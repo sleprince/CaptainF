@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 914d864b63ea05d4d8081137080c61c9
+  productGUID: f36157e66d9b4dd4082689d6de20bcb6
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: CaptainF
+  productName: My project (1)
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -478,8 +478,7 @@ PlayerSettings:
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
-  m_TemplateCustomTags:
-    PRODUCT_DESCRIPTION: 
+  m_TemplateCustomTags: {}
   mobileMTRendering:
     iPhone: 1
     tvOS: 1
@@ -744,10 +743,10 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:Minimal
+  webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 1
+  webGLCompressionFormat: 2
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
@@ -881,10 +880,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: b00b38d7-489b-4219-930d-6bdc3e7ca259
+  cloudProjectId: be469397-4485-46c4-a9aa-919e27e1aec9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: CaptainF
+  projectName: 
   organizationId: steffan-le-prince
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 1
