@@ -9,7 +9,8 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 
 	[Header ("Linked Components")]
 	public Transform weaponBone; //the bone were weapon will be parented on
-	private UnitAnimator animator; //link to the animator component
+    public Vector3 weaponRotationOffset;  // Rotation offset for the weapon
+    private UnitAnimator animator; //link to the animator component
 	private UnitState playerState; //the state of the player
 	private Rigidbody rb;
 
@@ -621,7 +622,10 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 
                 // Update the currentWeapon reference
                 currentWeapon.playerHandPrefab = PlayerWeapon;
-            }
+
+				// Apply the rotation offset (set in the editor)
+				PlayerWeapon.transform.localRotation = Quaternion.Euler(weaponRotationOffset);
+        }
         }
 
         #endregion
