@@ -602,22 +602,34 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 
 	//equip current weapon
 	public void equipWeapon(Weapon weapon){
-		currentWeapon = weapon;
-		currentWeapon.damageObject.inflictor = gameObject;
+            currentWeapon = weapon;
+            currentWeapon.damageObject.inflictor = gameObject;
 
-		//add player hand weapon
-		if(weapon.playerHandPrefab != null) {
-			GameObject PlayerWeapon = GameObject.Instantiate(weapon.playerHandPrefab, weaponBone) as GameObject;
-			currentWeapon.playerHandPrefab = PlayerWeapon;
-		}
-	}
+            // Instantiate the weapon and parent it to the weaponBone
+            if (weapon.playerHandPrefab != null)
+            {
+                GameObject PlayerWeapon = Instantiate(weapon.playerHandPrefab, weaponBone);
 
-	#endregion
+                // Ensure the weapon's scale is reset after parenting
+                PlayerWeapon.transform.localScale = Vector3.one;
+                PlayerWeapon.transform.localPosition = Vector3.zero;
+                PlayerWeapon.transform.localRotation = Quaternion.identity;
 
-	#region KnockDown Sequence
+                // Debug the scale to ensure it's being set correctly
+                Debug.Log("Weapon Scale After Parenting: " + PlayerWeapon.transform.localScale);
+                Debug.Log("WeaponBone Scale: " + weaponBone.localScale);
 
-	//knockDown sequence
-	public IEnumerator KnockDownSequence(GameObject inflictor) {
+                // Update the currentWeapon reference
+                currentWeapon.playerHandPrefab = PlayerWeapon;
+            }
+        }
+
+        #endregion
+
+        #region KnockDown Sequence
+
+        //knockDown sequence
+        public IEnumerator KnockDownSequence(GameObject inflictor) {
 		playerState.SetState (UNITSTATE.KNOCKDOWN);
 		animator.StopAllCoroutines();
 		yield return new WaitForFixedUpdate();
