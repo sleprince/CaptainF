@@ -609,12 +609,15 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
             // Instantiate the weapon and parent it to the weaponBone
             if (weapon.playerHandPrefab != null)
             {
-                GameObject PlayerWeapon = Instantiate(weapon.playerHandPrefab, weaponBone);
+				// Instantiate the weapon without resetting the transform
+				GameObject PlayerWeapon = Instantiate(weapon.playerHandPrefab, weaponBone);
 
-                // Ensure the weapon's scale is reset after parenting
-                PlayerWeapon.transform.localScale = Vector3.one;
-                PlayerWeapon.transform.localPosition = Vector3.zero;
-                PlayerWeapon.transform.localRotation = Quaternion.identity;
+				// Ensure the weapon's scale is reset after parenting
+				PlayerWeapon.transform.localScale = Vector3.one;
+				// Keep the original transform settings of the prefab
+				PlayerWeapon.transform.localPosition = weapon.playerHandPrefab.transform.localPosition;
+
+				PlayerWeapon.transform.localRotation = Quaternion.identity;
 
                 // Debug the scale to ensure it's being set correctly
                 Debug.Log("Weapon Scale After Parenting: " + PlayerWeapon.transform.localScale);
