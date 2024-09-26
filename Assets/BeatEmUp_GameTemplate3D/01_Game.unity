@@ -2042,18 +2042,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 381549771}
   m_Mesh: {fileID: 4300018, guid: 56a9e5d3ec4e1d045ad05d326d5980ef, type: 3}
---- !u!1 &386642271 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1027917220076984, guid: 7d5feb6af67f18d43974e399da3c03b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 172453739}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &386642276 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4221300857950164, guid: 7d5feb6af67f18d43974e399da3c03b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 172453739}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &386790987
 GameObject:
   m_ObjectHideFlags: 0
@@ -10928,7 +10916,7 @@ MonoBehaviour:
   - WaveName: Wave1
     AreaCollider: {fileID: 1211514635}
     EnemyList:
-    - {fileID: 386642271}
+    - {fileID: 1027917383840467}
     - {fileID: 823083665}
   - WaveName: Wave2
     AreaCollider: {fileID: 743693478}
@@ -10961,7 +10949,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 386642276}
+  - {fileID: 4221300963254463}
   - {fileID: 823083670}
   - {fileID: 1211514636}
   - {fileID: 445455588}
@@ -12465,7 +12453,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2120167888
 Transform:
   m_ObjectHideFlags: 0
@@ -12493,7 +12481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98eda79dab49cfe44b6074347dc5d0bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPlayerPrefab: {fileID: 1443228785723502, guid: 7934979097e14dd4cae0341be42961d4,
+  defaultPlayerPrefab: {fileID: 3227521482667822329, guid: d586d8054dd907c4fb696268d839f579,
     type: 3}
 --- !u!1001 &2132430576
 PrefabInstance:
@@ -12644,6 +12632,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2145201471}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1027917383840467 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1027917220076984, guid: 7d5feb6af67f18d43974e399da3c03b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 172453739}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4221300963254463 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4221300857950164, guid: 7d5feb6af67f18d43974e399da3c03b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 172453739}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3372225148932656545
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12656,6 +12656,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerBusiness
+      objectReference: {fileID: 0}
+    - target: {fileID: 3227521482667822329, guid: d586d8054dd907c4fb696268d839f579,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8274577769018081367, guid: d586d8054dd907c4fb696268d839f579,
         type: 3}
