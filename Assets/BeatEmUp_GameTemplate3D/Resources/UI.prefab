@@ -1497,6 +1497,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224000011517051458}
   - component: {fileID: 222000014146060396}
+  - component: {fileID: 7899536243946596910}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -1538,6 +1539,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000013313466138}
   m_CullTransparentMesh: 1
+--- !u!114 &7899536243946596910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013313466138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0488ecf7e88f8a14f83c54b9fd43fc0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  touchControlsOverlay: {fileID: 1748371876922862}
+  keyboardButton: {fileID: 1063972790453019691}
+  joypadButton: {fileID: 8362474944688054885}
+  touchscreenButton: {fileID: 1197436076780334104}
 --- !u!1 &1000013684700960
 GameObject:
   m_ObjectHideFlags: 0
@@ -8286,7 +8303,6 @@ GameObject:
   - component: {fileID: 5968096472155929245}
   - component: {fileID: 8404589263358354786}
   - component: {fileID: 1197436076780334104}
-  - component: {fileID: 1242688833900916697}
   m_Layer: 5
   m_Name: ButtonTouch
   m_TagString: Untagged
@@ -8395,33 +8411,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8404589263358354786}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1242688833900916697}
-        m_TargetAssemblyTypeName: UIControlSwitcher, Assembly-CSharp
-        m_MethodName: SwitchToTouchscreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1242688833900916697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795916084995810709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0488ecf7e88f8a14f83c54b9fd43fc0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputManagerPrefab: {fileID: 1000012781959418, guid: e39095174dacb1644bc531f5401d5731,
-    type: 3}
+      m_Calls: []
 --- !u!1 &818560654280063184
 GameObject:
   m_ObjectHideFlags: 0
@@ -8592,7 +8582,6 @@ GameObject:
   - component: {fileID: 5539827703256565480}
   - component: {fileID: 2667744365769308584}
   - component: {fileID: 1063972790453019691}
-  - component: {fileID: 2987500712077731694}
   m_Layer: 5
   m_Name: ButtonKeyboard
   m_TagString: Untagged
@@ -8701,33 +8690,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2667744365769308584}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2987500712077731694}
-        m_TargetAssemblyTypeName: UIControlSwitcher, Assembly-CSharp
-        m_MethodName: SwitchToKeyboard
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &2987500712077731694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5594152719024468244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0488ecf7e88f8a14f83c54b9fd43fc0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputManagerPrefab: {fileID: 1000012781959418, guid: e39095174dacb1644bc531f5401d5731,
-    type: 3}
+      m_Calls: []
 --- !u!1 &6072237223445483267
 GameObject:
   m_ObjectHideFlags: 0
@@ -8740,7 +8703,6 @@ GameObject:
   - component: {fileID: 4306872008609587817}
   - component: {fileID: 6762658948986254385}
   - component: {fileID: 8362474944688054885}
-  - component: {fileID: 8837724018138911986}
   m_Layer: 5
   m_Name: ButtonJoystick
   m_TagString: Untagged
@@ -8849,33 +8811,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6762658948986254385}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8837724018138911986}
-        m_TargetAssemblyTypeName: UIControlSwitcher, Assembly-CSharp
-        m_MethodName: SwitchToJoystick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &8837724018138911986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6072237223445483267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0488ecf7e88f8a14f83c54b9fd43fc0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputManagerPrefab: {fileID: 1000012781959418, guid: e39095174dacb1644bc531f5401d5731,
-    type: 3}
+      m_Calls: []
 --- !u!1 &7985898057044664406
 GameObject:
   m_ObjectHideFlags: 0

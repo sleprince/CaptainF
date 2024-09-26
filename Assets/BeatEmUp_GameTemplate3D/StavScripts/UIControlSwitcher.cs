@@ -1,78 +1,100 @@
 using UnityEngine;
+using UnityEngine.UI;  // Needed to reference buttons
 
 public class UIControlSwitcher : MonoBehaviour
 {
-    private InputManager inputManager;
+    private InputManager inputManager;  // Reference to the InputManager
+    public GameObject touchControlsOverlay;  // Reference to the touch controls overlay
 
-    // The InputManager prefab (drag your InputManager prefab here in the Inspector)
-    public GameObject inputManagerPrefab;
+    // Button references (assign these in the Unity Editor)
+    public Button keyboardButton;
+    public Button joypadButton;
+    public Button touchscreenButton;
 
     void Start()
     {
-        // Ensure we find the InputManager after it's instantiated at runtime
-        FindInputManager();
-    }
-
-    // Try to find the InputManager in the scene after the game starts
-    void FindInputManager()
-    {
-        // Check if InputManager already exists in the scene
+        // Try to find the InputManager in the scene
         inputManager = FindObjectOfType<InputManager>();
 
-        if (inputManager == null && inputManagerPrefab != null)
+        if (inputManager == null)
         {
-            // Instantiate the InputManager if it's not found in the scene
-            GameObject inputManagerInstance = Instantiate(inputManagerPrefab);
-            inputManager = inputManagerInstance.GetComponent<InputManager>();
+            Debug.LogError("InputManager not found in the scene. Make sure it's instantiated before trying to switch controls.");
+        }
 
-            if (inputManager == null)
+        // Attach button listeners to switch control types
+        if (keyboardButton != null)
+        {
+            keyboardButton.onClick.AddListener(SetKeyboardControls);
+        }
+
+        if (joypadButton != null)
+        {
+            joypadButton.onClick.AddListener(SetJoypadControls);
+        }
+
+        if (touchscreenButton != null)
+        {
+            touchscreenButton.onClick.AddListener(SetTouchscreenControls);
+        }
+    }
+
+    // Called when the Keyboard button is clicked
+    public void SetKeyboardControls()
+    {
+        // Ensure InputManager reference is valid
+        if (inputManager != null)
+        {
+            inputManager.inputType = INPUTTYPE.KEYBOARD;
+
+            // Disable touchscreen overlay
+            if (touchControlsOverlay != null)
             {
-                Debug.LogError("InputManager component not found on instantiated prefab!");
-            }
-            else
-            {
-                Debug.Log("InputManager found and set.");
+                touchControlsOverlay.SetActive(false);
             }
         }
         else
         {
-            Debug.Log("InputManager already exists in the scene.");
+            Debug.LogError("InputManager is missing or not referenced.");
         }
     }
 
-    // Call this when the button for keyboard is pressed
-    public void SwitchToKeyboard()
+    // Called when the Joypad button is clicked
+    public void SetJoypadControls()
     {
-        if (inputManager == null) FindInputManager();
-
-        if (inputManager != null)
-        {
-            inputManager.inputType = INPUTTYPE.KEYBOARD;
-            Debug.Log("Switched to Keyboard Controls");
-        }
-    }
-
-    // Call this when the button for joystick is pressed
-    public void SwitchToJoystick()
-    {
-        if (inputManager == null) FindInputManager();
-
+        // Ensure InputManager reference is valid
         if (inputManager != null)
         {
             inputManager.inputType = INPUTTYPE.JOYPAD;
-            Debug.Log("Switched to Joystick Controls");
+
+            // Disable touchscreen overlay
+            if (touchControlsOverlay != null)
+            {
+                touchControlsOverlay.SetActive(false);
+            }
+        }
+        else
+        {
+            Debug.LogError("InputManager is missing or not referenced.");
         }
     }
 
-    // Call this when the button for touchscreen is pressed
-    public void SwitchToTouchscreen()
+    // Called when the Touchscreen button is clicked
+    public void SetTouchscreenControls()
     {
-        if (inputManager == null) FindInputManager();
-
+        // Ensure InputManager reference is valid
         if (inputManager != null)
         {
             inputManager.inputType = INPUTTYPE.TOUCHSCREEN;
-            Debug.Log("Switched to Touchscreen Controls");
+
+            // Enable touchscreen overlay
+            if (touchControlsOverlay != null)
+            {
+                touchControlsOverlay.SetActive(true);
+            }
+        }
+        else
+        {
+            Debug.LogError("InputManager is missing or not referenced.");
         }
     }
 }

@@ -4,12 +4,13 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(RectTransform))]
 public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
+
     public RectTransform handle;
     public float radius = 40f;
     public float autoReturnSpeed = 8f;
     private bool returnToStartPos;
     private RectTransform parentRect;
-    private InputManager inputManager;
+    private InputManager inputmanager;
 
     void OnEnable()
     {
@@ -20,18 +21,15 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
 
     void Update()
     {
-        if (inputManager == null) inputManager = GameObject.FindObjectOfType<InputManager>();
+        if (inputmanager == null) inputmanager = GameObject.FindObjectOfType<InputManager>();
 
-        // Ensure only touchscreen input is processed
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
-        // Return to start position
+        //return to start position
         if (returnToStartPos)
         {
             if (handle.anchoredPosition.magnitude > Mathf.Epsilon)
             {
                 handle.anchoredPosition -= new Vector2(handle.anchoredPosition.x * autoReturnSpeed, handle.anchoredPosition.y * autoReturnSpeed) * Time.deltaTime;
-                inputManager.OnTouchScreenJoystickEvent(Vector2.zero);
+                inputmanager.OnTouchScreenJoystickEvent(Vector2.zero);
             }
             else
             {
@@ -40,38 +38,46 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    // Touch down
+    //return coordinates
+    public Vector2 Coordinates
+    {
+        get
+        {
+            if (handle.anchoredPosition.magnitude < radius)
+            {
+                return handle.anchoredPosition / radius;
+            }
+            return handle.anchoredPosition.normalized;
+        }
+    }
+
+    //touch down
     void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
     {
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
         returnToStartPos = false;
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
+        if (inputmanager != null) inputmanager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
-    // Touch drag
+    //touch drag
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
+        if (inputmanager != null) inputmanager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
-    // Touch up
+    //touch up
     void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
     {
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
         returnToStartPos = true;
     }
 
-    // Get offset
+    //get offset
     private Vector2 GetJoystickOffset(PointerEventData eventData)
     {
+
         Vector3 globalHandle;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out globalHandle))
         {

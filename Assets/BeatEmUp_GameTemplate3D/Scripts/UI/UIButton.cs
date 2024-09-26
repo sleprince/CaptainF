@@ -3,26 +3,23 @@ using UnityEngine.EventSystems;
 
 public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+
     public string actionDown = "";
     public string actionUp = "";
-    private InputManager inputManager;
+    private InputManager inputmanager;
 
     void Update()
     {
-        if (inputManager == null) inputManager = GameObject.FindObjectOfType<InputManager>();
+        if (inputmanager == null) inputmanager = GameObject.FindObjectOfType<InputManager>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
-        if (inputManager != null && actionDown != "") inputManager.OnTouchScreenInputEvent(actionDown, BUTTONSTATE.PRESS);
+        if (inputmanager != null && actionDown != "") inputmanager.OnTouchScreenInputEvent(actionDown, BUTTONSTATE.PRESS);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (inputManager.inputType != INPUTTYPE.TOUCHSCREEN) return;
-
-        if (inputManager != null && actionUp != "") inputManager.OnTouchScreenInputEvent(actionUp, BUTTONSTATE.RELEASE);
+        if (inputmanager != null && actionUp != "") inputmanager.OnTouchScreenInputEvent(actionUp, BUTTONSTATE.RELEASE);
     }
 }
