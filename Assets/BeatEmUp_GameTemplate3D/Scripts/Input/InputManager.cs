@@ -139,6 +139,13 @@ public class InputManager : MonoBehaviour
         lastInputTime = Time.time;
         return doubleTapDetected;
     }
+
+        public void ClearMovementInput()
+    {
+        // Set movement direction to zero
+        DirectionEvent(Vector2.zero, false);
+    }
+
 }
 
 //---------------
@@ -253,5 +260,6 @@ public class InputManagerEditor : Editor
         inputManager.doubleTapSpeed = EditorGUILayout.FloatField("Double Tap Speed:", inputManager.doubleTapSpeed);
         EditorUtility.SetDirty(inputManager);
     }
+
 }
 #endif
