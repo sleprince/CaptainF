@@ -234,31 +234,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114662415636318138, guid: 76482c68ab3b16a49923324ef8f22bd7,
-        type: 3}
-      propertyPath: UIMenus.Array.size
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 114662415636318138, guid: 76482c68ab3b16a49923324ef8f22bd7,
-        type: 3}
-      propertyPath: UIMenus.Array.data[5].UI_Name
-      value: CharacterSelection
-      objectReference: {fileID: 0}
-    - target: {fileID: 114662415636318138, guid: 76482c68ab3b16a49923324ef8f22bd7,
-        type: 3}
-      propertyPath: UIMenus.Array.data[6].UI_Name
-      value: TrainingRoom
-      objectReference: {fileID: 0}
-    - target: {fileID: 114662415636318138, guid: 76482c68ab3b16a49923324ef8f22bd7,
-        type: 3}
-      propertyPath: UIMenus.Array.data[5].UI_Gameobject
-      value: 
-      objectReference: {fileID: 396946326}
-    - target: {fileID: 114662415636318138, guid: 76482c68ab3b16a49923324ef8f22bd7,
-        type: 3}
-      propertyPath: UIMenus.Array.data[6].UI_Gameobject
-      value: 
-      objectReference: {fileID: 396946325}
     - target: {fileID: 224000013536346468, guid: 76482c68ab3b16a49923324ef8f22bd7,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -274,18 +249,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76482c68ab3b16a49923324ef8f22bd7, type: 3}
---- !u!1 &396946325 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1565694240088188, guid: 76482c68ab3b16a49923324ef8f22bd7,
-    type: 3}
-  m_PrefabInstance: {fileID: 396946324}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &396946326 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1434332590102558, guid: 76482c68ab3b16a49923324ef8f22bd7,
-    type: 3}
-  m_PrefabInstance: {fileID: 396946324}
-  m_PrefabAsset: {fileID: 0}
 --- !u!850595691 &1083623754
 LightingSettings:
   m_ObjectHideFlags: 0

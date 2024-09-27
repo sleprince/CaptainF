@@ -620,28 +620,18 @@ MonoBehaviour:
   UIMenus:
   - UI_Name: MainMenu
     UI_Gameobject: {fileID: 1357981599008068}
-    showTouchControls: 0
   - UI_Name: HUD
     UI_Gameobject: {fileID: 1000013313466138}
-    showTouchControls: 1
   - UI_Name: LevelComplete
     UI_Gameobject: {fileID: 1000011976466326}
-    showTouchControls: 0
   - UI_Name: LevelSelection
     UI_Gameobject: {fileID: 1408462507273364}
-    showTouchControls: 0
   - UI_Name: GameOver
     UI_Gameobject: {fileID: 1300669151133180}
-    showTouchControls: 0
-  - UI_Name: TouchScreenControls
-    UI_Gameobject: {fileID: 1748371876922862}
-    showTouchControls: 0
   - UI_Name: CharacterSelection
     UI_Gameobject: {fileID: 1434332590102558}
-    showTouchControls: 0
   - UI_Name: TrainingRoom
     UI_Gameobject: {fileID: 1565694240088188}
-    showTouchControls: 1
 --- !u!1 &179672
 GameObject:
   m_ObjectHideFlags: 0
@@ -2225,7 +2215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &224684704755235784
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2738,7 +2728,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 640, y: -330}
+  m_AnchoredPosition: {x: 640, y: -360}
   m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222405085833385220
