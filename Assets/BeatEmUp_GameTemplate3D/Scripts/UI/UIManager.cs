@@ -6,17 +6,12 @@ public class UIManager : MonoBehaviour
     public UIFader UI_fader;
     public UI_Screen[] UIMenus;
 
-    private InputManager inputManager;
-
     void Awake()
     {
         DisableAllScreens();
 
         // Don't destroy this object on load
         DontDestroyOnLoad(gameObject);
-
-        // Find InputManager
-        inputManager = FindObjectOfType<InputManager>();
     }
 
     // Shows a menu by name
@@ -31,18 +26,6 @@ public class UIManager : MonoBehaviour
                 if (UI.UI_Gameobject != null)
                 {
                     UI.UI_Gameobject.SetActive(true);
-
-                    // Only show touch screen controls if inputType is TOUCHSCREEN and it's not the main menu
-                    if (IsGameplayScene() && inputManager != null && inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
-                    {
-                        Debug.Log("Showing TouchScreenControls");
-                        ShowTouchScreenControls();
-                    }
-                    else
-                    {
-                        Debug.Log("Hiding TouchScreenControls");
-                        CloseMenu("TouchScreenControls");
-                    }
                 }
                 else
                 {
@@ -87,29 +70,6 @@ public class UIManager : MonoBehaviour
                 Debug.Log("Null reference found in UI with name: " + UI.UI_Name);
             }
         }
-    }
-
-    // Show touch screen controls if inputType is TOUCHSCREEN
-    void ShowTouchScreenControls()
-    {
-        foreach (UI_Screen UI in UIMenus)
-        {
-            if (UI.UI_Name == "TouchScreenControls")
-            {
-                if (inputManager != null && inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
-                {
-                    Debug.Log("Activating TouchScreenControls");
-                    UI.UI_Gameobject.SetActive(true);
-                }
-                else
-                {
-                    Debug.Log("Deactivating TouchScreenControls");
-                    UI.UI_Gameobject.SetActive(false);
-                }
-                return;
-            }
-        }
-        Debug.LogError("TouchScreenControls not found in UIMenus.");
     }
 
     // Check if the current scene is gameplay or menu
