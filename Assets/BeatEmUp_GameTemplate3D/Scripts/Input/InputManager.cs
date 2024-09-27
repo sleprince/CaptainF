@@ -31,6 +31,8 @@ public class InputManager : MonoBehaviour
     {
         // Allow manual input type selection (remove automatic platform-based detection)
         // You can still switch between input types via UI buttons.
+
+        
     }
 
     public static void DirectionEvent(Vector2 dir, bool doubleTapActive)

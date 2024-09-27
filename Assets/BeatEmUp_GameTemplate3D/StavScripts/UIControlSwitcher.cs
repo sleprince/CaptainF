@@ -13,9 +13,6 @@ public class UIControlSwitcher : MonoBehaviour
 
     void Start()
     {
-        // Try to find the InputManager in the scene
-        AssignInputManager();
-
         // Attach button listeners to switch control types
         if (keyboardButton != null)
         {
@@ -31,23 +28,15 @@ public class UIControlSwitcher : MonoBehaviour
         {
             touchscreenButton.onClick.AddListener(SetTouchscreenControls);
         }
+
+        // Try to set up InputManager after the initial setup in the scene
+        InitializeInputManager();
     }
 
     void OnEnable()
     {
-        // Reassign InputManager when the UI is enabled
-        AssignInputManager();
-    }
-
-    // This method tries to find the InputManager again, in case it was destroyed and recreated
-    private void AssignInputManager()
-    {
-        inputManager = FindObjectOfType<InputManager>();
-
-        if (inputManager == null)
-        {
-            Debug.LogError("InputManager not found in the scene. Make sure it's instantiated before trying to switch controls.");
-        }
+        // Try to set up InputManager every time the object is enabled (such as after respawn)
+        InitializeInputManager();
     }
 
     // Called when the Keyboard button is clicked
@@ -58,6 +47,7 @@ public class UIControlSwitcher : MonoBehaviour
             inputManager.ClearMovementInput();
             inputManager.inputType = INPUTTYPE.KEYBOARD;
 
+            // Disable touchscreen overlay
             if (touchControlsOverlay != null)
             {
                 touchControlsOverlay.SetActive(false);
@@ -73,6 +63,7 @@ public class UIControlSwitcher : MonoBehaviour
             inputManager.ClearMovementInput();
             inputManager.inputType = INPUTTYPE.JOYPAD;
 
+            // Disable touchscreen overlay
             if (touchControlsOverlay != null)
             {
                 touchControlsOverlay.SetActive(false);
@@ -88,10 +79,34 @@ public class UIControlSwitcher : MonoBehaviour
             inputManager.ClearMovementInput();
             inputManager.inputType = INPUTTYPE.TOUCHSCREEN;
 
+            // Enable touchscreen overlay
             if (touchControlsOverlay != null)
             {
                 touchControlsOverlay.SetActive(true);
             }
+        }
+    }
+
+    // This ensures that the InputManager is correctly found after the game has started or reloaded
+    private void InitializeInputManager()
+    {
+        // Try to find the InputManager in the scene
+        inputManager = FindObjectOfType<InputManager>();
+
+        if (inputManager != null)
+        {
+            // Set default input to touchscreen
+            inputManager.inputType = INPUTTYPE.TOUCHSCREEN;
+
+            // Enable touchscreen overlay at the start
+            if (touchControlsOverlay != null)
+            {
+                touchControlsOverlay.SetActive(true);
+            }
+        }
+        else
+        {
+            Debug.LogError("InputManager not found in the scene. Make sure it's instantiated before trying to switch controls.");
         }
     }
 }
