@@ -37,19 +37,39 @@ public class UIControlSwitcher : MonoBehaviour
             touchscreenButton.onClick.AddListener(SetTouchscreenControls);
         }
 
-        // Set default controls (touchscreen) if not a retry
-        if (!inputManager.IsRetrying())
+        // Set default controls (touchscreen) if not a retry, else handle retry case
+        if (inputManager != null)
         {
-            SetDefaultToTouchscreen();
+            if (!inputManager.IsRetrying())
+            {
+                SetDefaultToTouchscreen();
+            }
+            else
+            {
+                HandleRetryControlState();
+            }
         }
     }
 
     void OnEnable()
     {
-        // Check if it's a retry and only default to touchscreen if it's not a retry
-        if (!inputManager.IsRetrying())
+        // Try to find the InputManager again in case it's not yet instantiated
+        if (inputManager == null)
         {
-            SetDefaultToTouchscreen();
+            inputManager = FindObjectOfType<InputManager>();
+        }
+
+        // Ensure InputManager is found before proceeding
+        if (inputManager != null)
+        {
+            if (!inputManager.IsRetrying())
+            {
+                SetDefaultToTouchscreen();
+            }
+            else
+            {
+                HandleRetryControlState();
+            }
         }
     }
 
@@ -124,6 +144,31 @@ public class UIControlSwitcher : MonoBehaviour
             if (touchControlsOverlay != null)
             {
                 touchControlsOverlay.SetActive(true);
+            }
+        }
+    }
+
+    // Handle control state when retrying (ensure overlay visibility matches control type)
+    private void HandleRetryControlState()
+    {
+        if (inputManager != null)
+        {
+            // Check if the input type was set to TOUCHSCREEN
+            if (inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
+            {
+                // Enable touchscreen overlay
+                if (touchControlsOverlay != null)
+                {
+                    touchControlsOverlay.SetActive(true);
+                }
+            }
+            else
+            {
+                // Hide touchscreen overlay for non-touchscreen controls
+                if (touchControlsOverlay != null)
+                {
+                    touchControlsOverlay.SetActive(false);
+                }
             }
         }
     }

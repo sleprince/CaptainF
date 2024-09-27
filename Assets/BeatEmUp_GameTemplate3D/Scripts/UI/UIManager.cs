@@ -85,5 +85,4 @@ public class UI_Screen
 {
     public string UI_Name;
     public GameObject UI_Gameobject;
-    public bool showTouchControls;
 }
