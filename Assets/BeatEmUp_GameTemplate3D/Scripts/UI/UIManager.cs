@@ -1,21 +1,38 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
     public UIFader UI_fader;
     public UI_Screen[] UIMenus;
 
+    private bool isTitleScreenActive = true; // Track if TitleScreen is active
+    private bool isTransitioning = false;    // Prevent double fades or transitions
+
     void Awake()
     {
         DisableAllScreens();
-
-        // Don't destroy this object on load
         DontDestroyOnLoad(gameObject);
+
+        // Show TitleScreen without a fade if that's how it worked before
+        ShowMenu("TitleScreen", false);
     }
 
-    // Shows a menu by name
-    public void ShowMenu(string name, bool disableAllScreens)
+    void Update()
+    {
+        // If we're still on TitleScreen and any key is pressed, initiate transition
+        if (isTitleScreenActive && !isTransitioning && Input.anyKeyDown)
+        {
+            // Directly show the main menu without a coroutine
+            ShowMenu("MainMenu");
+            isTransitioning = true;  // Prevent further input during transition
+            isTitleScreenActive = false;
+        }
+    }
+
+    // Show a menu and handle fading (UI fader is managed inside this function)
+    public void ShowMenu(string name, bool disableAllScreens = true)
     {
         if (disableAllScreens) DisableAllScreens();
 
@@ -34,17 +51,20 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // Fade in the UI
-        if (UI_fader != null) UI_fader.gameObject.SetActive(true);
-        UI_fader.Fade(UIFader.FADE.FadeIn, .5f, .3f);
+        // Fade in the UI (if it's not the TitleScreen)
+        if (UI_fader != null && name != "TitleScreen")
+        {
+            // Ensure the fader is active before fading in the new menu
+            if (!UI_fader.gameObject.activeSelf)
+            {
+                UI_fader.gameObject.SetActive(true);
+            }
+
+            // Fade in the menu
+            UI_fader.Fade(UIFader.FADE.FadeIn, .5f, .3f);
+        }
     }
 
-    public void ShowMenu(string name)
-    {
-        ShowMenu(name, true);
-    }
-
-    // Closes a menu by name
     public void CloseMenu(string name)
     {
         foreach (UI_Screen UI in UIMenus)
@@ -56,7 +76,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // Disables all screens
     public void DisableAllScreens()
     {
         foreach (UI_Screen UI in UIMenus)
@@ -78,6 +97,10 @@ public class UIManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         return sceneName != "00_MainMenu"; // Replace with your actual main menu scene name
     }
+
+
+
+
 }
 
 [System.Serializable]
