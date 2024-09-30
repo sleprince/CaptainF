@@ -1681,7 +1681,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4811056328376034085
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2099,7 +2099,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3667041142004760021
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6153,7 +6153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6931562000144507835}
   m_Layer: 0
-  m_Name: TitleScr
+  m_Name: TitleScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6792,6 +6792,8 @@ MonoBehaviour:
     UI_Gameobject: {fileID: 2841455157731368982}
   - UI_Name: TrainingRoom
     UI_Gameobject: {fileID: 1689200233759362589}
+  - UI_Name: TitleScreen
+    UI_Gameobject: {fileID: 5702628501733981539}
 --- !u!1 &6267408094836162329
 GameObject:
   m_ObjectHideFlags: 0

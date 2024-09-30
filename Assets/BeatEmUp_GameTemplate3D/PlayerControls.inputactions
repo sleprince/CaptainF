@@ -1,0 +1,77 @@
+{
+    "name": "PlayerControls",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "c285303c-f202-4489-b2c6-72097810dec4",
+            "actions": [
+                {
+                    "name": "Movement",
+                    "type": "Value",
+                    "id": "924d9684-4c07-4f1a-8fef-0569e87fe8ab",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "5dbb4081-b823-4827-a31d-1389b962956f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d15e33e7-9533-454e-b073-215be50eb335",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "DefaultControls",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "bfa1c6e9-6393-47ea-a9d1-c3380ee7f431",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "184412fe-48df-4103-b5df-2e7a21bdcb15",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c87da83a-b191-45de-87d6-a224420d322f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "DefaultControls",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "DefaultControls",
+            "bindingGroup": "DefaultControls",
+            "devices": []
+        }
+    ]
+}

@@ -86,9 +86,22 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        // Handle input based on the input type
-        if (inputType == INPUTTYPE.KEYBOARD) KeyboardControls();
-        if (inputType == INPUTTYPE.JOYPAD) JoyPadControls();
+        // Touchscreen control overrides everything
+        if (inputType == INPUTTYPE.TOUCHSCREEN)
+        {
+            if (DetectKeyboardInput() || DetectJoypadInput() || DetectJoystickAxis())
+            {
+                inputType = INPUTTYPE.KEYBOARD;  // Default to both keyboard and joystick
+                UIControlSwitcher.HideTouchControlsOverlay();  // Hide touch controls
+            }
+        }
+
+        // Keyboard and joystick can both run simultaneously if not in touch mode
+        if (inputType != INPUTTYPE.TOUCHSCREEN)
+        {
+            KeyboardControls();
+            JoyPadControls();
+        }
     }
 
     void KeyboardControls()
@@ -124,7 +137,11 @@ public class InputManager : MonoBehaviour
             }
 
             // Defend key exception (checks the defend state every frame)
-            if (inputControl.Action == "Defend") defendKeyDown = Input.GetKey(inputControl.key);
+            if (inputControl.Action == "Defend")
+            {
+                defendKeyDown = Input.GetKey(inputControl.key);
+                onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
+            }
         }
 
         // Send a direction event
@@ -138,18 +155,65 @@ public class InputManager : MonoBehaviour
         // On joypad button press
         foreach (InputControl inputControl in joypadControls)
         {
-            if (Input.GetKeyDown(inputControl.key)) onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
+            if (Input.GetKeyDown(inputControl.key))
+                onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
+
+            // On joypad button release
+            if (Input.GetKeyUp(inputControl.key))
+                onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
 
             // Defend key exception (checks the defend state every frame)
-            if (inputControl.Action == "Defend") defendKeyDown = Input.GetKey(inputControl.key);
+            if (inputControl.Action == "Defend")
+            {
+                defendKeyDown = Input.GetKey(inputControl.key);
+                onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
+            }
         }
 
         // Get Joypad direction axis
         float x = Input.GetAxis("Joypad Left-Right");
         float y = Input.GetAxis("Joypad Up-Down");
 
-        // Send a direction event
-        DirectionEvent(new Vector2(x, y).normalized, false);
+        // Handle joystick axis movement
+        if (Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f)
+        {
+            DirectionEvent(new Vector2(x, y).normalized, false);
+        }
+    }
+
+    // Detects if any keyboard input was pressed
+    public bool DetectKeyboardInput()
+    {
+        foreach (InputControl inputControl in keyBoardControls)
+        {
+            if (Input.GetKey(inputControl.key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Detects if any joystick input was pressed (buttons)
+    public bool DetectJoypadInput()
+    {
+        foreach (InputControl inputControl in joypadControls)
+        {
+            if (Input.GetKey(inputControl.key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Detects if the joystick axis (stick movement) was used
+    public bool DetectJoystickAxis()
+    {
+        float x = Input.GetAxis("Joypad Left-Right");
+        float y = Input.GetAxis("Joypad Up-Down");
+
+        return Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f;
     }
 
     // Clear movement input (to handle stuck movement)
@@ -187,8 +251,11 @@ public class InputManager : MonoBehaviour
         lastInputTime = Time.time;
         return doubleTapDetected;
     }
-
 }
+
+
+
+
 
 //---------------
 //    ENUMS
