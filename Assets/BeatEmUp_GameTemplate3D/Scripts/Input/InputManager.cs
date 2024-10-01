@@ -100,7 +100,10 @@ public class InputManager : MonoBehaviour
         if (inputType != INPUTTYPE.TOUCHSCREEN)
         {
             KeyboardControls();
-            JoyPadControls();
+            if (!DetectKeyboardInput())
+            {
+                JoyPadControls();
+            }
         }
     }
 
@@ -118,12 +121,14 @@ public class InputManager : MonoBehaviour
             if (Input.GetKeyDown(inputControl.key))
             {
                 doubleTapState = DetectDoubleTap(inputControl.Action);
+                Debug.Log($"Key Down: {inputControl.Action} (Key: {inputControl.key})");  // Debug for all key presses
                 onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
             }
 
             // On keyboard key up
             if (Input.GetKeyUp(inputControl.key))
             {
+                Debug.Log($"Key Up: {inputControl.Action} (Key: {inputControl.key})");  // Debug for key releases
                 onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
             }
 
@@ -139,7 +144,9 @@ public class InputManager : MonoBehaviour
             // Defend key exception (checks the defend state every frame)
             if (inputControl.Action == "Defend")
             {
+                Debug.Log($"Defend Key Pressed: {Input.GetKey(inputControl.key)}");  // Debug to check Defend key detection
                 defendKeyDown = Input.GetKey(inputControl.key);
+                Debug.Log($"Defend state: {(defendKeyDown ? "Pressed" : "Released")}");
                 onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
             }
         }
@@ -289,19 +296,20 @@ public enum BUTTONSTATE
 [CustomEditor(typeof(InputManager))]
 public class InputManagerEditor : Editor
 {
+
     public override void OnInspectorGUI()
     {
         InputManager inputManager = (InputManager)target;
         EditorGUIUtility.labelWidth = 120;
         EditorGUIUtility.fieldWidth = 100;
 
-        // Input type
+        //input type
         GUILayout.Space(10);
         EditorGUILayout.LabelField("Input Type", EditorStyles.boldLabel);
         inputManager.inputType = (INPUTTYPE)EditorGUILayout.EnumPopup("Input Type:", inputManager.inputType);
         GUILayout.Space(15);
 
-        // Keyboard controls
+        //keyboard controls	
         if (inputManager.inputType == INPUTTYPE.KEYBOARD)
         {
             EditorGUILayout.LabelField("Keyboard Keys", EditorStyles.boldLabel);
@@ -314,7 +322,7 @@ public class InputManagerEditor : Editor
             }
         }
 
-        // Joypad controls
+        //joypad controls	
         if (inputManager.inputType == INPUTTYPE.JOYPAD)
         {
             EditorGUILayout.LabelField("Joypad Keys", EditorStyles.boldLabel);
@@ -329,7 +337,7 @@ public class InputManagerEditor : Editor
             }
         }
 
-        // Touch screen controls
+        //touch Screen controls
         if (inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
         {
             EditorGUILayout.LabelField("* You can edit the touchscreen buttons in the 'UI' prefab in the project folder.");
@@ -337,7 +345,30 @@ public class InputManagerEditor : Editor
         }
         GUILayout.Space(15);
 
-        // Double tap settings
+        if (inputManager.inputType == INPUTTYPE.KEYBOARD || inputManager.inputType == INPUTTYPE.JOYPAD)
+        {
+            GUILayout.BeginHorizontal();
+
+            //button: add a new action 
+            if (GUILayout.Button("Add Input Action", GUILayout.Width(130), GUILayout.Height(25)))
+            {
+                if (inputManager.inputType == INPUTTYPE.KEYBOARD) inputManager.keyBoardControls.Add(new InputControl());
+                if (inputManager.inputType == INPUTTYPE.JOYPAD) inputManager.joypadControls.Add(new InputControl());
+            }
+
+            //button: delete last action 
+            bool showDeleteButton = (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) || (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) ? true : false;
+            if (showDeleteButton && GUILayout.Button("Delete Input Action", GUILayout.Width(130), GUILayout.Height(25)))
+            {
+                if (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) inputManager.keyBoardControls.RemoveAt(inputManager.keyBoardControls.Count - 1);
+                if (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) inputManager.joypadControls.RemoveAt(inputManager.joypadControls.Count - 1);
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.Space(15);
+        }
+
+        //double tap settings
         EditorGUILayout.LabelField("Double Tap Settings", EditorStyles.boldLabel);
         inputManager.doubleTapSpeed = EditorGUILayout.FloatField("Double Tap Speed:", inputManager.doubleTapSpeed);
         EditorUtility.SetDirty(inputManager);
