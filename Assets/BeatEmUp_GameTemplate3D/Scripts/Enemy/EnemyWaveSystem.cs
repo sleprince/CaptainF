@@ -1,177 +1,222 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
-public class EnemyWaveSystem : MonoBehaviour {
+public class EnemyWaveSystem : MonoBehaviour
+{
+    public int MaxAttackers = 3; // Maximum number of enemies that can attack the player simultaneously 
 
-	public int MaxAttackers = 3; //the maximum number of enemies that can attack the player simultaneously 
+    [Header("List of enemy Waves")]
+    public EnemyWave[] EnemyWaves;
+    public int currentWave;
 
-	[Header ("List of enemy Waves")]
-	public EnemyWave[] EnemyWaves;
-	public int currentWave;
+    [Header("Slow Motion Settings")]
+    public bool activateSlowMotionOnLastHit;
+    public float effectDuration = 1.5f;
 
-	[Header ("Slow Motion Settings")]
-	public bool activateSlowMotionOnLastHit;
-	public float effectDuration = 1.5f;
+    [Header("Load level On Finish")]
+    public bool loadNewLevel;
+    public string levelName;
 
-	[Header ("Load level On Finish")]
-	public bool loadNewLevel;
-	public string levelName;
+    void OnEnable()
+    {
+        EnemyActions.OnUnitDestroy += onUnitDestroy;
+    }
 
-	void OnEnable(){
-		EnemyActions.OnUnitDestroy += onUnitDestroy;
-	}
+    void OnDisable()
+    {
+        EnemyActions.OnUnitDestroy -= onUnitDestroy;
+    }
 
-	void OnDisable(){
-		EnemyActions.OnUnitDestroy -= onUnitDestroy;
-	}
+    void Awake()
+    {
+        if (enabled) DisableAllEnemies();
+    }
 
-	void Awake(){
-		if (enabled) DisableAllEnemies();
-	}
+    void Start()
+    {
+        currentWave = 0;
+        UpdateAreaColliders();
+        StartNewWave();
+    }
 
-	void Start(){
-		currentWave = 0;
-		UpdateAreaColliders();
-		StartNewWave();
-	}
+    // Disable all the enemies
+    void DisableAllEnemies()
+    {
+        foreach (EnemyWave wave in EnemyWaves)
+        {
+            for (int i = 0; i < wave.EnemyList.Count; i++)
+            {
+                if (wave.EnemyList[i] != null)
+                {
+                    wave.EnemyList[i].SetActive(false);
+                }
+                else
+                {
+                    wave.EnemyList.RemoveAt(i);
+                }
+            }
+        }
+    }
 
-	//Disable all the enemies
-	void DisableAllEnemies(){
-		foreach(EnemyWave wave in EnemyWaves){
-			for(int i=0; i<wave.EnemyList.Count; i++){
-				if (wave.EnemyList[i] != null){
+    // Start a new enemy wave
+    public void StartNewWave()
+    {
+        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+        if (hp != null) hp.DeActivateHandPointer();
 
-					//deactivate enemy
-					wave.EnemyList[i].SetActive(false);
-				} else {
-					
-					//remove empty fields from the list
-					wave.EnemyList.RemoveAt(i);
-				}
-			}
-			foreach(GameObject g in wave.EnemyList){
-				if (g != null) g.SetActive(false);
-			}
-		}
-	}
-		
-	//Start a new enemy wave
-	public void StartNewWave(){
+        foreach (GameObject g in EnemyWaves[currentWave].EnemyList)
+        {
+            if (g != null) g.SetActive(true);
+        }
+        Invoke("SetEnemyTactics", .1f);
+    }
 
-		//hide UI hand pointer
-		HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
-		if (hp != null)	hp.DeActivateHandPointer ();
+    // Update Area Colliders
+    void UpdateAreaColliders()
+    {
+        // Ensure wave area collider is handled correctly across network
+        CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
+        if (PhotonNetwork.InRoom)
+        {
+            // Network mode - only update local player's camera
+            if (cf != null && cf.GetComponent<PhotonView>().IsMine)
+            {
+                SetCurrentWaveCollider(cf);
+            }
+        }
+        else
+        {
+            // Local play
+            SetCurrentWaveCollider(cf);
+        }
+    }
 
-		//activate enemies
-		foreach (GameObject g in EnemyWaves[currentWave].EnemyList) {
-			if(g!=null)	g.SetActive (true);
-		}
-		Invoke("SetEnemyTactics", .1f);
-	}
+    // Helper function to set current wave collider
+    void SetCurrentWaveCollider(CameraFollow cf)
+    {
+        if (cf != null)
+        {
+            // Switch previous area collider to trigger
+            if (currentWave > 0)
+            {
+                BoxCollider areaCollider = EnemyWaves[currentWave - 1].AreaCollider;
+                if (areaCollider != null)
+                {
+                    areaCollider.enabled = true;
+                    areaCollider.isTrigger = true;
+                    AreaColliderTrigger act = areaCollider.gameObject.AddComponent<AreaColliderTrigger>();
+                    act.EnemyWaveSystem = this;
+                }
+            }
 
-	//Update Area Colliders
-	void UpdateAreaColliders(){
+            // Set next collider as camera area restrictor
+            if (EnemyWaves[currentWave].AreaCollider != null)
+            {
+                EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
+            }
 
-		//switch current area collider to a trigger
-		if (currentWave > 0) {
-			BoxCollider areaCollider = EnemyWaves [currentWave - 1].AreaCollider;
-			if (areaCollider != null) {
-				areaCollider.enabled = true;
-				areaCollider.isTrigger = true;
-				AreaColliderTrigger act = areaCollider.gameObject.AddComponent<AreaColliderTrigger> ();
-				act.EnemyWaveSystem = this;
-			}
-		}
+            // Update the camera's area collider for restriction
+            cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
+            cf.UseWaveAreaCollider = true;
+            cf.AreaColliderViewOffset = 4.5f; // Ensure the proper offset is set
+        }
 
-		//set next collider as camera area restrictor
-		if(EnemyWaves[currentWave].AreaCollider != null) { 
-			EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
-		}
+        // Activate UI hand pointer if needed
+        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+        if (hp != null) hp.ActivateHandPointer();
+    }
 
-		CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
-		if (cf != null)	cf.CurrentAreaCollider = EnemyWaves [currentWave].AreaCollider;
+    // An enemy has been destroyed
+    void onUnitDestroy(GameObject g)
+    {
+        if (EnemyWaves.Length > currentWave)
+        {
+            EnemyWaves[currentWave].RemoveEnemyFromWave(g);
+            if (EnemyWaves[currentWave].waveComplete())
+            {
+                currentWave += 1;
+                if (!allWavesCompleted())
+                {
+                    UpdateAreaColliders();
+                }
+                else
+                {
+                    StartCoroutine(LevelComplete());
+                }
+            }
+        }
+    }
 
-		//show UI hand pointer
-		HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
-		if (hp != null)	hp.ActivateHandPointer ();
-	}
+    // True if all the waves are completed
+    bool allWavesCompleted()
+    {
+        int waveCount = EnemyWaves.Length;
+        int waveFinished = 0;
 
-	//An enemy has been destroyed
-	void onUnitDestroy(	GameObject g){
-		if(EnemyWaves.Length > currentWave){
-			EnemyWaves[currentWave].RemoveEnemyFromWave(g);
-			if(EnemyWaves[currentWave].waveComplete()){
-				currentWave += 1;
-				if(!allWavesCompleted()){ 
-					UpdateAreaColliders();
-				} else{
-					StartCoroutine (LevelComplete());
-				}
-			}
-		}
-	}
+        for (int i = 0; i < waveCount; i++)
+        {
+            if (EnemyWaves[i].waveComplete()) waveFinished += 1;
+        }
 
-	//True if all the waves are completed
-	bool allWavesCompleted(){
-		int waveCount = EnemyWaves.Length;
-		int waveFinished = 0;
+        return waveCount == waveFinished;
+    }
 
-		for(int i=0; i<waveCount; i++){
-			if(EnemyWaves[i].waveComplete()) waveFinished += 1;
-		}
+    // Update enemy tactics
+    void SetEnemyTactics()
+    {
+        EnemyManager.SetEnemyTactics();
+    }
 
-		if(waveCount == waveFinished) 
-			return true;
-		else 
-			return false;
-	}
+    public BoxCollider GetCurrentWaveCollider()
+    {
+        if (EnemyWaves.Length > 0 && EnemyWaves[currentWave].AreaCollider != null)
+        {
+            return EnemyWaves[currentWave].AreaCollider;
+        }
+        return null;
+    }
 
-	//Update enemy tactics
-	void SetEnemyTactics(){
-		EnemyManager.SetEnemyTactics();
-	}
+    // Level complete
+    IEnumerator LevelComplete()
+    {
+        if (activateSlowMotionOnLastHit)
+        {
+            CamSlowMotionDelay cmd = Camera.main.GetComponent<CamSlowMotionDelay>();
+            if (cmd != null)
+            {
+                cmd.StartSlowMotionDelay(effectDuration);
+                yield return new WaitForSeconds(effectDuration);
+            }
+        }
 
-	//Level complete
-	IEnumerator LevelComplete(){
+        yield return new WaitForSeconds(1f);
 
-		//activate slow motion effect
-		if (activateSlowMotionOnLastHit) {
-			CamSlowMotionDelay cmd = Camera.main.GetComponent<CamSlowMotionDelay>();
-			if (cmd != null) {
-				cmd.StartSlowMotionDelay (effectDuration);
-				yield return new WaitForSeconds (effectDuration);
-			}
-		}
+        UIManager UI = GameObject.FindObjectOfType<UIManager>();
+        if (UI != null)
+        {
+            UI.UI_fader.Fade(UIFader.FADE.FadeOut, 2f, 0);
+            yield return new WaitForSeconds(2f);
+        }
 
-		//Timeout before continuing
-		yield return new WaitForSeconds (1f);
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject p in players)
+        {
+            Destroy(p);
+        }
 
-		//Fade to black
-		UIManager UI = GameObject.FindObjectOfType<UIManager>();
-		if (UI != null) {
-			UI.UI_fader.Fade (UIFader.FADE.FadeOut, 2f, 0);
-			yield return new WaitForSeconds (2f);
-		}
-
-		//Disable players
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-		foreach (GameObject p in players) {
-			Destroy(p);
-		}
-
-		//Go to next level or show GAMEOVER screen
-		if (loadNewLevel) {
-			if (levelName != "")
-				SceneManager.LoadScene (levelName);
-
-		} else {
-
-			//Show game over screen
-			if (UI != null) {
-				UI.DisableAllScreens ();
-				UI.ShowMenu ("LevelComplete");
-			}
-		}
-	}
+        if (loadNewLevel && levelName != "")
+        {
+            SceneManager.LoadScene(levelName);
+        }
+        else
+        {
+            if (UI != null)
+            {
+                UI.DisableAllScreens();
+                UI.ShowMenu("LevelComplete");
+            }
+        }
+    }
 }

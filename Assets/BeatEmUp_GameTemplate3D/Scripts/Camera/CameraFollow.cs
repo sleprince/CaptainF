@@ -4,16 +4,15 @@ using System.Collections;
 
 public class CameraFollow : MonoBehaviour
 {
-
     public Vector3 MiddlePosition;
 
     [Header("Player Targets")]
     public GameObject[] targets;
 
     [Header("Follow Settings")]
-    public float distanceToTarget = 10; // The distance to the target
-    public float heightOffset = -2; // The height offset of the camera relative to its target
-    public float viewAngle = -6; // Downwards rotation
+    public float distanceToTarget = 10f; // The distance to the target
+    public float heightOffset = -2f; // The height offset of the camera relative to its target
+    public float viewAngle = -6f; // Downwards rotation
     public Vector3 AdditionalOffset; // Any additional offset
     public bool FollowZAxis; // Enable or disable the camera following the Z-axis
 
@@ -33,6 +32,7 @@ public class CameraFollow : MonoBehaviour
     private bool firstFrameActive;
 
     private PhotonView photonView; // For identifying the local player in a networked game
+    private EnemyWaveSystem enemyWaveSystem; // Reference to EnemyWaveSystem
 
     void Start()
     {
@@ -48,6 +48,12 @@ public class CameraFollow : MonoBehaviour
             photonView = GetComponentInParent<PhotonView>();
         }
 
+        // Find the EnemyWaveSystem at the start to set the first wave collider
+        enemyWaveSystem = FindObjectOfType<EnemyWaveSystem>();
+        if (enemyWaveSystem != null)
+        {
+            UpdateAreaColliderFromWaveSystem();
+        }
     }
 
     IEnumerator WaitForPlayersAndInitializeCamera()
@@ -78,11 +84,11 @@ public class CameraFollow : MonoBehaviour
             {
                 // Find the center position between multiple targets
                 int count = 0;
-                for (int i = 0; i < targets.Length; i++)
+                foreach (GameObject target in targets)
                 {
-                    if (targets[i])
+                    if (target)
                     {
-                        MiddlePosition += targets[i].transform.position;
+                        MiddlePosition += target.transform.position;
                         count++;
                     }
                 }
@@ -125,7 +131,7 @@ public class CameraFollow : MonoBehaviour
             {
                 transform.position = new Vector3(Mathf.Clamp(currentX, MaxRight, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
-            else
+            else if (CurrentAreaCollider != null)
             {
                 transform.position = new Vector3(Mathf.Clamp(currentX, CurrentAreaCollider.transform.position.x + AreaColliderViewOffset, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
@@ -158,7 +164,7 @@ public class CameraFollow : MonoBehaviour
         }
     }
 
-
+    // Find the local player in the networked game
     private GameObject FindLocalPlayer()
     {
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
@@ -170,5 +176,19 @@ public class CameraFollow : MonoBehaviour
             }
         }
         return null;
+    }
+
+    // Function to update the area collider based on the enemy wave system
+    private void UpdateAreaColliderFromWaveSystem()
+    {
+        if (enemyWaveSystem != null && enemyWaveSystem.EnemyWaves.Length > 0)
+        {
+            BoxCollider newAreaCollider = enemyWaveSystem.GetCurrentWaveCollider();
+            if (newAreaCollider != null)
+            {
+                CurrentAreaCollider = newAreaCollider;
+                UseWaveAreaCollider = true;
+            }
+        }
     }
 }
