@@ -27,12 +27,11 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Wave Area Collider")]
     public bool UseWaveAreaCollider;
-    public BoxCollider CurrentAreaCollider;
+    public BoxCollider CurrentAreaCollider; // This will be set from the EnemyWaveSystem
     public float AreaColliderViewOffset;
     private bool firstFrameActive;
 
     private PhotonView photonView; // For identifying the local player in a networked game
-    private EnemyWaveSystem enemyWaveSystem; // Reference to EnemyWaveSystem
 
     void Start()
     {
@@ -46,13 +45,6 @@ public class CameraFollow : MonoBehaviour
         if (PhotonNetwork.InRoom)
         {
             photonView = GetComponentInParent<PhotonView>();
-        }
-
-        // Find the EnemyWaveSystem at the start to set the first wave collider
-        enemyWaveSystem = FindObjectOfType<EnemyWaveSystem>();
-        if (enemyWaveSystem != null)
-        {
-            UpdateAreaColliderFromWaveSystem();
         }
     }
 
@@ -78,17 +70,16 @@ public class CameraFollow : MonoBehaviour
             {
                 // Follow a single target
                 if (targets[0] != null) MiddlePosition = targets[0].transform.position;
-
             }
             else
             {
                 // Find the center position between multiple targets
                 int count = 0;
-                foreach (GameObject target in targets)
+                for (int i = 0; i < targets.Length; i++)
                 {
-                    if (target)
+                    if (targets[i])
                     {
-                        MiddlePosition += target.transform.position;
+                        MiddlePosition += targets[i].transform.position;
                         count++;
                     }
                 }
@@ -131,7 +122,7 @@ public class CameraFollow : MonoBehaviour
             {
                 transform.position = new Vector3(Mathf.Clamp(currentX, MaxRight, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
-            else if (CurrentAreaCollider != null)
+            else
             {
                 transform.position = new Vector3(Mathf.Clamp(currentX, CurrentAreaCollider.transform.position.x + AreaColliderViewOffset, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
@@ -164,7 +155,6 @@ public class CameraFollow : MonoBehaviour
         }
     }
 
-    // Find the local player in the networked game
     private GameObject FindLocalPlayer()
     {
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
@@ -176,19 +166,5 @@ public class CameraFollow : MonoBehaviour
             }
         }
         return null;
-    }
-
-    // Function to update the area collider based on the enemy wave system
-    private void UpdateAreaColliderFromWaveSystem()
-    {
-        if (enemyWaveSystem != null && enemyWaveSystem.EnemyWaves.Length > 0)
-        {
-            BoxCollider newAreaCollider = enemyWaveSystem.GetCurrentWaveCollider();
-            if (newAreaCollider != null)
-            {
-                CurrentAreaCollider = newAreaCollider;
-                UseWaveAreaCollider = true;
-            }
-        }
     }
 }
