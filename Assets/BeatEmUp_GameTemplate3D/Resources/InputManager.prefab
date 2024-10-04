@@ -47,43 +47,31 @@ MonoBehaviour:
   inputType: 0
   keyBoardControls:
   - Action: Left
-    inputType: 0
     key: 276
   - Action: Right
-    inputType: 0
     key: 275
   - Action: Up
-    inputType: 0
     key: 273
   - Action: Down
-    inputType: 0
     key: 274
   - Action: Punch
-    inputType: 0
     key: 122
   - Action: Kick
-    inputType: 0
     key: 120
   - Action: Defend
-    inputType: 0
     key: 99
   - Action: Jump
-    inputType: 0
     key: 32
   joypadControls:
   - Action: Punch
-    inputType: 0
     key: 332
   - Action: Kick
-    inputType: 0
     key: 333
   - Action: Defend
-    inputType: 0
     key: 331
   - Action: Jump
-    inputType: 0
     key: 330
   - Action: Run
-    inputType: 0
     key: 335
   doubleTapSpeed: 0.3
+  isNetworkedGame: 0

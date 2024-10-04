@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Photon.Pun;  // For Photon multiplayer functionality
+using UnityEngine;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -7,17 +7,21 @@ using UnityEditor;
 
 public class InputManager : MonoBehaviour
 {
-    public static InputManager instance;  // Singleton instance
+    public static InputManager instance;  // Singleton instance for local play
 
     [Header("Input Type")]
-    public INPUTTYPE inputType;
-    public List<InputControl> keyBoardControls = new List<InputControl>(); // a list of keyboard control input
-    public List<InputControl> joypadControls = new List<InputControl>();   // a list of joypad control input
+    public INPUTTYPE inputType;  // The current input type (Keyboard, Joypad, or Touchscreen)
+    public List<InputControl> keyBoardControls = new List<InputControl>(); // List of keyboard controls
+    public List<InputControl> joypadControls = new List<InputControl>();   // List of joypad controls
 
     [Header("Double Tap Settings")]
-    public float doubleTapSpeed = .3f;
+    public float doubleTapSpeed = 0.3f;
     private float lastInputTime = 0f;
     private string lastInputAction = "";
+
+    [Header("Multiplayer Settings")]
+    public bool isNetworkedGame = false;  // Whether this is a networked game
+    private PhotonView photonView;  // For controlling player-specific input in networked games
 
     // Delegates
     public delegate void DirectionInputEventHandler(Vector2 dir, bool doubleTapActive);
@@ -31,16 +35,22 @@ public class InputManager : MonoBehaviour
 
     void Awake()
     {
-        // Implementing Singleton pattern
-        if (instance == null)
+        photonView = GetComponent<PhotonView>();
+
+        if (!isNetworkedGame)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);  // Ensure InputManager persists between scene changes
+            // Singleton pattern for local games
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject);  // Persist between scenes for local games
+            }
+            else
+            {
+                Destroy(gameObject);  // Destroy duplicates
+            }
         }
-        else
-        {
-            Destroy(gameObject);  // Destroy duplicate instance
-        }
+        // No singleton for networked games, allow multiple instances (one per player)
     }
 
     void Start()
@@ -60,7 +70,7 @@ public class InputManager : MonoBehaviour
         return isRetrying;
     }
 
-    // Set default input type based on the scene
+    // Set the default input type depending on the scene
     void SetDefaultInputType()
     {
         string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -76,28 +86,38 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public static void DirectionEvent(Vector2 dir, bool doubleTapActive)
+    void Update()
     {
-        if (onDirectionInputEvent != null)
+        if (isNetworkedGame)
         {
-            onDirectionInputEvent(dir, doubleTapActive);
+            // Only process input for the local player in networked games
+            if (photonView.IsMine)
+            {
+                ProcessInput();
+            }
+        }
+        else
+        {
+            // Local play
+            ProcessInput();
         }
     }
 
-    void Update()
+    // Process input based on input type
+    void ProcessInput()
     {
-        // Touchscreen control overrides everything
         if (inputType == INPUTTYPE.TOUCHSCREEN)
         {
+            // Switch to keyboard if any keyboard or joypad input is detected
             if (DetectKeyboardInput() || DetectJoypadInput() || DetectJoystickAxis())
             {
-                inputType = INPUTTYPE.KEYBOARD;  // Default to both keyboard and joystick
-                UIControlSwitcher.HideTouchControlsOverlay();  // Hide touch controls
+                inputType = INPUTTYPE.KEYBOARD;
+                UIControlSwitcher.HideTouchControlsOverlay();  // Hide the touch control UI
             }
         }
 
-        // Keyboard and joystick can both run simultaneously if not in touch mode
-        if (inputType != INPUTTYPE.TOUCHSCREEN)
+        // Handle both keyboard and joypad input in non-touchscreen modes
+        if (inputType == INPUTTYPE.KEYBOARD || inputType == INPUTTYPE.JOYPAD)
         {
             KeyboardControls();
             if (!DetectKeyboardInput())
@@ -107,6 +127,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    // Handle keyboard input
     void KeyboardControls()
     {
         float x = 0;
@@ -117,22 +138,20 @@ public class InputManager : MonoBehaviour
         {
             if (onInputEvent == null) return;
 
-            // On keyboard key down
+            // Key down event
             if (Input.GetKeyDown(inputControl.key))
             {
                 doubleTapState = DetectDoubleTap(inputControl.Action);
-                Debug.Log($"Key Down: {inputControl.Action} (Key: {inputControl.key})");  // Debug for all key presses
                 onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
             }
 
-            // On keyboard key up
+            // Key up event
             if (Input.GetKeyUp(inputControl.key))
             {
-                Debug.Log($"Key Up: {inputControl.Action} (Key: {inputControl.key})");  // Debug for key releases
                 onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
             }
 
-            // Convert keyboard direction keys to x, y values
+            // Directional keys (for movement)
             if (Input.GetKey(inputControl.key))
             {
                 if (inputControl.Action == "Left") x = -1f;
@@ -144,32 +163,29 @@ public class InputManager : MonoBehaviour
             // Defend key exception (checks the defend state every frame)
             if (inputControl.Action == "Defend")
             {
-                //Debug.Log($"Defend Key Pressed: {Input.GetKey(inputControl.key)}");  // Debug to check Defend key detection
                 defendKeyDown = Input.GetKey(inputControl.key);
-                //Debug.Log($"Defend state: {(defendKeyDown ? "Pressed" : "Released")}");
                 onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
             }
         }
 
         // Send a direction event
-        DirectionEvent(new Vector2(x, y), doubleTapState);
+        onDirectionInputEvent?.Invoke(new Vector2(x, y), doubleTapState);
     }
 
+    // Handle joypad input
     void JoyPadControls()
     {
         if (onInputEvent == null) return;
 
-        // On joypad button press
         foreach (InputControl inputControl in joypadControls)
         {
             if (Input.GetKeyDown(inputControl.key))
                 onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
 
-            // On joypad button release
             if (Input.GetKeyUp(inputControl.key))
                 onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
 
-            // Defend key exception (checks the defend state every frame)
+            // Defend key handling
             if (inputControl.Action == "Defend")
             {
                 defendKeyDown = Input.GetKey(inputControl.key);
@@ -181,14 +197,13 @@ public class InputManager : MonoBehaviour
         float x = Input.GetAxis("Joypad Left-Right");
         float y = Input.GetAxis("Joypad Up-Down");
 
-        // Handle joystick axis movement
         if (Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f)
         {
-            DirectionEvent(new Vector2(x, y).normalized, false);
+            onDirectionInputEvent?.Invoke(new Vector2(x, y).normalized, false);
         }
     }
 
-    // Detects if any keyboard input was pressed
+    // Detect if any keyboard input was pressed
     public bool DetectKeyboardInput()
     {
         foreach (InputControl inputControl in keyBoardControls)
@@ -201,7 +216,7 @@ public class InputManager : MonoBehaviour
         return false;
     }
 
-    // Detects if any joystick input was pressed (buttons)
+    // Detects joypad input (button presses)
     public bool DetectJoypadInput()
     {
         foreach (InputControl inputControl in joypadControls)
@@ -214,7 +229,7 @@ public class InputManager : MonoBehaviour
         return false;
     }
 
-    // Detects if the joystick axis (stick movement) was used
+    // Detects joystick axis input (stick movement)
     public bool DetectJoystickAxis()
     {
         float x = Input.GetAxis("Joypad Left-Right");
@@ -223,10 +238,10 @@ public class InputManager : MonoBehaviour
         return Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f;
     }
 
-    // Clear movement input (to handle stuck movement)
+    // Clear movement input to handle "stuck" movement scenarios
     public void ClearMovementInput()
     {
-        DirectionEvent(Vector2.zero, false);  // Send a zero-vector direction event
+        onDirectionInputEvent?.Invoke(Vector2.zero, false);  // Send zero-vector direction event
     }
 
     // Called when a touch screen button is pressed
@@ -236,21 +251,21 @@ public class InputManager : MonoBehaviour
         {
             onInputEvent(action, buttonState);
 
-            // Defend exception
+            // Defend key exception
             if (action == "Defend") defendKeyDown = (buttonState == BUTTONSTATE.PRESS);
         }
     }
 
-    // This function is used for the touch screen thumb-stick
+    // Called when the touchscreen joystick is used
     public void OnTouchScreenJoystickEvent(Vector2 joystickDir)
     {
         if (onDirectionInputEvent != null)
         {
-            DirectionEvent(joystickDir.normalized, false);
+            onDirectionInputEvent(joystickDir.normalized, false);
         }
     }
 
-    // Returns true if a key double-tap is detected
+    // Detect double tap for input action
     bool DetectDoubleTap(string action)
     {
         bool doubleTapDetected = ((Time.time - lastInputTime < doubleTapSpeed) && (lastInputAction == action));
@@ -260,18 +275,11 @@ public class InputManager : MonoBehaviour
     }
 }
 
-
-
-
-
-//---------------
-//    ENUMS
-//---------------
+// Enums
 [System.Serializable]
 public class InputControl
 {
     public string Action;
-    public INPUTTYPE inputType;
     public KeyCode key;
 }
 
@@ -289,27 +297,22 @@ public enum BUTTONSTATE
     HOLD = 10,
 }
 
-//-------------
-//   EDITOR SCRIPT
-//-------------
+// Editor Script
 #if UNITY_EDITOR
 [CustomEditor(typeof(InputManager))]
 public class InputManagerEditor : Editor
 {
-
     public override void OnInspectorGUI()
     {
         InputManager inputManager = (InputManager)target;
         EditorGUIUtility.labelWidth = 120;
         EditorGUIUtility.fieldWidth = 100;
 
-        //input type
         GUILayout.Space(10);
         EditorGUILayout.LabelField("Input Type", EditorStyles.boldLabel);
         inputManager.inputType = (INPUTTYPE)EditorGUILayout.EnumPopup("Input Type:", inputManager.inputType);
         GUILayout.Space(15);
 
-        //keyboard controls	
         if (inputManager.inputType == INPUTTYPE.KEYBOARD)
         {
             EditorGUILayout.LabelField("Keyboard Keys", EditorStyles.boldLabel);
@@ -322,12 +325,10 @@ public class InputManagerEditor : Editor
             }
         }
 
-        //joypad controls	
         if (inputManager.inputType == INPUTTYPE.JOYPAD)
         {
             EditorGUILayout.LabelField("Joypad Keys", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("* The direction keys are mapped onto the joypad thumbstick.");
-
             foreach (InputControl inputControl in inputManager.joypadControls)
             {
                 GUILayout.BeginHorizontal();
@@ -337,38 +338,35 @@ public class InputManagerEditor : Editor
             }
         }
 
-        //touch Screen controls
         if (inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
         {
-            EditorGUILayout.LabelField("* You can edit the touchscreen buttons in the 'UI' prefab in the project folder.");
-            EditorGUILayout.LabelField("   Inside the prefab go to: UI/Canvas/TouchScreenControls");
+            EditorGUILayout.LabelField("* You can edit the touchscreen buttons in the 'UI' prefab.");
         }
+
         GUILayout.Space(15);
 
         if (inputManager.inputType == INPUTTYPE.KEYBOARD || inputManager.inputType == INPUTTYPE.JOYPAD)
         {
             GUILayout.BeginHorizontal();
 
-            //button: add a new action 
             if (GUILayout.Button("Add Input Action", GUILayout.Width(130), GUILayout.Height(25)))
             {
                 if (inputManager.inputType == INPUTTYPE.KEYBOARD) inputManager.keyBoardControls.Add(new InputControl());
                 if (inputManager.inputType == INPUTTYPE.JOYPAD) inputManager.joypadControls.Add(new InputControl());
             }
 
-            //button: delete last action 
-            bool showDeleteButton = (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) || (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) ? true : false;
+            bool showDeleteButton = (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) ||
+                                    (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0);
             if (showDeleteButton && GUILayout.Button("Delete Input Action", GUILayout.Width(130), GUILayout.Height(25)))
             {
-                if (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) inputManager.keyBoardControls.RemoveAt(inputManager.keyBoardControls.Count - 1);
-                if (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) inputManager.joypadControls.RemoveAt(inputManager.joypadControls.Count - 1);
+                if (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0)
+                    inputManager.keyBoardControls.RemoveAt(inputManager.keyBoardControls.Count - 1);
+                if (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0)
+                    inputManager.joypadControls.RemoveAt(inputManager.joypadControls.Count - 1);
             }
-
             GUILayout.EndHorizontal();
-            GUILayout.Space(15);
         }
 
-        //double tap settings
         EditorGUILayout.LabelField("Double Tap Settings", EditorStyles.boldLabel);
         inputManager.doubleTapSpeed = EditorGUILayout.FloatField("Double Tap Speed:", inputManager.doubleTapSpeed);
         EditorUtility.SetDirty(inputManager);
