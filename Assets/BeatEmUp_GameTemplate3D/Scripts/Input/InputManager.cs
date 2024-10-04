@@ -7,7 +7,6 @@ using UnityEditor;
 
 public class InputManager : MonoBehaviour
 {
-    public static InputManager instance;  // Singleton instance for local play
 
     [Header("Input Type")]
     public INPUTTYPE inputType;  // The current input type (Keyboard, Joypad, or Touchscreen)
@@ -37,20 +36,6 @@ public class InputManager : MonoBehaviour
     {
         photonView = GetComponent<PhotonView>();
 
-        if (!isNetworkedGame)
-        {
-            // Singleton pattern for local games
-            if (instance == null)
-            {
-                instance = this;
-                DontDestroyOnLoad(gameObject);  // Persist between scenes for local games
-            }
-            else
-            {
-                Destroy(gameObject);  // Destroy duplicates
-            }
-        }
-        // No singleton for networked games, allow multiple instances (one per player)
     }
 
     void Start()
