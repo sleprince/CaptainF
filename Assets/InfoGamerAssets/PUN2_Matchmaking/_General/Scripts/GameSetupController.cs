@@ -1,20 +1,19 @@
 ﻿using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 public class GameSetupController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject SpawnPoint;
+    private GameObject player1SpawnPoint;  // Assign this in the inspector for Player 1's spawn point
+    [SerializeField]
+    private GameObject player2SpawnPoint;  // Assign this in the inspector for Player 2's spawn point
     public int ID;
 
-    // This script will be added to any multiplayer scene
     void Start()
     {
-        AssignPlayerID(); // Assign correct player ID based on whether the player is Master Client or not
-        CreatePlayer(ID);  // Create a networked player object for each player that loads into the multiplayer scene
+        AssignPlayerID();  // Assign correct player ID based on whether the player is the Master Client or not
+        CreatePlayer(ID);   // Create a networked player object for each player that loads into the multiplayer scene
     }
 
     private void AssignPlayerID()
@@ -35,10 +34,21 @@ public class GameSetupController : MonoBehaviour
 
     private void CreatePlayer(int ID)
     {
-        Debug.Log("Creating Player with ID: " + ID);
+        // Choose spawn point based on the player ID
+        Vector3 spawnPosition;
+        if (ID == 1)
+        {
+            spawnPosition = player1SpawnPoint.transform.position;  // Use Player 1's spawn point
+        }
+        else
+        {
+            spawnPosition = player2SpawnPoint.transform.position;  // Use Player 2's spawn point
+        }
+
         // Load the appropriate player prefab based on the assigned ID
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PhotonPlayer" + ID),
-                                  SpawnPoint.transform.position,
-                                  Quaternion.identity);
+        string prefabName = Path.Combine("PhotonPrefabs", "PhotonPlayer" + ID);
+        Debug.Log("Creating Player with ID: " + ID + " at spawn position: " + spawnPosition);
+
+        PhotonNetwork.Instantiate(prefabName, spawnPosition, Quaternion.identity);
     }
 }

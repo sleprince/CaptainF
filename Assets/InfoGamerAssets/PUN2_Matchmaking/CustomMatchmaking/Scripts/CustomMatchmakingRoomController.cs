@@ -67,6 +67,15 @@ public class CustomMatchmakingRoomController : MonoBehaviourPunCallbacks
     {
         ClearPlayerListings(); //remove all old player listings
         ListPlayers(); //relist all current player listings
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("Master Client detected in room.");
+        }
+        else
+        {
+            Debug.Log("Non-Master Client detected in room.");
+        }
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)//called whenever a player leave the room
     {

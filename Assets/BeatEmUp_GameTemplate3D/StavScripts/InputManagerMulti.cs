@@ -1,14 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using Photon.Pun;
 
-public class InputManager : MonoBehaviour
+public class InputManagerMulti : MonoBehaviour
 {
-    public static InputManager instance;  // Singleton instance
-
     [Header("Input Type")]
     public INPUTTYPE inputType;
     public List<InputControl> keyBoardControls = new List<InputControl>(); // a list of keyboard control input
@@ -29,17 +25,16 @@ public class InputManager : MonoBehaviour
     public static bool defendKeyDown;
     private bool isRetrying = false;  // To track retry state
 
+    private PhotonView photonView; // Reference to the PhotonView for multiplayer synchronization
+
     void Awake()
     {
-        // Implementing Singleton pattern
-        if (instance == null)
+        // Ensure this script only controls the local player in multiplayer
+        photonView = GetComponent<PhotonView>();
+
+        if (!photonView.IsMine)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);  // Ensure InputManager persists between scene changes
-        }
-        else
-        {
-            Destroy(gameObject);  // Destroy duplicate instance
+            enabled = false; // Disable this script for non-local players
         }
     }
 
@@ -86,6 +81,9 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
+        // Ensure the script only runs for the local player
+        if (!photonView.IsMine) return;
+
         // Touchscreen control overrides everything
         if (inputType == INPUTTYPE.TOUCHSCREEN)
         {
@@ -121,14 +119,12 @@ public class InputManager : MonoBehaviour
             if (Input.GetKeyDown(inputControl.key))
             {
                 doubleTapState = DetectDoubleTap(inputControl.Action);
-                Debug.Log($"Key Down: {inputControl.Action} (Key: {inputControl.key})");  // Debug for all key presses
                 onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
             }
 
             // On keyboard key up
             if (Input.GetKeyUp(inputControl.key))
             {
-                Debug.Log($"Key Up: {inputControl.Action} (Key: {inputControl.key})");  // Debug for key releases
                 onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
             }
 
@@ -144,9 +140,7 @@ public class InputManager : MonoBehaviour
             // Defend key exception (checks the defend state every frame)
             if (inputControl.Action == "Defend")
             {
-                //Debug.Log($"Defend Key Pressed: {Input.GetKey(inputControl.key)}");  // Debug to check Defend key detection
                 defendKeyDown = Input.GetKey(inputControl.key);
-                //Debug.Log($"Defend state: {(defendKeyDown ? "Pressed" : "Released")}");
                 onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
             }
         }
@@ -258,120 +252,30 @@ public class InputManager : MonoBehaviour
         lastInputTime = Time.time;
         return doubleTapDetected;
     }
-}
 
-
-
-
-
-//---------------
-//    ENUMS
-//---------------
-[System.Serializable]
-public class InputControl
-{
-    public string Action;
-    public INPUTTYPE inputType;
-    public KeyCode key;
-}
-
-public enum INPUTTYPE
-{
-    KEYBOARD = 0,
-    JOYPAD = 5,
-    TOUCHSCREEN = 10,
-}
-
-public enum BUTTONSTATE
-{
-    PRESS = 0,
-    RELEASE = 5,
-    HOLD = 10,
-}
-
-//-------------
-//   EDITOR SCRIPT
-//-------------
-#if UNITY_EDITOR
-[CustomEditor(typeof(InputManager))]
-public class InputManagerEditor : Editor
-{
-
-    public override void OnInspectorGUI()
+    //---------------
+    //    ENUMS
+    //---------------
+    [System.Serializable]
+    public class InputControl
     {
-        InputManager inputManager = (InputManager)target;
-        EditorGUIUtility.labelWidth = 120;
-        EditorGUIUtility.fieldWidth = 100;
-
-        //input type
-        GUILayout.Space(10);
-        EditorGUILayout.LabelField("Input Type", EditorStyles.boldLabel);
-        inputManager.inputType = (INPUTTYPE)EditorGUILayout.EnumPopup("Input Type:", inputManager.inputType);
-        GUILayout.Space(15);
-
-        //keyboard controls	
-        if (inputManager.inputType == INPUTTYPE.KEYBOARD)
-        {
-            EditorGUILayout.LabelField("Keyboard Keys", EditorStyles.boldLabel);
-            foreach (InputControl inputControl in inputManager.keyBoardControls)
-            {
-                GUILayout.BeginHorizontal();
-                inputControl.Action = EditorGUILayout.TextField("Action:", inputControl.Action);
-                inputControl.key = (KeyCode)EditorGUILayout.EnumPopup("Key:", inputControl.key, GUILayout.Width(350));
-                GUILayout.EndHorizontal();
-            }
-        }
-
-        //joypad controls	
-        if (inputManager.inputType == INPUTTYPE.JOYPAD)
-        {
-            EditorGUILayout.LabelField("Joypad Keys", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("* The direction keys are mapped onto the joypad thumbstick.");
-
-            foreach (InputControl inputControl in inputManager.joypadControls)
-            {
-                GUILayout.BeginHorizontal();
-                inputControl.Action = EditorGUILayout.TextField("Action:", inputControl.Action);
-                inputControl.key = (KeyCode)EditorGUILayout.EnumPopup("Key:", inputControl.key, GUILayout.Width(350));
-                GUILayout.EndHorizontal();
-            }
-        }
-
-        //touch Screen controls
-        if (inputManager.inputType == INPUTTYPE.TOUCHSCREEN)
-        {
-            EditorGUILayout.LabelField("* You can edit the touchscreen buttons in the 'UI' prefab in the project folder.");
-            EditorGUILayout.LabelField("   Inside the prefab go to: UI/Canvas/TouchScreenControls");
-        }
-        GUILayout.Space(15);
-
-        if (inputManager.inputType == INPUTTYPE.KEYBOARD || inputManager.inputType == INPUTTYPE.JOYPAD)
-        {
-            GUILayout.BeginHorizontal();
-
-            //button: add a new action 
-            if (GUILayout.Button("Add Input Action", GUILayout.Width(130), GUILayout.Height(25)))
-            {
-                if (inputManager.inputType == INPUTTYPE.KEYBOARD) inputManager.keyBoardControls.Add(new InputControl());
-                if (inputManager.inputType == INPUTTYPE.JOYPAD) inputManager.joypadControls.Add(new InputControl());
-            }
-
-            //button: delete last action 
-            bool showDeleteButton = (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) || (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) ? true : false;
-            if (showDeleteButton && GUILayout.Button("Delete Input Action", GUILayout.Width(130), GUILayout.Height(25)))
-            {
-                if (inputManager.inputType == INPUTTYPE.KEYBOARD && inputManager.keyBoardControls.Count > 0) inputManager.keyBoardControls.RemoveAt(inputManager.keyBoardControls.Count - 1);
-                if (inputManager.inputType == INPUTTYPE.JOYPAD && inputManager.joypadControls.Count > 0) inputManager.joypadControls.RemoveAt(inputManager.joypadControls.Count - 1);
-            }
-
-            GUILayout.EndHorizontal();
-            GUILayout.Space(15);
-        }
-
-        //double tap settings
-        EditorGUILayout.LabelField("Double Tap Settings", EditorStyles.boldLabel);
-        inputManager.doubleTapSpeed = EditorGUILayout.FloatField("Double Tap Speed:", inputManager.doubleTapSpeed);
-        EditorUtility.SetDirty(inputManager);
+        public string Action;
+        public INPUTTYPE inputType;
+        public KeyCode key;
     }
+
+    public enum INPUTTYPE
+    {
+        KEYBOARD = 0,
+        JOYPAD = 5,
+        TOUCHSCREEN = 10,
+    }
+
+    public enum BUTTONSTATE
+    {
+        PRESS = 0,
+        RELEASE = 5,
+        HOLD = 10,
+    }
+
 }
-#endif
