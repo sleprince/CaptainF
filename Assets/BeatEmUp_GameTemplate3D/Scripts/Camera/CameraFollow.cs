@@ -26,8 +26,8 @@ public class CameraFollow : MonoBehaviour
     public float MaxRight;
 
     [Header("Wave Area Collider")]
-    public bool UseWaveAreaCollider;
-    public BoxCollider CurrentAreaCollider; // This will be set from the EnemyWaveSystem
+    public bool UseWaveAreaCollider = true; // Force this to start as true
+    public BoxCollider CurrentAreaCollider;
     public float AreaColliderViewOffset;
     private bool firstFrameActive;
 
@@ -54,7 +54,7 @@ public class CameraFollow : MonoBehaviour
         while (targets == null || targets.Length == 0)
         {
             UpdatePlayerTargets(); // Continuously check for players
-            yield return new WaitForSeconds(0.1f); // Wait for a short time before checking again
+            yield return new WaitForSeconds(0.1f); // Wait a short time before checking again
         }
 
         firstFrameActive = true;
@@ -117,14 +117,19 @@ public class CameraFollow : MonoBehaviour
             }
 
             // Set camera position
-            if (CurrentAreaCollider == null) UseWaveAreaCollider = false;
-            if (!UseWaveAreaCollider)
+            if (CurrentAreaCollider == null || !UseWaveAreaCollider)
             {
-                transform.position = new Vector3(Mathf.Clamp(currentX, MaxRight, MinLeft), currentY, currentZ) + AdditionalOffset;
+                // Keep trying to activate wave area collider
+                UseWaveAreaCollider = true; // Ensure this is always set to true
+            }
+
+            if (UseWaveAreaCollider && CurrentAreaCollider != null)
+            {
+                transform.position = new Vector3(Mathf.Clamp(currentX, CurrentAreaCollider.transform.position.x + AreaColliderViewOffset, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
             else
             {
-                transform.position = new Vector3(Mathf.Clamp(currentX, CurrentAreaCollider.transform.position.x + AreaColliderViewOffset, MinLeft), currentY, currentZ) + AdditionalOffset;
+                transform.position = new Vector3(Mathf.Clamp(currentX, MaxRight, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
 
             // Set camera rotation
@@ -166,5 +171,15 @@ public class CameraFollow : MonoBehaviour
             }
         }
         return null;
+    }
+
+    // Call this method from the EnemyWaveSystem to update the current wave area collider
+    public void SetCurrentAreaCollider(BoxCollider areaCollider)
+    {
+        if (areaCollider != null)
+        {
+            CurrentAreaCollider = areaCollider;
+            UseWaveAreaCollider = true;  // Make sure the flag is set to true when the area collider is assigned
+        }
     }
 }
