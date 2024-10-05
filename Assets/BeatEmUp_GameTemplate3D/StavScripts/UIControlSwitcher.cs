@@ -14,7 +14,8 @@ public class UIControlSwitcher : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("FindInputManager", 0f, 0.5f); // Keep trying to find the InputManager every 0.5 seconds
+        // Start searching for the InputManager with repeated attempts
+        InvokeRepeating("FindLocalPlayerInputManager", 0f, 0.5f);
 
         if (touchscreenButton != null)
         {
@@ -67,38 +68,37 @@ public class UIControlSwitcher : MonoBehaviour
         }
     }
 
-    // Find the InputManager in the scene
-    private void FindInputManager()
+    // Find the InputManager for the local player
+    private void FindLocalPlayerInputManager()
     {
         if (inputManager != null) return;  // Stop searching if already found
 
         if (PhotonNetwork.InRoom)
         {
-            // Look for the local player's Photon Player prefab
-            foreach (var player in GameObject.FindGameObjectsWithTag("Player"))
+            int localPlayerID = PhotonNetwork.LocalPlayer.ActorNumber; // Get the local player's Photon Actor Number
+
+            // Look for the InputManager by the naming convention
+            string inputManagerName = "InputManager_Player" + localPlayerID;
+            GameObject inputManagerObject = GameObject.Find(inputManagerName);
+
+            if (inputManagerObject != null)
             {
-                var photonView = player.GetComponent<PhotonView>();
-                if (photonView != null && photonView.IsMine)
+                inputManager = inputManagerObject.GetComponent<InputManager>();
+                if (inputManager != null)
                 {
-                    // Look for the InputManager inside the local player's prefab
-                    inputManager = player.GetComponentInChildren<InputManager>();
-                    if (inputManager != null)
-                    {
-                        Debug.Log("InputManager found inside local player's Photon prefab.");
-                        CancelInvoke("FindInputManager"); // Stop searching after it's found
-                        break;
-                    }
+                    Debug.Log("InputManager found: " + inputManagerName);
+                    CancelInvoke("FindLocalPlayerInputManager"); // Stop searching after it's found
                 }
             }
         }
         else
         {
-            // Local play - find the InputManager if it exists
+            // For local play, find the InputManager
             inputManager = FindObjectOfType<InputManager>();
             if (inputManager != null)
             {
                 Debug.Log("InputManager found for local play.");
-                CancelInvoke("FindInputManager"); // Stop searching after it's found
+                CancelInvoke("FindLocalPlayerInputManager"); // Stop searching after it's found
             }
         }
 

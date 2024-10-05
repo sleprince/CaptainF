@@ -32,6 +32,8 @@ public class InputManager : MonoBehaviour
     public static bool defendKeyDown;
     private bool isRetrying = false;  // To track retry state
 
+    public int PlayerID;
+
     void Awake()
     {
         photonView = GetComponent<PhotonView>();
@@ -40,6 +42,7 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("InputManager initialized for PlayerID: " + PlayerID);
         SetDefaultInputType();
     }
 

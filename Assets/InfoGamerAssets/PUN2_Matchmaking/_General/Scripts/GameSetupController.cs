@@ -16,22 +16,13 @@ public class GameSetupController : MonoBehaviour
     // The camera prefab to be instantiated for each player
     public GameObject cameraPrefab;
 
+    // InputManager prefab (added to instantiate it for each player)
+    public GameObject inputManagerPrefab;
+
     void Start()
     {
-        DestroyOldInputManager(); // Destroy the old InputManager if it exists
         AssignPlayerID();         // Assign correct player ID based on whether the player is Master Client or not
         CreatePlayer(ID);         // Create a networked player object for each player that loads into the multiplayer scene
-    }
-
-    private void DestroyOldInputManager()
-    {
-        // Look for any existing InputManager and destroy it
-        InputManager oldInputManager = FindObjectOfType<InputManager>();
-        if (oldInputManager != null)
-        {
-            Debug.Log("Destroying old InputManager");
-            Destroy(oldInputManager.gameObject);
-        }
     }
 
     private void AssignPlayerID()
@@ -63,6 +54,12 @@ public class GameSetupController : MonoBehaviour
         if (cameraPrefab != null)
         {
             CreateAndAssignCamera(player, ID);
+        }
+
+        // Instantiate and assign InputManager for each player
+        if (inputManagerPrefab != null)
+        {
+            CreateAndAssignInputManager(player, ID);
         }
     }
 
@@ -104,5 +101,22 @@ public class GameSetupController : MonoBehaviour
         }
 
         Debug.Log("Camera instantiated for Player " + playerID);
+    }
+
+    private void CreateAndAssignInputManager(GameObject player, int playerID)
+    {
+        // Instantiate InputManager prefab (assuming you have an InputManager prefab in the project)
+        GameObject inputManagerInstance = Instantiate(inputManagerPrefab);
+
+        // Set a unique name to better organize in the hierarchy
+        inputManagerInstance.name = "InputManager_Player" + playerID;
+
+        // Find the InputManager script component and set the PlayerID
+        InputManager inputManager = inputManagerInstance.GetComponent<InputManager>();
+        if (inputManager != null)
+        {
+            inputManager.PlayerID = playerID; // Assign the player ID or PhotonView ID
+            Debug.Log("Assigned PlayerID " + playerID + " to InputManager.");
+        }
     }
 }

@@ -13013,6 +13013,8 @@ MonoBehaviour:
   - {fileID: 373438976}
   ID: 0
   cameraPrefab: {fileID: 171854, guid: 36a2e3d21b9de1448891cdfb14223a15, type: 3}
+  inputManagerPrefab: {fileID: 1000012781959418, guid: e39095174dacb1644bc531f5401d5731,
+    type: 3}
 --- !u!4 &4692904466098452580
 Transform:
   m_ObjectHideFlags: 0
