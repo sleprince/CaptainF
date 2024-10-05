@@ -1812,7 +1812,7 @@ GameObject:
   - component: {fileID: 1401704339480916902}
   - component: {fileID: 3463906291111523995}
   m_Layer: 9
-  m_Name: PlayerPunk
+  m_Name: PhotonPlayer3
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

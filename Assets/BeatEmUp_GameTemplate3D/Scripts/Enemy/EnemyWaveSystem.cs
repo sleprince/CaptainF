@@ -4,7 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class EnemyWaveSystem : MonoBehaviour
 {
-    public int MaxAttackers = 3; // The maximum number of enemies that can attack the player simultaneously 
+
+    public int MaxAttackers = 3; //the maximum number of enemies that can attack the player simultaneously 
 
     [Header("List of enemy Waves")]
     public EnemyWave[] EnemyWaves;
@@ -17,8 +18,6 @@ public class EnemyWaveSystem : MonoBehaviour
     [Header("Load level On Finish")]
     public bool loadNewLevel;
     public string levelName;
-
-    private CameraFollow cameraFollow;
 
     void OnEnable()
     {
@@ -38,36 +37,11 @@ public class EnemyWaveSystem : MonoBehaviour
     void Start()
     {
         currentWave = 0;
-
-        // Dynamically find the CameraFollow component, accounting for network play where it might be a child of the player prefab
-        StartCoroutine(FindAndAssignCameraFollow());
-
         UpdateAreaColliders();
         StartNewWave();
     }
 
-    IEnumerator FindAndAssignCameraFollow()
-    {
-        // Continuously try to find CameraFollow until it is located
-        while (cameraFollow == null)
-        {
-            cameraFollow = FindCameraFollow();
-            if (cameraFollow != null)
-            {
-                Debug.Log("CameraFollow found and assigned.");
-                yield break; // Exit when the camera is found
-            }
-            yield return new WaitForSeconds(0.5f); // Wait a little before trying again
-        }
-    }
-
-    CameraFollow FindCameraFollow()
-    {
-        // This will find the CameraFollow component even if it's a child of another object (like the player prefab in network play)
-        return GameObject.FindObjectOfType<CameraFollow>();
-    }
-
-    // Disable all the enemies
+    //Disable all the enemies
     void DisableAllEnemies()
     {
         foreach (EnemyWave wave in EnemyWaves)
@@ -76,12 +50,14 @@ public class EnemyWaveSystem : MonoBehaviour
             {
                 if (wave.EnemyList[i] != null)
                 {
-                    // Deactivate enemy
+
+                    //deactivate enemy
                     wave.EnemyList[i].SetActive(false);
                 }
                 else
                 {
-                    // Remove empty fields from the list
+
+                    //remove empty fields from the list
                     wave.EnemyList.RemoveAt(i);
                 }
             }
@@ -92,33 +68,27 @@ public class EnemyWaveSystem : MonoBehaviour
         }
     }
 
-    // Start a new enemy wave
+    //Start a new enemy wave
     public void StartNewWave()
     {
-        // Hide UI hand pointer
+
+        //hide UI hand pointer
         HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
         if (hp != null) hp.DeActivateHandPointer();
 
-        // Activate enemies
+        //activate enemies
         foreach (GameObject g in EnemyWaves[currentWave].EnemyList)
         {
             if (g != null) g.SetActive(true);
         }
-
-        Invoke("SetEnemyTactics", 0.1f);
+        Invoke("SetEnemyTactics", .1f);
     }
 
-    // Update Area Colliders
+    //Update Area Colliders
     void UpdateAreaColliders()
     {
-        // Ensure CameraFollow is found before continuing
-        if (cameraFollow == null)
-        {
-            Debug.LogError("CameraFollow component not found.");
-            return;
-        }
 
-        // Switch current area collider to a trigger
+        //switch current area collider to a trigger
         if (currentWave > 0)
         {
             BoxCollider areaCollider = EnemyWaves[currentWave - 1].AreaCollider;
@@ -131,17 +101,21 @@ public class EnemyWaveSystem : MonoBehaviour
             }
         }
 
-        // Set next collider as camera area restrictor
+        //set next collider as camera area restrictor
         if (EnemyWaves[currentWave].AreaCollider != null)
         {
             EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
         }
 
-        // Assign the collider to CameraFollow
-        cameraFollow.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
+        CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
+        if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
+
+        //show UI hand pointer
+        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+        if (hp != null) hp.ActivateHandPointer();
     }
 
-    // An enemy has been destroyed
+    //An enemy has been destroyed
     void onUnitDestroy(GameObject g)
     {
         if (EnemyWaves.Length > currentWave)
@@ -162,7 +136,7 @@ public class EnemyWaveSystem : MonoBehaviour
         }
     }
 
-    // True if all the waves are completed
+    //True if all the waves are completed
     bool allWavesCompleted()
     {
         int waveCount = EnemyWaves.Length;
@@ -173,19 +147,23 @@ public class EnemyWaveSystem : MonoBehaviour
             if (EnemyWaves[i].waveComplete()) waveFinished += 1;
         }
 
-        return waveCount == waveFinished;
+        if (waveCount == waveFinished)
+            return true;
+        else
+            return false;
     }
 
-    // Update enemy tactics
+    //Update enemy tactics
     void SetEnemyTactics()
     {
         EnemyManager.SetEnemyTactics();
     }
 
-    // Level complete
+    //Level complete
     IEnumerator LevelComplete()
     {
-        // Activate slow motion effect
+
+        //activate slow motion effect
         if (activateSlowMotionOnLastHit)
         {
             CamSlowMotionDelay cmd = Camera.main.GetComponent<CamSlowMotionDelay>();
@@ -196,10 +174,10 @@ public class EnemyWaveSystem : MonoBehaviour
             }
         }
 
-        // Timeout before continuing
+        //Timeout before continuing
         yield return new WaitForSeconds(1f);
 
-        // Fade to black
+        //Fade to black
         UIManager UI = GameObject.FindObjectOfType<UIManager>();
         if (UI != null)
         {
@@ -207,22 +185,24 @@ public class EnemyWaveSystem : MonoBehaviour
             yield return new WaitForSeconds(2f);
         }
 
-        // Disable players
+        //Disable players
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject p in players)
         {
             Destroy(p);
         }
 
-        // Go to the next level or show GAMEOVER screen
+        //Go to next level or show GAMEOVER screen
         if (loadNewLevel)
         {
             if (levelName != "")
                 SceneManager.LoadScene(levelName);
+
         }
         else
         {
-            // Show game over screen
+
+            //Show game over screen
             if (UI != null)
             {
                 UI.DisableAllScreens();

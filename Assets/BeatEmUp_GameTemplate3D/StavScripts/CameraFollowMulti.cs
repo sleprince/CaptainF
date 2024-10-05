@@ -95,7 +95,7 @@ public class CameraFollowMulti : MonoBehaviour
             }
 
             // Set camera position
-            if (CurrentAreaCollider == null) UseWaveAreaCollider = false;
+            if (CurrentAreaCollider == null) UseWaveAreaCollider = true;
             if (!UseWaveAreaCollider)
             {
                 transform.position = new Vector3(Mathf.Clamp(currentX, MaxRight, MinLeft), currentY, currentZ) + AdditionalOffset;

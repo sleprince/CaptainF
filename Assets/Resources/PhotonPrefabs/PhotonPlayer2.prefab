@@ -433,7 +433,8 @@ GameObject:
   - component: {fileID: 114910383437093988}
   - component: {fileID: 114852759199269202}
   - component: {fileID: 3118643190999982936}
-  - component: {fileID: -9171247986421394035}
+  - component: {fileID: 548066660640727056}
+  - component: {fileID: 6014772796617465734}
   m_Layer: 9
   m_Name: PhotonPlayer2
   m_TagString: Player
@@ -813,15 +814,16 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 1
   OwnershipTransfer: 0
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 0}
+  - {fileID: 548066660640727056}
+  - {fileID: 6014772796617465734}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &-9171247986421394035
+--- !u!114 &548066660640727056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -830,14 +832,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1216528722486240}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c6bbd85ce47f9d46990aab68c46ec0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputType: 0
-  keyBoardControls: []
-  joypadControls: []
-  doubleTapSpeed: 0.3
-  isNetworkedGame: 0
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &6014772796617465734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216528722486240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &1221600064908312
 GameObject:
   m_ObjectHideFlags: 0
