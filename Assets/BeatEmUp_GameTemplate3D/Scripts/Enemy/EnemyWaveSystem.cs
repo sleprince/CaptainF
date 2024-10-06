@@ -77,8 +77,6 @@ public class EnemyWaveSystem : MonoBehaviour
         Invoke("SetEnemyTactics", .1f);
     }
 
-
-
     // Update Area Colliders
     void UpdateAreaColliders()
     {
@@ -101,10 +99,6 @@ public class EnemyWaveSystem : MonoBehaviour
 
         CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
         if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
-
-        // Show UI hand pointer after all enemies in the wave are defeated
-        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
-        if (hp != null) hp.ActivateHandPointer();
     }
 
     // When an enemy is destroyed
@@ -115,13 +109,14 @@ public class EnemyWaveSystem : MonoBehaviour
             EnemyWaves[currentWave].RemoveEnemyFromWave(g);
             if (EnemyWaves[currentWave].waveComplete())
             {
-                // Show hand pointer to allow player to move to next area
-                HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
-                if (hp != null) hp.ActivateHandPointer();
-
                 currentWave += 1;
+
+                // Only show hand pointer if there are more waves
                 if (!allWavesCompleted())
                 {
+                    HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+                    if (hp != null) hp.ActivateHandPointer();
+
                     UpdateAreaColliders();
                 }
                 else
@@ -142,6 +137,8 @@ public class EnemyWaveSystem : MonoBehaviour
         {
             if (EnemyWaves[i].waveComplete()) waveFinished += 1;
         }
+
+
 
         return waveCount == waveFinished;
     }
