@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using Photon.Pun;
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
@@ -40,7 +39,6 @@ public class EnemyWaveSystem : MonoBehaviour
     void Start()
     {
         currentWave = 0;
-        StartCoroutine(UpdatePlayerTargetsRepeatedly());
         UpdateAreaColliders();
         StartNewWave();
     }
@@ -54,7 +52,7 @@ public class EnemyWaveSystem : MonoBehaviour
             {
                 if (wave.EnemyList[i] != null)
                 {
-                    wave.EnemyList[i].SetActive(false);
+                    wave.EnemyList[i].SetActive(false); // Deactivate enemy
                 }
                 else
                 {
@@ -67,51 +65,23 @@ public class EnemyWaveSystem : MonoBehaviour
     // Start a new enemy wave
     public void StartNewWave()
     {
-        // Activate enemies in the current wave
-        foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
+        // Hide UI hand pointer
+        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+        if (hp != null) hp.DeActivateHandPointer();
+
+        // Activate enemies in the current wave after passing through the collider
+        foreach (GameObject g in EnemyWaves[currentWave].EnemyList)
         {
-            if (enemy != null) enemy.SetActive(true);
+            if (g != null) g.SetActive(true);
         }
         Invoke("SetEnemyTactics", .1f);
     }
 
-    // Update the player targets for the enemies
-    IEnumerator UpdatePlayerTargetsRepeatedly()
-    {
-        // Keep searching for player prefabs for the first few seconds of the game, ensuring that players are properly instantiated.
-        for (int i = 0; i < 5; i++) // Retry for 5 frames
-        {
-            UpdatePlayerTargets();
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
 
-    void UpdatePlayerTargets()
-    {
-        // Continuously search for player prefabs (Photon Player prefabs)
-        playerPrefabs = GameObject.FindGameObjectsWithTag("Player");
 
-        // Ensure that all enemies in the current wave receive the player targets
-        foreach (var wave in EnemyWaves)
-        {
-            foreach (var enemy in wave.EnemyList)
-            {
-                if (enemy != null)
-                {
-                    EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
-                    if (enemyAI != null)
-                    {
-                        enemyAI.playerPrefabs = playerPrefabs; // Assign all player prefabs to the enemies
-                    }
-                }
-            }
-        }
-    }
-
-    // Update the area colliders for wave restrictions
+    // Update Area Colliders
     void UpdateAreaColliders()
     {
-        // Switch the current area collider to a trigger
         if (currentWave > 0)
         {
             BoxCollider areaCollider = EnemyWaves[currentWave - 1].AreaCollider;
@@ -124,14 +94,17 @@ public class EnemyWaveSystem : MonoBehaviour
             }
         }
 
-        // Set next collider as camera area restrictor
         if (EnemyWaves[currentWave].AreaCollider != null)
         {
             EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
         }
 
-        CameraFollow cf = FindObjectOfType<CameraFollow>();
+        CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
         if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
+
+        // Show UI hand pointer after all enemies in the wave are defeated
+        HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+        if (hp != null) hp.ActivateHandPointer();
     }
 
     // When an enemy is destroyed
@@ -142,11 +115,14 @@ public class EnemyWaveSystem : MonoBehaviour
             EnemyWaves[currentWave].RemoveEnemyFromWave(g);
             if (EnemyWaves[currentWave].waveComplete())
             {
+                // Show hand pointer to allow player to move to next area
+                HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+                if (hp != null) hp.ActivateHandPointer();
+
                 currentWave += 1;
                 if (!allWavesCompleted())
                 {
                     UpdateAreaColliders();
-                    StartNewWave(); // Start the next wave if available
                 }
                 else
                 {
@@ -170,7 +146,6 @@ public class EnemyWaveSystem : MonoBehaviour
         return waveCount == waveFinished;
     }
 
-    // Add this method to EnemyWaveSystem
     public BoxCollider GetCurrentWaveCollider()
     {
         if (currentWave < EnemyWaves.Length && EnemyWaves[currentWave].AreaCollider != null)
@@ -201,19 +176,21 @@ public class EnemyWaveSystem : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        UIManager UI = FindObjectOfType<UIManager>();
+        UIManager UI = GameObject.FindObjectOfType<UIManager>();
         if (UI != null)
         {
             UI.UI_fader.Fade(UIFader.FADE.FadeOut, 2f, 0);
             yield return new WaitForSeconds(2f);
         }
 
+        // Disable players
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject p in players)
         {
             Destroy(p);
         }
 
+        // Go to next level or show GAMEOVER screen
         if (loadNewLevel)
         {
             if (levelName != "")

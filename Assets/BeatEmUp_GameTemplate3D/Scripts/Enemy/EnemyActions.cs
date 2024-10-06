@@ -544,20 +544,22 @@ public class EnemyActions : MonoBehaviour {
 		Move(Vector3.zero, 0f);
 	}
 
-	//look at the current target
-	public void LookAtTarget(Transform _target){
-		if(_target != null){
-			Vector3 newDir = Vector3.zero;
-			int dir = _target.transform.position.x >= transform.position.x ? 1 : -1;
-			currentDirection = (DIRECTION)dir;
-			if (animator != null) animator.currentDirection = currentDirection;
-			newDir = Vector3.RotateTowards(transform.forward, Vector3.forward * dir, rotationSpeed * Time.deltaTime, 0.0f);	
-			transform.rotation = Quaternion.LookRotation(newDir);
-		}
-	}
+    // Modify the LookAtTarget method in EnemyActions to be virtual
+    public virtual void LookAtTarget(Transform _target)
+    {
+        if (_target != null)
+        {
+            Vector3 newDir = Vector3.zero;
+            int dir = _target.transform.position.x >= transform.position.x ? 1 : -1;
+            currentDirection = (DIRECTION)dir;
+            if (animator != null) animator.currentDirection = currentDirection;
+            newDir = Vector3.RotateTowards(transform.forward, Vector3.forward * dir, rotationSpeed * Time.deltaTime, 0.0f);
+            transform.rotation = Quaternion.LookRotation(newDir);
+        }
+    }
 
-	//randomizes values
-	public void SetRandomValues(){
+    //randomizes values
+    public void SetRandomValues(){
 		walkSpeed *= Random.Range(.8f, 1.2f);
 		walkBackwardSpeed *= Random.Range(.8f, 1.2f);
 		attackInterval *= Random.Range(.7f, 1.5f);
