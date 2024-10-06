@@ -222,6 +222,11 @@ MonoBehaviour:
   ZSpread: 0
   distanceToTarget: {x: 0, y: 0, z: 0}
   enableAI: 1
+  playerPrefabs:
+  - {fileID: 3227521482667822329, guid: 2565566d781cea443bec730e2912d039, type: 3}
+  - {fileID: 1216528722486240, guid: c5f3a37f4bce3a74bb87ae693f27d72d, type: 3}
+  - {fileID: 1443228785723502, guid: 7934979097e14dd4cae0341be42961d4, type: 3}
+  - {fileID: 1443228785723502, guid: 30701978228a92142a8b1fdb95ee80f0, type: 3}
 --- !u!1 &1355117993601544
 GameObject:
   m_ObjectHideFlags: 0

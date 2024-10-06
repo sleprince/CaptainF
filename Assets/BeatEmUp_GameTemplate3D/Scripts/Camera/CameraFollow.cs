@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
+using Photon.Pun;
+using System.Collections;
 
 public class CameraFollow : MonoBehaviour
 {
-
     public Vector3 MiddlePosition;
 
     [Header("Player Targets")]
     public GameObject[] targets;
 
     [Header("Follow Settings")]
-    public float distanceToTarget = 10; // The distance to the target
-    public float heightOffset = -2; // the height offset of the camera relative to it's target
-    public float viewAngle = -6; //a downwards rotation
-    public Vector3 AdditionalOffset; //any additional offset
-    public bool FollowZAxis; //enable or disable the camera following the z axis
+    public float distanceToTarget = 10f; // The distance to the target
+    public float heightOffset = -2f; // The height offset of the camera relative to its target
+    public float viewAngle = -6f; // Downwards rotation
+    public Vector3 AdditionalOffset; // Any additional offset
+    public bool FollowZAxis; // Enable or disable the camera following the Z-axis
 
     [Header("Damp Settings")]
     public float DampX = 3f;
@@ -24,15 +25,41 @@ public class CameraFollow : MonoBehaviour
     public float MinLeft;
     public float MaxRight;
 
-    [Header("Wave Area collider")]
+    [Header("Wave Area Collider")]
     public bool UseWaveAreaCollider;
     public BoxCollider CurrentAreaCollider;
     public float AreaColliderViewOffset;
     private bool firstFrameActive;
 
+    private PhotonView photonView; // For identifying the local player in a networked game
+
     void Start()
     {
-        UpdatePlayerTargets();
+        StartCoroutine(WaitForPlayersAndInitializeCamera());
+
+        firstFrameActive = true;
+        UpdatePlayerTargets();  // Initially assign targets
+        InvokeRepeating("UpdatePlayerTargets", 0f, 0.5f); // Keep checking for players every 0.5 seconds
+
+        // Check if this is a networked game
+        if (PhotonNetwork.InRoom)
+        {
+            photonView = GetComponentInParent<PhotonView>();
+        }
+
+        // Find the EnemyWaveSystem at the start and assign the area collider
+        FindAndAssignEnemyWaveSystem();
+    }
+
+    IEnumerator WaitForPlayersAndInitializeCamera()
+    {
+        // Wait until networked player objects are instantiated
+        while (targets == null || targets.Length == 0)
+        {
+            UpdatePlayerTargets(); // Continuously check for players
+            yield return new WaitForSeconds(0.1f); // Wait for a short time before checking again
+        }
+
         firstFrameActive = true;
     }
 
@@ -44,15 +71,12 @@ public class CameraFollow : MonoBehaviour
 
             if (targets.Length == 1)
             {
-
-                //follow a single target
+                // Follow a single target
                 if (targets[0] != null) MiddlePosition = targets[0].transform.position;
-
             }
             else
             {
-
-                //find center position between multiple targets
+                // Find the center position between multiple targets
                 int count = 0;
                 for (int i = 0; i < targets.Length; i++)
                 {
@@ -65,18 +89,18 @@ public class CameraFollow : MonoBehaviour
                 MiddlePosition = MiddlePosition / count;
             }
 
-            //initial values
+            // Initial values
             float currentX = transform.position.x;
             float currentY = transform.position.y;
             float currentZ = transform.position.z;
 
-            //Damp X
+            // Damp X
             currentX = Mathf.Lerp(currentX, MiddlePosition.x, DampX * Time.deltaTime);
 
-            //DampY
+            // Damp Y
             currentY = Mathf.Lerp(currentY, MiddlePosition.y - heightOffset, DampY * Time.deltaTime);
 
-            //DampZ
+            // Damp Z
             if (FollowZAxis)
             {
                 currentZ = Mathf.Lerp(currentZ, MiddlePosition.z + distanceToTarget, DampZ * Time.deltaTime);
@@ -86,7 +110,7 @@ public class CameraFollow : MonoBehaviour
                 currentZ = distanceToTarget;
             }
 
-            //set values for 1st frame (No damping)
+            // Set values for 1st frame (No damping)
             if (firstFrameActive)
             {
                 firstFrameActive = false;
@@ -95,7 +119,7 @@ public class CameraFollow : MonoBehaviour
                 currentZ = FollowZAxis ? (MiddlePosition.z + distanceToTarget) : distanceToTarget;
             }
 
-            //Set cam position
+            // Set camera position
             if (CurrentAreaCollider == null) UseWaveAreaCollider = false;
             if (!UseWaveAreaCollider)
             {
@@ -106,14 +130,62 @@ public class CameraFollow : MonoBehaviour
                 transform.position = new Vector3(Mathf.Clamp(currentX, CurrentAreaCollider.transform.position.x + AreaColliderViewOffset, MinLeft), currentY, currentZ) + AdditionalOffset;
             }
 
-            //Set cam rotation
+            // Set camera rotation
             transform.rotation = new Quaternion(0, 180f, viewAngle, 0);
         }
     }
 
-    //updates the targets to follow
+    // Updates the targets to follow, differentiating local and network play
     public void UpdatePlayerTargets()
     {
-        targets = GameObject.FindGameObjectsWithTag("Player");
+        if (PhotonNetwork.InRoom)
+        {
+            GameObject localPlayer = FindLocalPlayer();  // Prioritize finding the local player
+            if (localPlayer != null)
+            {
+                targets = new GameObject[] { localPlayer };  // Set the local player as the target
+            }
+            else
+            {
+                // Fallback to find players by tag, but this is less reliable in network mode
+                targets = GameObject.FindGameObjectsWithTag("Player");
+            }
+        }
+        else
+        {
+            // If not in network mode, just find players by tag
+            targets = GameObject.FindGameObjectsWithTag("Player");
+        }
+    }
+
+    // Finds and assigns the EnemyWaveSystem's current wave collider to the camera
+    void FindAndAssignEnemyWaveSystem()
+    {
+        EnemyWaveSystem enemyWaveSystem = FindObjectOfType<EnemyWaveSystem>();
+        if (enemyWaveSystem != null)
+        {
+            // Assign the current wave's area collider to this camera's collider restriction
+            CurrentAreaCollider = enemyWaveSystem.GetCurrentWaveCollider();
+
+            // Ensure the camera is restricted by the wave area
+            UseWaveAreaCollider = true;
+        }
+        else
+        {
+            Debug.LogError("EnemyWaveSystem not found! Camera area colliders might not work correctly.");
+        }
+    }
+
+    private GameObject FindLocalPlayer()
+    {
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            PhotonView photonView = player.GetComponent<PhotonView>();
+            if (photonView != null && photonView.IsMine)
+            {
+                return player;
+            }
+        }
+        return null;
     }
 }
