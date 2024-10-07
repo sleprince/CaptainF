@@ -19,6 +19,8 @@ public class EnemyWaveSystem : MonoBehaviour
     public bool loadNewLevel;
     public string levelName;
 
+    private PhotonView photonView;
+
     private GameObject[] playerPrefabs; // Store the player prefabs as targets
 
     void OnEnable()
@@ -33,11 +35,14 @@ public class EnemyWaveSystem : MonoBehaviour
 
     void Awake()
     {
+        photonView= GetComponent<PhotonView>();
         if (enabled) DisableAllEnemies();
     }
 
     void Start()
     {
+
+
         currentWave = 0;
         UpdateAreaColliders();
         StartNewWave();
@@ -62,8 +67,23 @@ public class EnemyWaveSystem : MonoBehaviour
         }
     }
 
-    // Start a new enemy wave
     public void StartNewWave(int waveIndex = -1)
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_StartWave", RpcTarget.AllBuffered, waveIndex);
+        }
+        else
+        {
+            RPC_StartWave(waveIndex);
+        }
+    }
+
+
+
+    // Start a new enemy wave RPC
+    [PunRPC]
+    private void RPC_StartWave(int waveIndex)
     {
         if (waveIndex >= 0)
         {
@@ -119,8 +139,23 @@ public class EnemyWaveSystem : MonoBehaviour
         Invoke("SetEnemyTactics", 0.1f);
     }
 
-    // Update Area Colliders
+
+    // Call this method wherever you update area colliders
     void UpdateAreaColliders()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_UpdateAreaColliders", RpcTarget.AllBuffered);
+        }
+        else
+        {
+            RPC_UpdateAreaColliders();
+        }
+    }
+
+    // Update Area Colliders RPC
+    [PunRPC]
+    private void RPC_UpdateAreaColliders()
     {
         if (currentWave > 0)
         {
@@ -143,8 +178,21 @@ public class EnemyWaveSystem : MonoBehaviour
         if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
     }
 
-    // When an enemy is destroyed
+
     void onUnitDestroy(GameObject g)
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_OnEnemyDestroyed", RpcTarget.AllBuffered);
+        }
+        else
+        {
+            RPC_OnEnemyDestroyed(g);
+        }
+    }
+    // When an enemy is destroyed RPC
+    [PunRPC]
+    void RPC_OnEnemyDestroyed(GameObject g)
     {
         if (EnemyWaves.Length > currentWave)
         {
