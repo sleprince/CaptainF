@@ -130,14 +130,15 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
 		}
 		return RANGE.FARRANGE;
 	}
-
+  
     public void SetEnemyTactic(ENEMYTACTIC tactic)
     {
+        int tacticInt = (int)tactic; // Convert enum to int
         if (PhotonNetwork.IsConnected)
         {
             if (photonView.IsMine)
             {
-                photonView.RPC("RPC_SetEnemyTactic", RpcTarget.AllBuffered, tactic);
+                photonView.RPC("RPC_SetEnemyTactic", RpcTarget.AllBuffered, tacticInt);
             }
         }
         else
@@ -152,8 +153,9 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
     }
 
     [PunRPC]
-    public void RPC_SetEnemyTactic(ENEMYTACTIC tactic)
+    public void RPC_SetEnemyTactic(int tacticInt)
     {
+        ENEMYTACTIC tactic = (ENEMYTACTIC)tacticInt; // Convert int back to enum
         SetLocalEnemyTactic(tactic);
     }
 

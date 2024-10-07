@@ -183,16 +183,46 @@ public class EnemyWaveSystem : MonoBehaviour
     {
         if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("RPC_OnEnemyDestroyed", RpcTarget.AllBuffered);
+            int viewID = g.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("RPC_OnEnemyDestroyed", RpcTarget.AllBuffered, viewID);
         }
         else
         {
-            RPC_OnEnemyDestroyed(g);
+            Local_OnEnemyDestroyed(g);
         }
     }
-    // When an enemy is destroyed RPC
+
     [PunRPC]
-    void RPC_OnEnemyDestroyed(GameObject g)
+    void RPC_OnEnemyDestroyed(int viewID)
+    {
+        GameObject g = PhotonView.Find(viewID).gameObject;
+        if (EnemyWaves.Length > currentWave)
+        {
+            EnemyWaves[currentWave].RemoveEnemyFromWave(g);
+            if (EnemyWaves[currentWave].waveComplete())
+            {
+                currentWave += 1;
+
+                // Only show hand pointer if there are more waves
+                if (!allWavesCompleted())
+                {
+                    HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+                    if (hp != null) hp.ActivateHandPointer();
+
+                    UpdateAreaColliders();
+                }
+                else
+                {
+                    StartCoroutine(LevelComplete());
+                }
+            }
+        }
+    }
+
+
+
+    // When an enemy is destroyed Local
+    void Local_OnEnemyDestroyed(GameObject g)
     {
         if (EnemyWaves.Length > currentWave)
         {
