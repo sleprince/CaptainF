@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 54021038908083726}
   - component: {fileID: 114268890603238016}
   - component: {fileID: 114862996046309558}
+  - component: {fileID: 7232940854146470969}
+  - component: {fileID: 2037190266796292768}
   m_Layer: 8
   m_Name: Enemy
   m_TagString: Enemy
@@ -222,11 +224,46 @@ MonoBehaviour:
   ZSpread: 0
   distanceToTarget: {x: 0, y: 0, z: 0}
   enableAI: 1
-  playerPrefabs:
-  - {fileID: 3227521482667822329, guid: 2565566d781cea443bec730e2912d039, type: 3}
-  - {fileID: 1216528722486240, guid: c5f3a37f4bce3a74bb87ae693f27d72d, type: 3}
-  - {fileID: 1443228785723502, guid: 7934979097e14dd4cae0341be42961d4, type: 3}
-  - {fileID: 1443228785723502, guid: 30701978228a92142a8b1fdb95ee80f0, type: 3}
+--- !u!114 &7232940854146470969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027917220076984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  observableSearch: 0
+  ObservedComponents:
+  - {fileID: 2037190266796292768}
+  - {fileID: 8536883392888714420}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &2037190266796292768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027917220076984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &1355117993601544
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,6 +425,7 @@ GameObject:
   - component: {fileID: 4696055645807592}
   - component: {fileID: 95324496746204870}
   - component: {fileID: 4835711493673616693}
+  - component: {fileID: 8536883392888714420}
   m_Layer: 0
   m_Name: GFX
   m_TagString: Untagged
@@ -453,6 +491,75 @@ MonoBehaviour:
   HitEffect: {fileID: 115594, guid: efd3011863918584d94591e177fa8d29, type: 3}
   DefendEffect: {fileID: 194486, guid: 103ca3ac1720c8445935db20b30e3305, type: 3}
   animator: {fileID: 95324496746204870}
+--- !u!114 &8536883392888714420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363018927459058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 0
+    Name: GroundHit
+  - Type: 9
+    SynchronizeType: 0
+    Name: Death
+  - Type: 9
+    SynchronizeType: 0
+    Name: Idle
+  - Type: 9
+    SynchronizeType: 0
+    Name: Walk
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_Up
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_Down
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_End
+  - Type: 9
+    SynchronizeType: 0
+    Name: StandUp
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack2
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack3
+  - Type: 9
+    SynchronizeType: 0
+    Name: Defend
+  - Type: 9
+    SynchronizeType: 0
+    Name: Hit1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Hit2
+  - Type: 1
+    SynchronizeType: 0
+    Name: Blend
+  - Type: 1
+    SynchronizeType: 0
+    Name: MovementSpeed
+  - Type: 4
+    SynchronizeType: 0
+    Name: isDead
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &1929304379585312
 GameObject:
   m_ObjectHideFlags: 0

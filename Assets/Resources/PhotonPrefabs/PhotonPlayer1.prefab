@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 677138102769546103}
   - component: {fileID: 965745787248463811}
   - component: {fileID: 8347376129885738813}
+  - component: {fileID: 5596303634541553636}
   m_Layer: 0
   m_Name: GFX2
   m_TagString: Untagged
@@ -202,6 +203,123 @@ MonoBehaviour:
   HitEffect: {fileID: 115594, guid: efd3011863918584d94591e177fa8d29, type: 3}
   DefendEffect: {fileID: 194486, guid: 103ca3ac1720c8445935db20b30e3305, type: 3}
   animator: {fileID: 0}
+--- !u!114 &5596303634541553636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314099500537778188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 0
+    Name: Jump
+  - Type: 4
+    SynchronizeType: 0
+    Name: JumpKickActive
+  - Type: 9
+    SynchronizeType: 0
+    Name: JumpKick
+  - Type: 9
+    SynchronizeType: 0
+    Name: Punch1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Punch2
+  - Type: 9
+    SynchronizeType: 0
+    Name: Punch3
+  - Type: 4
+    SynchronizeType: 0
+    Name: Defend
+  - Type: 9
+    SynchronizeType: 0
+    Name: Hit1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Hit2
+  - Type: 9
+    SynchronizeType: 0
+    Name: Kick0
+  - Type: 9
+    SynchronizeType: 0
+    Name: Kick1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Kick2
+  - Type: 9
+    SynchronizeType: 0
+    Name: GroundPunch
+  - Type: 9
+    SynchronizeType: 0
+    Name: GroundKick
+  - Type: 9
+    SynchronizeType: 0
+    Name: Pickup
+  - Type: 4
+    SynchronizeType: 0
+    Name: Run
+  - Type: 9
+    SynchronizeType: 0
+    Name: Walk
+  - Type: 9
+    SynchronizeType: 0
+    Name: Idle
+  - Type: 4
+    SynchronizeType: 0
+    Name: JumpInProgress
+  - Type: 4
+    SynchronizeType: 0
+    Name: Falling
+  - Type: 1
+    SynchronizeType: 0
+    Name: MovementSpeed
+  - Type: 4
+    SynchronizeType: 0
+    Name: Death
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_Up
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_Down
+  - Type: 9
+    SynchronizeType: 0
+    Name: KnockDown_End
+  - Type: 9
+    SynchronizeType: 0
+    Name: StandUp
+  - Type: 4
+    SynchronizeType: 0
+    Name: isGrounded
+  - Type: 9
+    SynchronizeType: 0
+    Name: JumpUp
+  - Type: 9
+    SynchronizeType: 0
+    Name: ThrowWeapon
+  - Type: 9
+    SynchronizeType: 0
+    Name: FireGun
+  - Type: 9
+    SynchronizeType: 0
+    Name: SwingWeapon
+  - Type: 9
+    SynchronizeType: 0
+    Name: RunningPunch
+  - Type: 9
+    SynchronizeType: 0
+    Name: RunningKick
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &383358828117784414
 GameObject:
   m_ObjectHideFlags: 0
@@ -2476,6 +2594,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 3872312454877321539}
   - {fileID: 2571704899665765711}
+  - {fileID: 5596303634541553636}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
