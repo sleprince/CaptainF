@@ -63,18 +63,60 @@ public class EnemyWaveSystem : MonoBehaviour
     }
 
     // Start a new enemy wave
-    public void StartNewWave()
+    public void StartNewWave(int waveIndex = -1)
     {
-        // Hide UI hand pointer
+        if (waveIndex >= 0)
+        {
+            currentWave = waveIndex;
+        }
+
         HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
         if (hp != null) hp.DeActivateHandPointer();
 
-        // Activate enemies in the current wave after passing through the collider
-        foreach (GameObject g in EnemyWaves[currentWave].EnemyList)
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            if (g != null) g.SetActive(true);
+            for (int i = 0; i < EnemyWaves[currentWave].EnemyList.Count; i++)
+            {
+                GameObject enemy = EnemyWaves[currentWave].EnemyList[i];
+                if (enemy != null)
+                {
+                    Vector3 spawnPosition = enemy.transform.position;
+                    Quaternion spawnRotation = enemy.transform.rotation;
+
+                    // Instantiate enemy via Photon for networked play
+                    GameObject instantiatedEnemy = PhotonNetwork.InstantiateRoomObject("Enemy", spawnPosition, spawnRotation);
+
+                    if (instantiatedEnemy != null)
+                    {
+                        // Set the instantiated enemy's name to match the original GameObject name
+                        instantiatedEnemy.name = enemy.name;
+
+                        // Replace the original enemy in the EnemyList with the instantiated one
+                        EnemyWaves[currentWave].EnemyList[i] = instantiatedEnemy;
+
+                        // Set the parent as needed for organization
+                        instantiatedEnemy.transform.SetParent(enemy.transform.parent);
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to instantiate enemy prefab. Make sure it exists in the Resources folder.");
+                    }
+                }
+            }
         }
-        Invoke("SetEnemyTactics", .1f);
+        else
+        {
+            // Local play: Simply activate the enemies directly
+            foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
+            {
+                if (enemy != null)
+                {
+                    enemy.SetActive(true);
+                }
+            }
+        }
+
+        Invoke("SetEnemyTactics", 0.1f);
     }
 
     // Update Area Colliders
