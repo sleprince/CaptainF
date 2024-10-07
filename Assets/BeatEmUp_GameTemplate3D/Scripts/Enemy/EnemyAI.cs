@@ -1,6 +1,7 @@
 ﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
 
@@ -13,10 +14,14 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
 		UNITSTATE.WALK 
 	};
 
-	void Start(){
+    private PhotonView photonView;
 
-		//add this enemy to the enemylist
-		EnemyManager.enemyList.Add(gameObject);
+    void Start(){
+
+        photonView = GetComponent<PhotonView>();
+
+        //add this enemy to the enemylist
+        EnemyManager.enemyList.Add(gameObject);
 
 		//set z spread (zspread is used to keep space between the enemies)
 		ZSpread = (EnemyManager.enemyList.Count-1);
@@ -125,21 +130,60 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
 		}
 		return RANGE.FARRANGE;
 	}
-		
-	//set an enemy tactic
-	public void SetEnemyTactic(ENEMYTACTIC tactic){
-		enemyTactic = tactic;
-	}
 
-	//spread enemies out in z distance
-	void SetZSpread(){
+    public void SetEnemyTactic(ENEMYTACTIC tactic)
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            if (photonView.IsMine)
+            {
+                photonView.RPC("RPC_SetEnemyTactic", RpcTarget.AllBuffered, tactic);
+            }
+        }
+        else
+        {
+            SetLocalEnemyTactic(tactic);
+        }
+    }
+
+    private void SetLocalEnemyTactic(ENEMYTACTIC tactic)
+    {
+        enemyTactic = tactic;
+    }
+
+    [PunRPC]
+    public void RPC_SetEnemyTactic(ENEMYTACTIC tactic)
+    {
+        SetLocalEnemyTactic(tactic);
+    }
+
+    //spread enemies out in z distance
+    void SetZSpread(){
 		ZSpread = (ZSpread - (float)(EnemyManager.enemyList.Count - 1) / 2f) * (capsule.radius*2) * zSpreadMultiplier;
 		if (ZSpread > attackRangeDistance) ZSpread = attackRangeDistance - 0.1f;
 	}
 
-	//Unit has died
-	void Death(){
-		StopAllCoroutines();
+    public void Death()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            if (photonView.IsMine)
+            {
+                photonView.RPC("RPC_Death", RpcTarget.AllBuffered);
+            }
+        }
+        else
+        {
+            // For local play, just call the method directly
+            RPC_Death();
+        }
+    }
+
+    //Unit has died RPC
+    [PunRPC]
+    public void RPC_Death() { 
+
+        StopAllCoroutines();
 		CancelInvoke();
 
 		enableAI = false;
