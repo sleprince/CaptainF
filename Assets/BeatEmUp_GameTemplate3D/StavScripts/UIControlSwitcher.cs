@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using System.Collections;
 
 public class UIControlSwitcher : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class UIControlSwitcher : MonoBehaviour
 
         // Default to touchscreen controls at the start
         SetTouchscreenControls(true);
+
+        StartCoroutine(DelayedTouchscreenToggle());
     }
 
     void Update()
@@ -38,6 +41,16 @@ public class UIControlSwitcher : MonoBehaviour
             // Automatically exit touchscreen mode
             SetTouchscreenControls(false);
         }
+    }
+
+    private IEnumerator DelayedTouchscreenToggle()
+    {
+        // Wait for 0.5 seconds before toggling
+        yield return new WaitForSeconds(0.5f);
+
+        // Effectively "press" the toggle button on and off to ensure controls work correctly
+        SetTouchscreenControls(false);
+        SetTouchscreenControls(true);
     }
 
     public void ToggleTouchscreenControls()
