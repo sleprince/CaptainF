@@ -66,8 +66,10 @@ public class PlayerMovement : MonoBehaviour {
 
 	void Start(){
 
-		//find components
-		if(!animator) animator = GetComponentInChildren<UnitAnimator>();
+        StartCoroutine(DelayedInputStart());
+
+        //find components
+        if (!animator) animator = GetComponentInChildren<UnitAnimator>();
 		if(!rb) rb = GetComponent<Rigidbody>();
 		if(!playerState) playerState = GetComponent<UnitState>();
 		if(!capsule) capsule = GetComponent<CapsuleCollider>();
@@ -119,8 +121,19 @@ public class PlayerMovement : MonoBehaviour {
 		TurnToCurrentDirection();
 	}
 
-	//movement on the ground
-	void MoveGrounded(){
+    private IEnumerator DelayedInputStart()
+    {
+        // Wait for 0.5 seconds
+        yield return new WaitForSeconds(0.5f);
+
+        // Enable input processing after the delay
+        canProcessInput = true;
+    }
+
+    private bool canProcessInput = false;
+
+    //movement on the ground
+    void MoveGrounded(){
 
 		//do nothing when landing
 		if(playerState.currentState == UNITSTATE.LAND) return;
@@ -225,14 +238,30 @@ public class PlayerMovement : MonoBehaviour {
 	//input actions
 	void OnInputEvent(string action, BUTTONSTATE buttonState) {
 
-		//ignore input when we are dead or when this state is not active
-		if(!MovementStates.Contains(playerState.currentState) || isDead) return;
+        // Check if input processing is allowed
+        if (!canProcessInput)
+        {
+            return; // Exit early if not allowed
+        }
 
-		//start a jump
-		if(action == "Jump" && buttonState == BUTTONSTATE.PRESS && IsGrounded() && playerState.currentState != UNITSTATE.JUMPING) JumpNextFixedUpdate = true;
 
-		//start running when a run button is pressed (e.g. Joypad controls)
-		if(action == "Run") playerState.SetState(UNITSTATE.RUN);
+        // Check if the referenced object or variable is not null before proceeding
+        if (action != null)
+        {
+            //ignore input when we are dead or when this state is not active
+            if (!MovementStates.Contains(playerState.currentState) || isDead) return;
+
+            //start a jump
+            if (action == "Jump" && buttonState == BUTTONSTATE.PRESS && IsGrounded() && playerState.currentState != UNITSTATE.JUMPING) JumpNextFixedUpdate = true;
+
+            //start running when a run button is pressed (e.g. Joypad controls)
+            if (action == "Run") playerState.SetState(UNITSTATE.RUN);
+        }
+        else
+        {
+            Debug.LogWarning("OnInputEvent: Received null reference for action or button state.");
+        }
+
 	}
 
 	#endregion

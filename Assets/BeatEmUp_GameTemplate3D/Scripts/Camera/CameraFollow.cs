@@ -172,7 +172,7 @@ public class CameraFollow : MonoBehaviour
         }
         else
         {
-            Debug.LogError("EnemyWaveSystem not found! Camera area colliders might not work correctly.");
+            Debug.LogWarning("EnemyWaveSystem not found! Camera area colliders might not work correctly.");
         }
     }
 
