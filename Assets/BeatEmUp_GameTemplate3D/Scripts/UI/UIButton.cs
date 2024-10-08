@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Pun; // Add Photon namespace
 
 public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -17,8 +18,9 @@ public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log($"UIButton: OnPointerDown - Action {actionDown} Pressed");
-        if (inputManager != null && actionDown != "")
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+
+        if (actionDown != "")
         {
             inputManager.OnTouchScreenInputEvent(actionDown, BUTTONSTATE.PRESS);
         }
@@ -26,8 +28,9 @@ public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log($"UIButton: OnPointerUp - Action {actionUp} Released");
-        if (inputManager != null && actionUp != "")
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+
+        if (actionUp != "")
         {
             inputManager.OnTouchScreenInputEvent(actionUp, BUTTONSTATE.RELEASE);
         }

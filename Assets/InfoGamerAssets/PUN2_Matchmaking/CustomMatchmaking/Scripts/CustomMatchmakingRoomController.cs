@@ -25,6 +25,9 @@ public class CustomMatchmakingRoomController : MonoBehaviourPunCallbacks
     [SerializeField]
     private Text roomNameDisplay; //display for the name of the room
 
+    [SerializeField]
+    private string gameSetupControllerPrefab = "GameSetupController"; // Name of the GameSetupController prefab in the Resources folder
+
     void ClearPlayerListings()
     {
         for (int i = playersContainer.childCount - 1; i >= 0; i--) //loop through all child object of the playersContainer, removing each child
@@ -50,14 +53,18 @@ public class CustomMatchmakingRoomController : MonoBehaviourPunCallbacks
         roomPanel.SetActive(true); //activate the display for being in a room
         lobbyPanel.SetActive(false); //hide the display for being in a lobby
         roomNameDisplay.text = PhotonNetwork.CurrentRoom.Name; //update room name display
-        if (PhotonNetwork.IsMasterClient) //if master client then activate the start button
+
+        if (PhotonNetwork.IsMasterClient)
         {
+            
             startButton.SetActive(true);
+
         }
         else
         {
             startButton.SetActive(false);
         }
+
         //photonPlayers = PhotonNetwork.PlayerList;
         ClearPlayerListings(); //remove all old player listings
         ListPlayers(); //relist all current player listings
@@ -89,11 +96,12 @@ public class CustomMatchmakingRoomController : MonoBehaviourPunCallbacks
 
     public void StartGameOnClick() //paired to the start button. will load all players into the multiplayer scene through the master client and AutomaticallySyncScene
     {
-        if(PhotonNetwork.IsMasterClient)
-        {
+
             PhotonNetwork.CurrentRoom.IsOpen = false; //Comment out if you want player to join after the game has started
+
+
             PhotonNetwork.LoadLevel(multiPlayerSceneIndex);   
-        }
+        
     }
 
     IEnumerator rejoinLobby()

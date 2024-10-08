@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Pun; // Add Photon namespace
 
 [RequireComponent(typeof(RectTransform))]
 public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
@@ -25,15 +26,14 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
             inputManager = FindObjectOfType<InputManager>();
         }
 
-        if (inputManager == null) return;
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
 
-        // Return to start position
         if (returnToStartPos)
         {
             if (handle.anchoredPosition.magnitude > Mathf.Epsilon)
             {
                 handle.anchoredPosition -= new Vector2(handle.anchoredPosition.x * autoReturnSpeed, handle.anchoredPosition.y * autoReturnSpeed) * Time.deltaTime;
-                inputManager.OnTouchScreenJoystickEvent(Vector2.zero);  // Send zero vector when no movement
+                inputManager.OnTouchScreenJoystickEvent(Vector2.zero);
             }
             else
             {
@@ -42,49 +42,30 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    public Vector2 Coordinates
-    {
-        get
-        {
-            if (handle.anchoredPosition.magnitude < radius)
-            {
-                return handle.anchoredPosition / radius;
-            }
-            return handle.anchoredPosition.normalized;
-        }
-    }
-
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+
         returnToStartPos = false;
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-
-        Debug.Log($"UIJoystick: OnPointerDown - Joystick Moved to {handleOffset}");
-
-        if (inputManager != null)
-        {
-            inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);  // Send joystick direction
-        }
+        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-
-        Debug.Log($"UIJoystick: OnDrag - Joystick Moved to {handleOffset}");
-
-        if (inputManager != null)
-        {
-            inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);  // Send joystick direction
-        }
+        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+
         returnToStartPos = true;
-        Debug.Log("UIJoystick: OnPointerUp - Joystick Released");
     }
 
     private Vector2 GetJoystickOffset(PointerEventData eventData)
