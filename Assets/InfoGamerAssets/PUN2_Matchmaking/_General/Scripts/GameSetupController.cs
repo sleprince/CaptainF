@@ -16,6 +16,9 @@ public class GameSetupController : MonoBehaviour
     // The camera prefab to be instantiated for each player
     public GameObject cameraPrefab;
 
+    // InputManager prefab (added to instantiate it for each player)
+    public GameObject inputManagerPrefab;
+
     // Prefab names in Resources folder
     private const string enemyWaveSystemPrefab = "EnemyWaveSystem";
     private const string itemsPrefab = "Items";
@@ -84,8 +87,13 @@ public class GameSetupController : MonoBehaviour
             CreateAndAssignCamera(player, ID);
         }
 
+        // Instantiate and assign InputManager for each player
+        if (inputManagerPrefab != null)
+        {
             CreateAndAssignInputManager(player, ID);
-            CreateAndAssignUI(player, ID);
+        }
+
+        CreateAndAssignUI(player, ID);
 
     }
 
@@ -131,8 +139,8 @@ public class GameSetupController : MonoBehaviour
 
     private void CreateAndAssignInputManager(GameObject player, int playerID)
     {
-        // Instantiate InputManager from Resources folder using Photon for networked play
-        GameObject inputManagerInstance = PhotonNetwork.InstantiateRoomObject("InputManagerNetwork", Vector3.zero, Quaternion.identity);
+        // Instantiate InputManager prefab (assuming you have an InputManager prefab in the project)
+        GameObject inputManagerInstance = Instantiate(inputManagerPrefab);
 
         // Set a unique name to better organize in the hierarchy
         inputManagerInstance.name = "InputManager_Player" + playerID;
@@ -142,6 +150,7 @@ public class GameSetupController : MonoBehaviour
         if (inputManager != null)
         {
             inputManager.PlayerID = playerID; // Assign the player ID or PhotonView ID
+            inputManager.playerPhotonView = player.GetComponent<PhotonView>(); // Assign the player's PhotonView
             Debug.Log("Assigned PlayerID " + playerID + " to InputManager.");
         }
     }

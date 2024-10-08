@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c6bbd85ce47f9d46990aab68c46ec0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isNetworkedGame: 0
   inputType: 0
   keyBoardControls:
   - Action: Left
@@ -74,5 +75,5 @@ MonoBehaviour:
   - Action: Run
     key: 335
   doubleTapSpeed: 0.3
-  isNetworkedGame: 0
   PlayerID: 0
+  playerPhotonView: {fileID: 0}
