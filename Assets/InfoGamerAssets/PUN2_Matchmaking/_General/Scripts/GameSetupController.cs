@@ -16,11 +16,6 @@ public class GameSetupController : MonoBehaviour
     // The camera prefab to be instantiated for each player
     public GameObject cameraPrefab;
 
-    // InputManager prefab (added to instantiate it for each player)
-    public GameObject inputManagerPrefab;
-
-    public GameObject uiPrefab;
-
     // Prefab names in Resources folder
     private const string enemyWaveSystemPrefab = "EnemyWaveSystem";
     private const string itemsPrefab = "Items";
@@ -89,16 +84,9 @@ public class GameSetupController : MonoBehaviour
             CreateAndAssignCamera(player, ID);
         }
 
-        // Instantiate and assign InputManager for each player
-        if (inputManagerPrefab != null)
-        {
             CreateAndAssignInputManager(player, ID);
-        }
-
-        if(uiPrefab != null)
-        {
             CreateAndAssignUI(player, ID);
-        }
+
     }
 
     private GameObject GetSpawnPoint(int ID)
@@ -143,8 +131,8 @@ public class GameSetupController : MonoBehaviour
 
     private void CreateAndAssignInputManager(GameObject player, int playerID)
     {
-        // Instantiate InputManager prefab (assuming you have an InputManager prefab in the project)
-        GameObject inputManagerInstance = Instantiate(inputManagerPrefab);
+        // Instantiate InputManager from Resources folder using Photon for networked play
+        GameObject inputManagerInstance = PhotonNetwork.InstantiateRoomObject("InputManagerNetwork", Vector3.zero, Quaternion.identity);
 
         // Set a unique name to better organize in the hierarchy
         inputManagerInstance.name = "InputManager_Player" + playerID;
@@ -160,25 +148,23 @@ public class GameSetupController : MonoBehaviour
 
     private void CreateAndAssignUI(GameObject player, int playerID)
     {
-        // Find the existing UI object that might have been marked as 'DoNotDestroyOnLoad'
-        GameObject oldUI = GameObject.FindWithTag("UI"); // Ensure the UI object has a specific tag like "UI"
-
-        // Check if the old UI exists and destroy it
+        // Find the existing UI object and destroy it if necessary
+        GameObject oldUI = GameObject.FindWithTag("UI");
         if (oldUI != null)
         {
             Destroy(oldUI);
         }
 
-        // Instantiate the new UI prefab (ensure the uiPrefab is assigned in the inspector)
-        GameObject uiInstance = Instantiate(uiPrefab);
-
-        // Optionally, set the new UI instance to not be destroyed on load if needed in the next scenes
-        DontDestroyOnLoad(uiInstance);
+        // Instantiate UI from Resources folder using Photon for networked play
+        GameObject uiInstance = PhotonNetwork.InstantiateRoomObject("UINetwork", Vector3.zero, Quaternion.identity);
 
         // Set a unique name to better organize it in the hierarchy
         uiInstance.name = "UI_Player" + playerID;
 
-        // Optionally, assign the player as a parent or set any player-specific components here
+        // Ensure UI stays intact across scenes if needed
+        DontDestroyOnLoad(uiInstance);
+
+        Debug.Log("UI instantiated for Player " + playerID);
     }
 
 

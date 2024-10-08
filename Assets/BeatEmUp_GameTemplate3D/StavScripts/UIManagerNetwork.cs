@@ -8,8 +8,6 @@ public class UIManagerNetwork : MonoBehaviourPun
     public UIFader UI_fader;
     public UI_Screen[] UIMenus;
 
-    private bool isTransitioning = false; // Prevent double fades or transitions
-
     void Awake()
     {
         DisableAllScreens();
@@ -21,12 +19,7 @@ public class UIManagerNetwork : MonoBehaviourPun
 
     void Update()
     {
-        // Example: Check for Master Client and input to show Retry Screen
-        if (PhotonNetwork.IsMasterClient && Input.GetKeyDown(KeyCode.R) && !isTransitioning)
-        {
-            photonView.RPC("RPC_ShowRetryScreen", RpcTarget.All);
-            isTransitioning = true;
-        }
+
     }
 
     // Show a menu and handle fading (UI fader is managed inside this function)
@@ -87,11 +80,19 @@ public class UIManagerNetwork : MonoBehaviourPun
         }
     }
 
-    // This RPC will be called by the Master Client to show the retry screen on all clients
-    [PunRPC]
-    public void RPC_ShowRetryScreen()
+    // Check if the current scene is gameplay or menu
+    bool IsGameplayScene()
     {
-        ShowMenu("GameOver"); // Replace with the actual name of your retry screen
-        isTransitioning = false; // Reset transition flag after showing the menu
+        string sceneName = SceneManager.GetActiveScene().name;
+        return sceneName != "00_MainMenu"; // Replace with your actual main menu scene name
     }
+
+
+    [System.Serializable]
+    public class UI_Screen
+    {
+        public string UI_Name;
+        public GameObject UI_Gameobject;
+    }
+
 }
