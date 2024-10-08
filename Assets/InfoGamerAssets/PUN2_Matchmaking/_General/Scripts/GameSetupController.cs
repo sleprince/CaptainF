@@ -21,10 +21,41 @@ public class GameSetupController : MonoBehaviour
 
     public GameObject uiPrefab;
 
+    // Prefab names in Resources folder
+    private const string enemyWaveSystemPrefab = "EnemyWaveSystem";
+    private const string itemsPrefab = "Items";
+
+
     void Start()
     {
+
+        // Only the Master Client should instantiate dynamic game elements
+        if (PhotonNetwork.IsMasterClient)
+        {
+            InstantiateDynamicObjects();
+        }
+
         AssignPlayerID();         // Assign correct player ID based on whether the player is Master Client or not
         CreatePlayer(ID);         // Create a networked player object for each player that loads into the multiplayer scene
+
+    }
+
+    private void InstantiateDynamicObjects()
+    {
+        // Instantiate EnemyWaveSystem at Vector3.zero and Quaternion.identity
+        GameObject enemyWaveSystem = PhotonNetwork.InstantiateRoomObject(enemyWaveSystemPrefab, Vector3.zero, Quaternion.identity);
+        enemyWaveSystem.name = "EnemyWaveSystem";
+
+        // Instantiate Items at Vector3.zero and Quaternion.identity
+        GameObject items = PhotonNetwork.InstantiateRoomObject(itemsPrefab, Vector3.zero, Quaternion.identity);
+        items.name = "Items";
+
+        // Set objects to their prefab positions
+        enemyWaveSystem.transform.localPosition = enemyWaveSystem.GetComponent<Transform>().position;
+        enemyWaveSystem.transform.localRotation = enemyWaveSystem.GetComponent<Transform>().rotation;
+
+        items.transform.localPosition = items.GetComponent<Transform>().position;
+        items.transform.localRotation = items.GetComponent<Transform>().rotation;
     }
 
     private void AssignPlayerID()
