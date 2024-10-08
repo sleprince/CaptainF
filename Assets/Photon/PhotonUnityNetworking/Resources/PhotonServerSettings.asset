@@ -41,6 +41,12 @@ MonoBehaviour:
   - RespawnSpaceship
   - StartNewWave
   - RPC_InstantiateEnemy
+  - RPC_OnEnemyDestroyed
+  - RPC_StartWave
+  - RPC_UpdateAreaColliders
+  - RPC_Death
+  - RPC_SetEnemyTactic
+  - RPC_ShowRetryScreen
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

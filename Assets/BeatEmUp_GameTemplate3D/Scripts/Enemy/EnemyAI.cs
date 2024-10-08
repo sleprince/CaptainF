@@ -20,6 +20,16 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
 
         photonView = GetComponent<PhotonView>();
 
+        // Make Rigidbody kinematic on non-Master Clients
+        if (PhotonNetwork.IsConnected && !PhotonNetwork.IsMasterClient)
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+            }
+        }
+
         //add this enemy to the enemylist
         EnemyManager.enemyList.Add(gameObject);
 
@@ -143,7 +153,10 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
         }
         else
         {
-            SetLocalEnemyTactic(tactic);
+			if (!PhotonNetwork.IsConnected)
+			{
+				SetLocalEnemyTactic(tactic);
+			}
         }
     }
 
@@ -176,8 +189,11 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>{
         }
         else
         {
-            // For local play, just call the method directly
-            RPC_Death();
+			// For local play, just call the method directly
+			if (!PhotonNetwork.IsConnected)
+			{
+				RPC_Death();
+			}
         }
     }
 

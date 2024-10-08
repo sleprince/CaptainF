@@ -35,8 +35,11 @@ public class EnemyWaveSystem : MonoBehaviour
 
     void Awake()
     {
-        photonView= GetComponent<PhotonView>();
+
+        photonView = GetComponent<PhotonView>();
         if (enabled) DisableAllEnemies();
+
+
     }
 
     void Start()
@@ -75,7 +78,10 @@ public class EnemyWaveSystem : MonoBehaviour
         }
         else
         {
-            RPC_StartWave(waveIndex);
+            if (!PhotonNetwork.IsConnected)
+            {
+                RPC_StartWave(waveIndex);
+            }
         }
     }
 
@@ -124,7 +130,8 @@ public class EnemyWaveSystem : MonoBehaviour
                 }
             }
         }
-        else
+
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
         {
             // Local play: Simply activate the enemies directly
             foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
@@ -136,7 +143,14 @@ public class EnemyWaveSystem : MonoBehaviour
             }
         }
 
-        Invoke("SetEnemyTactics", 0.1f);
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
+        {
+            Invoke("SetEnemyTactics", 0.1f);
+        }
+
+
+
+        //Invoke("SetEnemyTactics", 0.1f);
     }
 
 
@@ -149,7 +163,10 @@ public class EnemyWaveSystem : MonoBehaviour
         }
         else
         {
-            RPC_UpdateAreaColliders();
+            if (!PhotonNetwork.IsConnected)
+            {
+                RPC_UpdateAreaColliders();
+            }
         }
     }
 
@@ -188,7 +205,10 @@ public class EnemyWaveSystem : MonoBehaviour
         }
         else
         {
-            Local_OnEnemyDestroyed(g);
+            if (!PhotonNetwork.IsConnected)
+            {
+                Local_OnEnemyDestroyed(g);
+            }
         }
     }
 

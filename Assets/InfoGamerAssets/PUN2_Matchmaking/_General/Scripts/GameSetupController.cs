@@ -19,6 +19,8 @@ public class GameSetupController : MonoBehaviour
     // InputManager prefab (added to instantiate it for each player)
     public GameObject inputManagerPrefab;
 
+    public GameObject uiPrefab;
+
     void Start()
     {
         AssignPlayerID();         // Assign correct player ID based on whether the player is Master Client or not
@@ -60,6 +62,11 @@ public class GameSetupController : MonoBehaviour
         if (inputManagerPrefab != null)
         {
             CreateAndAssignInputManager(player, ID);
+        }
+
+        if(uiPrefab != null)
+        {
+            CreateAndAssignUI(player, ID);
         }
     }
 
@@ -119,4 +126,29 @@ public class GameSetupController : MonoBehaviour
             Debug.Log("Assigned PlayerID " + playerID + " to InputManager.");
         }
     }
+
+    private void CreateAndAssignUI(GameObject player, int playerID)
+    {
+        // Find the existing UI object that might have been marked as 'DoNotDestroyOnLoad'
+        GameObject oldUI = GameObject.FindWithTag("UI"); // Ensure the UI object has a specific tag like "UI"
+
+        // Check if the old UI exists and destroy it
+        if (oldUI != null)
+        {
+            Destroy(oldUI);
+        }
+
+        // Instantiate the new UI prefab (ensure the uiPrefab is assigned in the inspector)
+        GameObject uiInstance = Instantiate(uiPrefab);
+
+        // Optionally, set the new UI instance to not be destroyed on load if needed in the next scenes
+        DontDestroyOnLoad(uiInstance);
+
+        // Set a unique name to better organize it in the hierarchy
+        uiInstance.name = "UI_Player" + playerID;
+
+        // Optionally, assign the player as a parent or set any player-specific components here
+    }
+
+
 }
