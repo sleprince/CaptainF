@@ -30,7 +30,7 @@ public class InputManager : MonoBehaviour
     public event InputEventHandler onInputEvent;
 
     [Space(15)]
-    public static bool defendKeyDown;
+    public bool defendKeyDown;
     private bool isRetrying = false;  // To track retry state
 
     public int PlayerID;

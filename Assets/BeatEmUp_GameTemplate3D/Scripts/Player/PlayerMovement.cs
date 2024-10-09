@@ -87,14 +87,6 @@ public class PlayerMovement : MonoBehaviour {
 
     void Start(){
 
-
-
-        //InputManager inputManager = FindObjectOfType<InputManager>();
-       // if (inputManager != null)
-       // {
-       //     inputManager.playerPhotonView = (GetComponent<PhotonView>());
-       // }
-
         StartCoroutine(DelayedInputStart());
 
         //find components

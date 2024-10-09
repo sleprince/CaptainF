@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Photon.Pun;
 
 [RequireComponent (typeof(Rigidbody))]
 [RequireComponent (typeof(UnitState))]
@@ -126,10 +127,13 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 
     void OnEnable()
     {
-        // Find the InputManager instance
-        inputManager = FindObjectsOfType<InputManager>()
-            .FirstOrDefault(im => !im.isNetworkedGame ||
-                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
+        // Start searching for the InputManager with repeated attempts
+        InvokeRepeating("FindLocalPlayerInputManager", 0f, 0.5f);
+
+        if (!PhotonNetwork.InRoom)
+        {
+            inputManager = GameObject.FindObjectOfType<InputManager>();
+        }
 
         if (inputManager != null)
         {
@@ -168,7 +172,7 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 		if(animator) isGrounded = animator.animator.GetBool("isGrounded");
 
 		//update defence state every frame
-		Defend(InputManager.defendKeyDown);
+		Defend(inputManager.defendKeyDown);
 	}
 
 	//physics update
@@ -190,8 +194,49 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 		}
 	}
 
-	//set velocity in next fixed update
-	void SetVelocity(Vector3 velocity){
+    private void FindLocalPlayerInputManager()
+    {
+        if (inputManager != null) return; // Exit if already found
+
+        if (PhotonNetwork.InRoom)
+        {
+            // Only find InputManager if this player's PhotonView is owned by the local player
+            PhotonView photonView = GetComponent<PhotonView>();
+            if (photonView != null && photonView.IsMine)
+            {
+                // Look for InputManager as a child of the player
+                inputManager = GetComponentInChildren<InputManager>();
+                if (inputManager != null)
+                {
+                    AttachInputEvents();
+                    CancelInvoke("FindLocalPlayerInputManager"); // Stop further attempts
+                }
+            }
+        }
+        else
+        {
+            // Local play scenario: Find any InputManager in the scene
+            inputManager = FindObjectOfType<InputManager>();
+            if (inputManager != null)
+            {
+                AttachInputEvents();
+                CancelInvoke("FindLocalPlayerInputManager"); // Stop further attempts
+            }
+        }
+    }
+
+
+    private void AttachInputEvents()
+    {
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+            inputManager.onDirectionInputEvent += OnDirectionInputEvent;
+        }
+    }
+
+    //set velocity in next fixed update
+    void SetVelocity(Vector3 velocity){
 		fixedVelocity = velocity;
 		updateVelocity = true;
 	}
