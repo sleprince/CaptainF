@@ -52,18 +52,17 @@ public class InputManager : MonoBehaviour
 
         SetDefaultInputType();
 
-        // Attempt to find and assign the player's PhotonView if it wasn't set
+        // Directly assign the player's PhotonView from the parent, if it exists
         if (isNetworkedGame && playerPhotonView == null)
         {
-            foreach (GameObject playerObject in GameObject.FindGameObjectsWithTag("Player")) // Assuming your players have the "Player" tag
+            playerPhotonView = GetComponentInParent<PhotonView>();  // Directly find PhotonView in parent
+            if (playerPhotonView != null)
             {
-                PhotonView view = playerObject.GetComponent<PhotonView>();
-                if (view != null && view.Owner == PhotonNetwork.LocalPlayer)
-                {
-                    playerPhotonView = view;
-                    Debug.Log("Player's PhotonView assigned in Start for PlayerID: " + PlayerID);
-                    break;
-                }
+                Debug.Log("Player's PhotonView successfully assigned for PlayerID: " + PlayerID);
+            }
+            else
+            {
+                Debug.LogWarning("PhotonView not found on parent for networked game. Check player object setup.");
             }
         }
     }
@@ -117,6 +116,18 @@ public class InputManager : MonoBehaviour
     // Process input based on input type
     void ProcessInput()
     {
+
+        if (isNetworkedGame)
+        {
+            // Ensure the InputManager is only processing input for the local player's instance
+            string expectedName = "InputManager_Player" + PhotonNetwork.LocalPlayer.ActorNumber;
+            if (gameObject.name != expectedName)
+            {
+                Debug.Log($"[InputManager] Skipping input processing for {gameObject.name}, expected: {expectedName}");
+                return; // Skip input processing for non-local instances
+            }
+        }
+
         if (inputType == INPUTTYPE.TOUCHSCREEN)
         {
             // Switch to keyboard if any keyboard or joypad input is detected

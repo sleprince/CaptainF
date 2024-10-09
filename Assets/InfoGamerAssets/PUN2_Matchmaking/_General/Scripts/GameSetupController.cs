@@ -145,6 +145,9 @@ public class GameSetupController : MonoBehaviour
         // Instantiate InputManager prefab (assuming you have an InputManager prefab in the project)
         GameObject inputManagerInstance = Instantiate(inputManagerPrefab);
 
+        // Set the InputManager instance as a child of the player GameObject
+        inputManagerInstance.transform.SetParent(player.transform);
+
         // Set a unique name to better organize in the hierarchy
         inputManagerInstance.name = "InputManager_Player" + playerID;
 
@@ -154,7 +157,7 @@ public class GameSetupController : MonoBehaviour
         {
             inputManager.PlayerID = playerID; // Assign the player ID or PhotonView ID
             inputManager.playerPhotonView = player.GetComponent<PhotonView>(); // Assign the player's PhotonView
-            Debug.Log("Assigned PlayerID " + playerID + " to InputManager.");
+            Debug.Log("Assigned PlayerID " + playerID + " to InputManager and set as child of player.");
         }
     }
 
