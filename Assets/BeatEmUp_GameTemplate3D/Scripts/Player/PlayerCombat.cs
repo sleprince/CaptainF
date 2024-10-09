@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 [RequireComponent (typeof(Rigidbody))]
 [RequireComponent (typeof(UnitState))]
@@ -119,20 +120,26 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 		UNITSTATE.DEFEND,
 	};
 
-	//---
+    //---
 
-	void OnEnable(){
-		InputManager.onInputEvent += OnInputEvent;
-		InputManager.onDirectionInputEvent += OnDirectionInputEvent;
-	}
+    private InputManager inputManager;
 
-	void OnDisable() {
-		InputManager.onInputEvent -= OnInputEvent;
-		InputManager.onDirectionInputEvent -= OnDirectionInputEvent;
-	}
+    void OnEnable()
+    {
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+            .FirstOrDefault(im => !im.isNetworkedGame ||
+                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
 
-	//awake
-	void Start() {
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+            inputManager.onDirectionInputEvent += OnDirectionInputEvent;
+        }
+    }
+
+    //awake
+    void Start() {
 		animator = GetComponentInChildren<UnitAnimator>();
 		playerState = GetComponent<UnitState>();
 		rb = GetComponent<Rigidbody>();

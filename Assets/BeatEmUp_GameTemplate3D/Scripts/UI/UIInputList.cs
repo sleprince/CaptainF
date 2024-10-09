@@ -1,19 +1,36 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class UIInputList : MonoBehaviour {
 
 	private int maxIconCount = 20; //the max number of icons in the list
 
-	void OnEnable(){
-		InputManager.onInputEvent += OnInputEvent;
-	}
+    private InputManager inputManager;
 
-	void OnDisable(){
-		InputManager.onInputEvent -= OnInputEvent;
-	}
-		
-	void OnInputEvent(string action, BUTTONSTATE buttonState){
+    void OnEnable()
+    {
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+            .FirstOrDefault(im => !im.isNetworkedGame ||
+                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+    }
+
+    void OnDisable()
+    {
+        // Unsubscribe from the events
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
+
+    void OnInputEvent(string action, BUTTONSTATE buttonState){
 		if(buttonState != BUTTONSTATE.PRESS) return; //only respond to button press states
 
 		Sprite icon = Resources.Load<Sprite>("Icons/Icon" + action);

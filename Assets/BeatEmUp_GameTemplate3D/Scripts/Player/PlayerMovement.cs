@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(UnitState))]
@@ -52,19 +53,35 @@ public class PlayerMovement : MonoBehaviour {
 		UNITSTATE.DEFEND,
 	};
 
-	//--
+    //--
 
-	void OnEnable() {
-		InputManager.onInputEvent += OnInputEvent;
-		InputManager.onDirectionInputEvent += OnDirectionInputEvent;
-	}
+    private InputManager inputManager;
 
-	void OnDisable() {
-		InputManager.onInputEvent -= OnInputEvent;
-		InputManager.onDirectionInputEvent -= OnDirectionInputEvent;
-	}
+    void OnEnable()
+    {
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+            .FirstOrDefault(im => !im.isNetworkedGame ||
+                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
 
-	void Start(){
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+            inputManager.onDirectionInputEvent += OnDirectionInputEvent;
+        }
+    }
+
+    void OnDisable()
+    {
+        // Unsubscribe from the events
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+            inputManager.onDirectionInputEvent -= OnDirectionInputEvent;
+        }
+    }
+
+    void Start(){
 
         StartCoroutine(DelayedInputStart());
 

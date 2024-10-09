@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class UIButtonEvents : UISceneLoader, IPointerDownHandler, ISelectHandler, ISubmitHandler {
 
@@ -14,14 +15,26 @@ public class UIButtonEvents : UISceneLoader, IPointerDownHandler, ISelectHandler
 
 	void OnEnable() {
 		menuOpenTime = Time.time;
-		InputManager.onInputEvent += OnInputEvent;
-		if(inputManager == null) inputManager = GameObject.FindObjectOfType<InputManager>();
-		if(selectOnStart) EventSystem.current.SetSelectedGameObject(gameObject);
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+            .FirstOrDefault(im => !im.isNetworkedGame ||
+                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+
+        if (selectOnStart) EventSystem.current.SetSelectedGameObject(gameObject);
 	}
 
 	void OnDisable() {
-		InputManager.onInputEvent -= OnInputEvent;
-	}
+        // Unsubscribe from the events
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
 		
 	void OnInputEvent(string action, BUTTONSTATE buttonState){
 		if(buttonState != BUTTONSTATE.PRESS) return;

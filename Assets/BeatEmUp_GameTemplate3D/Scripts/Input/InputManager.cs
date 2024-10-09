@@ -25,9 +25,9 @@ public class InputManager : MonoBehaviour
 
     // Delegates
     public delegate void DirectionInputEventHandler(Vector2 dir, bool doubleTapActive);
-    public static event DirectionInputEventHandler onDirectionInputEvent;
+    public event DirectionInputEventHandler onDirectionInputEvent;
     public delegate void InputEventHandler(string action, BUTTONSTATE buttonState);
-    public static event InputEventHandler onInputEvent;
+    public event InputEventHandler onInputEvent;
 
     [Space(15)]
     public static bool defendKeyDown;
@@ -44,26 +44,24 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
-        // Determine if this is a networked game or a local game
-        isNetworkedGame = PhotonNetwork.IsConnected;  // Check if Photon is connected
-
-        Debug.Log("InputManager initialized for PlayerID: " + PlayerID);
         SetDefaultInputType();
 
         // Attempt to find and assign the player's PhotonView if it wasn't set
-        if (playerPhotonView == null)
+        if (isNetworkedGame && playerPhotonView == null)
         {
-            GameObject playerObject = GameObject.Find("PhotonPlayer" + PlayerID); // Adjust this to match your player naming convention
-            if (playerObject != null)
+            foreach (GameObject playerObject in GameObject.FindGameObjectsWithTag("Player")) // Assuming your players have the "Player" tag
             {
-                playerPhotonView = playerObject.GetComponent<PhotonView>();
-                if (playerPhotonView != null)
+                PhotonView view = playerObject.GetComponent<PhotonView>();
+                if (view != null && view.Owner == PhotonNetwork.LocalPlayer)
                 {
+                    playerPhotonView = view;
                     Debug.Log("Player's PhotonView assigned in Start for PlayerID: " + PlayerID);
+                    break;
                 }
             }
         }
     }
+
 
     // Set retry flag
     public void SetRetry(bool retrying)
@@ -98,7 +96,7 @@ public class InputManager : MonoBehaviour
         if (isNetworkedGame)
         {
             // Only process input if the playerPhotonView belongs to the local player
-            if (playerPhotonView != null && playerPhotonView.IsMine)
+            if (playerPhotonView.IsMine)
             {
                 ProcessInput();
             }

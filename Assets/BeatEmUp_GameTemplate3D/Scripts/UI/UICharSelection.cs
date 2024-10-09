@@ -1,19 +1,36 @@
 ﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class UICharSelection : UISceneLoader {
 
 	private UICharSelectionPortrait[] portraits;
 
-	void OnEnable(){
-		InputManager.onInputEvent += OnInputEvent;
-	}
+    private InputManager inputManager;
 
-	void OnDisable() {
-		InputManager.onInputEvent += OnInputEvent;
-	}
+    void OnEnable()
+    {
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+            .FirstOrDefault(im => !im.isNetworkedGame ||
+                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
 
-	void Start(){
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+    }
+
+    void OnDisable()
+    {
+        // Unsubscribe from the events
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
+
+    void Start(){
 		
 		//find all character portraits
 		portraits = GetComponentsInChildren<UICharSelectionPortrait>();

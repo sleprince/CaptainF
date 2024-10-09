@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using Photon.Pun; // Add Photon namespace
+using UnityEngine.UI;
+using System;
 
 [RequireComponent(typeof(RectTransform))]
 public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
+
     public RectTransform handle;
     public float radius = 40f;
     public float autoReturnSpeed = 8f;
     private bool returnToStartPos;
     private RectTransform parentRect;
-    private InputManager inputManager;
+    private InputManager inputmanager;
 
     void OnEnable()
     {
@@ -21,19 +23,15 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
 
     void Update()
     {
-        if (inputManager == null)
-        {
-            inputManager = FindObjectOfType<InputManager>();
-        }
+        if (inputmanager == null) inputmanager = GameObject.FindObjectOfType<InputManager>();
 
-        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
-
+        //return to start position
         if (returnToStartPos)
         {
             if (handle.anchoredPosition.magnitude > Mathf.Epsilon)
             {
                 handle.anchoredPosition -= new Vector2(handle.anchoredPosition.x * autoReturnSpeed, handle.anchoredPosition.y * autoReturnSpeed) * Time.deltaTime;
-                inputManager.OnTouchScreenJoystickEvent(Vector2.zero);
+                inputmanager.OnTouchScreenJoystickEvent(Vector2.zero);
             }
             else
             {
@@ -42,34 +40,46 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    //return coordinates
+    public Vector2 Coordinates
     {
-        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
+        get
+        {
+            if (handle.anchoredPosition.magnitude < radius)
+            {
+                return handle.anchoredPosition / radius;
+            }
+            return handle.anchoredPosition.normalized;
+        }
+    }
 
+    //touch down
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+    {
         returnToStartPos = false;
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
+        if (inputmanager != null) inputmanager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
-    public void OnDrag(PointerEventData eventData)
+    //touch drag
+    void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
-
         var handleOffset = GetJoystickOffset(eventData);
         handle.anchoredPosition = handleOffset;
-        inputManager.OnTouchScreenJoystickEvent(handleOffset.normalized);
+        if (inputmanager != null) inputmanager.OnTouchScreenJoystickEvent(handleOffset.normalized);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    //touch up
+    void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
     {
-        if (inputManager == null || !inputManager.playerPhotonView.IsMine) return;
-
         returnToStartPos = true;
     }
 
+    //get offset
     private Vector2 GetJoystickOffset(PointerEventData eventData)
     {
+
         Vector3 globalHandle;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out globalHandle))
         {
@@ -82,7 +92,6 @@ public class UIJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
             handleOffset = handleOffset.normalized * radius;
             handle.anchoredPosition = handleOffset;
         }
-
         return handleOffset;
     }
 }

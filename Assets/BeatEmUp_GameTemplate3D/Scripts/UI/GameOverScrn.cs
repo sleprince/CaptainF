@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class GameOverScrn : UISceneLoader
 {
@@ -13,13 +14,23 @@ public class GameOverScrn : UISceneLoader
     private bool restartInProgress = false;
 
     private InputManager inputManager; // Reference to InputManager
+    
 
-    private void OnEnable()
+
+private void OnEnable()
     {
-        FindInputManager();  // Find the InputManager at the start
 
-        // Subscribe to the static event using the class name instead of an instance
-        InputManager.onInputEvent += OnInputEvent;
+
+
+        // Find the InputManager instance
+        inputManager = FindObjectsOfType<InputManager>()
+                .FirstOrDefault(im => !im.isNetworkedGame ||
+                                      (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
 
         if (subtext != null)
         {
@@ -35,8 +46,11 @@ public class GameOverScrn : UISceneLoader
 
     private void OnDisable()
     {
-        // Unsubscribe from the static event using the class name instead of an instance
-        InputManager.onInputEvent -= OnInputEvent;
+        // Unsubscribe from the events
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
     }
 
     private void OnInputEvent(string action, BUTTONSTATE buttonState)
@@ -101,25 +115,5 @@ public class GameOverScrn : UISceneLoader
         return GlobalGameSettings.currentLevelId == totalNumberOfLevels;
     }
 
-    // Find the InputManager in the scene (networked or local)
-    private void FindInputManager()
-    {
-        // Check if it's a networked game and find the correct InputManager (network mode)
-        if (Photon.Pun.PhotonNetwork.InRoom)
-        {
-            foreach (var input in GameObject.FindObjectsOfType<InputManager>())
-            {
-                if (input.GetComponent<Photon.Pun.PhotonView>()?.IsMine == true)
-                {
-                    inputManager = input;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            // Local play - there should be only one InputManager in the scene
-            inputManager = GameObject.FindObjectOfType<InputManager>();
-        }
-    }
+    
 }
