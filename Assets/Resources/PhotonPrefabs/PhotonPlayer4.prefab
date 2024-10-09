@@ -119,6 +119,9 @@ GameObject:
   - component: {fileID: 114973803696962722}
   - component: {fileID: 114215166796135322}
   - component: {fileID: 114894661200743772}
+  - component: {fileID: 802528395663409963}
+  - component: {fileID: 3399212381209750557}
+  - component: {fileID: 1583151397569870377}
   m_Layer: 9
   m_Name: PhotonPlayer4
   m_TagString: Player
@@ -478,6 +481,63 @@ MonoBehaviour:
   currentDirection: -1
   itemInRange: {fileID: 0}
   targetHit: 0
+--- !u!114 &802528395663409963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443228785723502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  observableSearch: 0
+  ObservedComponents:
+  - {fileID: 3399212381209750557}
+  - {fileID: 1583151397569870377}
+  - {fileID: 4602715471507484820}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &3399212381209750557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443228785723502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &1583151397569870377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443228785723502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &1949648227834144
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,6 +549,7 @@ GameObject:
   - component: {fileID: 4409424734220706}
   - component: {fileID: 95899383307112096}
   - component: {fileID: 114664003058946536}
+  - component: {fileID: 4602715471507484820}
   m_Layer: 0
   m_Name: GFX
   m_TagString: Untagged
@@ -553,6 +614,123 @@ MonoBehaviour:
   HitEffect: {fileID: 115594, guid: efd3011863918584d94591e177fa8d29, type: 3}
   DefendEffect: {fileID: 194486, guid: 103ca3ac1720c8445935db20b30e3305, type: 3}
   animator: {fileID: 0}
+--- !u!114 &4602715471507484820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1949648227834144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 2
+    Name: Jump
+  - Type: 4
+    SynchronizeType: 2
+    Name: JumpKickActive
+  - Type: 9
+    SynchronizeType: 2
+    Name: JumpKick
+  - Type: 9
+    SynchronizeType: 2
+    Name: Punch1
+  - Type: 9
+    SynchronizeType: 2
+    Name: Punch2
+  - Type: 9
+    SynchronizeType: 2
+    Name: Punch3
+  - Type: 4
+    SynchronizeType: 2
+    Name: Defend
+  - Type: 9
+    SynchronizeType: 2
+    Name: Hit1
+  - Type: 9
+    SynchronizeType: 2
+    Name: Hit2
+  - Type: 9
+    SynchronizeType: 2
+    Name: Kick0
+  - Type: 9
+    SynchronizeType: 2
+    Name: Kick1
+  - Type: 9
+    SynchronizeType: 2
+    Name: Kick2
+  - Type: 9
+    SynchronizeType: 2
+    Name: GroundPunch
+  - Type: 9
+    SynchronizeType: 2
+    Name: GroundKick
+  - Type: 9
+    SynchronizeType: 2
+    Name: Pickup
+  - Type: 4
+    SynchronizeType: 2
+    Name: Run
+  - Type: 9
+    SynchronizeType: 2
+    Name: Walk
+  - Type: 9
+    SynchronizeType: 2
+    Name: Idle
+  - Type: 4
+    SynchronizeType: 2
+    Name: JumpInProgress
+  - Type: 4
+    SynchronizeType: 2
+    Name: Falling
+  - Type: 1
+    SynchronizeType: 2
+    Name: MovementSpeed
+  - Type: 4
+    SynchronizeType: 2
+    Name: Death
+  - Type: 9
+    SynchronizeType: 2
+    Name: KnockDown_Up
+  - Type: 9
+    SynchronizeType: 2
+    Name: KnockDown_Down
+  - Type: 9
+    SynchronizeType: 2
+    Name: KnockDown_End
+  - Type: 9
+    SynchronizeType: 2
+    Name: StandUp
+  - Type: 4
+    SynchronizeType: 2
+    Name: isGrounded
+  - Type: 9
+    SynchronizeType: 2
+    Name: JumpUp
+  - Type: 9
+    SynchronizeType: 2
+    Name: ThrowWeapon
+  - Type: 9
+    SynchronizeType: 2
+    Name: FireGun
+  - Type: 9
+    SynchronizeType: 2
+    Name: SwingWeapon
+  - Type: 9
+    SynchronizeType: 2
+    Name: RunningPunch
+  - Type: 9
+    SynchronizeType: 2
+    Name: RunningKick
+  m_SynchronizeLayers:
+  - SynchronizeType: 2
+    LayerIndex: 0
 --- !u!1 &240919373191395424
 GameObject:
   m_ObjectHideFlags: 0
