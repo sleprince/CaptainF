@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(UnitState))]
@@ -59,12 +60,15 @@ public class PlayerMovement : MonoBehaviour {
 
     void OnEnable()
     {
-        // Find the InputManager instance
-        inputManager = FindObjectsOfType<InputManager>()
-            .FirstOrDefault(im => !im.isNetworkedGame ||
-                                  (im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine));
 
-        if (inputManager != null)
+        // Start searching for the InputManager with repeated attempts
+        InvokeRepeating("FindLocalPlayerInputManager", 0f, 0.5f);
+
+		if (!PhotonNetwork.InRoom) {
+			inputManager = GameObject.FindObjectOfType<InputManager>();
+        }
+
+            if (inputManager != null)
         {
             inputManager.onInputEvent += OnInputEvent;
             inputManager.onDirectionInputEvent += OnDirectionInputEvent;
@@ -82,6 +86,14 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void Start(){
+
+
+
+        //InputManager inputManager = FindObjectOfType<InputManager>();
+       // if (inputManager != null)
+       // {
+       //     inputManager.playerPhotonView = (GetComponent<PhotonView>());
+       // }
 
         StartCoroutine(DelayedInputStart());
 
@@ -137,6 +149,54 @@ public class PlayerMovement : MonoBehaviour {
 		//always turn towards the current direction
 		TurnToCurrentDirection();
 	}
+
+    private void FindLocalPlayerInputManager()
+    {
+        if (inputManager != null) return;  // Stop searching if already found
+
+        if (PhotonNetwork.InRoom)
+        {
+            int localPlayerID = PhotonNetwork.LocalPlayer.ActorNumber; // Get the local player's Photon Actor Number
+
+            // Look for the InputManager by the naming convention
+            string inputManagerName = "InputManager_Player" + localPlayerID;
+            GameObject inputManagerObject = GameObject.Find(inputManagerName);
+
+            if (inputManagerObject != null)
+            {
+                inputManager = inputManagerObject.GetComponent<InputManager>();
+
+                inputManager.playerPhotonView = (GetComponent<PhotonView>());
+
+                if (inputManager != null && inputManager.playerPhotonView.IsMine)
+                {
+                    Debug.Log("InputManager found: " + inputManagerName);
+
+                    inputManager.onInputEvent += OnInputEvent;
+                    inputManager.onDirectionInputEvent += OnDirectionInputEvent;
+
+                    CancelInvoke("FindLocalPlayerInputManager"); // Stop searching after it's found
+
+
+                }
+            }
+        }
+        else
+        {
+            // For local play, find the InputManager
+            inputManager = FindObjectOfType<InputManager>();
+            if (inputManager != null)
+            {
+                Debug.Log("InputManager found for local play.");
+                CancelInvoke("FindLocalPlayerInputManager"); // Stop searching after it's found
+            }
+        }
+
+        if (inputManager == null)
+        {
+            Debug.LogError("InputManager not found.");
+        }
+    }
 
     private IEnumerator DelayedInputStart()
     {

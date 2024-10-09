@@ -44,6 +44,12 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
+
+        // Determine if this is a networked game or a local game
+        isNetworkedGame = PhotonNetwork.IsConnected;  // Check if Photon is connected
+
+        Debug.Log("InputManager initialized for PlayerID: " + PlayerID);
+
         SetDefaultInputType();
 
         // Attempt to find and assign the player's PhotonView if it wasn't set
