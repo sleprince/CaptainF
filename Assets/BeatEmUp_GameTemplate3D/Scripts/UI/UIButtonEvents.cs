@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
 public class UIButtonEvents : UISceneLoader, IPointerDownHandler, ISelectHandler, ISubmitHandler {
 
@@ -12,18 +13,53 @@ public class UIButtonEvents : UISceneLoader, IPointerDownHandler, ISelectHandler
 	[HideInInspector]
 	public float menuOpenTime;
 
-	void OnEnable() {
-		menuOpenTime = Time.time;
-		InputManager.onInputEvent += OnInputEvent;
-		if(inputManager == null) inputManager = GameObject.FindObjectOfType<InputManager>();
-		if(selectOnStart) EventSystem.current.SetSelectedGameObject(gameObject);
-	}
+    void OnEnable()
+    {
+        menuOpenTime = Time.time;
 
-	void OnDisable() {
-		InputManager.onInputEvent -= OnInputEvent;
-	}
-		
-	void OnInputEvent(string action, BUTTONSTATE buttonState){
+        // Check if the game is connected to the network
+        if (PhotonNetwork.IsConnected)
+        {
+            // Networked setup: look for InputManager as a child of the player
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            // Local setup: find InputManager anywhere in the scene
+            inputManager = FindObjectOfType<InputManager>();
+        }
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+
+        if (selectOnStart)
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+    }
+
+    void OnDisable()
+    {
+        // Use the same conditional logic to remove the event listener correctly
+        if (PhotonNetwork.IsConnected)
+        {
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            inputManager = FindObjectOfType<InputManager>();
+        }
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
+
+
+    void OnInputEvent(string action, BUTTONSTATE buttonState){
 		if(buttonState != BUTTONSTATE.PRESS) return;
 		
 		//only apply the following actions if this UI gameobject is currently selected

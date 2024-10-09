@@ -15,7 +15,28 @@ public class GameOverScrn : UISceneLoader
 
     private void OnEnable()
     {
+<<<<<<< Updated upstream
         InputManager.onInputEvent += OnInputEvent;
+=======
+        FindInputManager();  // Find the InputManager at the start
+
+        // Check if the game is connected to the network
+        if (Photon.Pun.PhotonNetwork.IsConnected)
+        {
+            // Networked setup: look for InputManager as a child of the player
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            // Local setup: find InputManager anywhere in the scene
+            inputManager = FindObjectOfType<InputManager>();
+        }
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+>>>>>>> Stashed changes
 
         if (subtext != null)
         {
@@ -31,7 +52,14 @@ public class GameOverScrn : UISceneLoader
 
     private void OnDisable()
     {
+<<<<<<< Updated upstream
         InputManager.onInputEvent -= OnInputEvent;
+=======
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+>>>>>>> Stashed changes
     }
 
     private void OnInputEvent(string action, BUTTONSTATE buttonState)

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(UnitState))]
@@ -52,19 +53,53 @@ public class PlayerMovement : MonoBehaviour {
 		UNITSTATE.DEFEND,
 	};
 
-	//--
+    //--
 
-	void OnEnable() {
-		InputManager.onInputEvent += OnInputEvent;
-		InputManager.onDirectionInputEvent += OnDirectionInputEvent;
-	}
+    void OnEnable()
+    {
+        InputManager inputManager;
 
-	void OnDisable() {
-		InputManager.onInputEvent -= OnInputEvent;
-		InputManager.onDirectionInputEvent -= OnDirectionInputEvent;
-	}
+        // Check if the game is connected to the network
+        if (PhotonNetwork.IsConnected)
+        {
+            // Use the networked approach: look for InputManager as a child of the player
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            // Use the local approach: find InputManager anywhere in the scene
+            inputManager = FindObjectOfType<InputManager>();
+        }
 
-	void Start(){
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+            inputManager.onDirectionInputEvent += OnDirectionInputEvent;
+        }
+
+    }
+
+    void OnDisable()
+    {
+        InputManager inputManager;
+
+        if (PhotonNetwork.IsConnected)
+        {
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            inputManager = FindObjectOfType<InputManager>();
+        }
+
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+            inputManager.onDirectionInputEvent -= OnDirectionInputEvent;
+        }
+    }
+
+    void Start(){
 
 		//find components
 		if(!animator) animator = GetComponentInChildren<UnitAnimator>();

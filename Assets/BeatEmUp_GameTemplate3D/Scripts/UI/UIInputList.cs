@@ -1,19 +1,41 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+
 public class UIInputList : MonoBehaviour {
 
 	private int maxIconCount = 20; //the max number of icons in the list
+    private InputManager inputManager;
 
-	void OnEnable(){
-		InputManager.onInputEvent += OnInputEvent;
-	}
+    void OnEnable()
+    {
+        // Check if the game is connected to the network
+        if (Photon.Pun.PhotonNetwork.IsConnected)
+        {
+            // Networked setup: look for InputManager as a child of the player
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            // Local setup: find InputManager anywhere in the scene
+            inputManager = FindObjectOfType<InputManager>();
+        }
 
-	void OnDisable(){
-		InputManager.onInputEvent -= OnInputEvent;
-	}
-		
-	void OnInputEvent(string action, BUTTONSTATE buttonState){
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
+
+    void OnInputEvent(string action, BUTTONSTATE buttonState){
 		if(buttonState != BUTTONSTATE.PRESS) return; //only respond to button press states
 
 		Sprite icon = Resources.Load<Sprite>("Icons/Icon" + action);

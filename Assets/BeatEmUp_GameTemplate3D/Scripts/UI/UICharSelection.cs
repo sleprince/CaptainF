@@ -4,16 +4,37 @@ using UnityEngine;
 public class UICharSelection : UISceneLoader {
 
 	private UICharSelectionPortrait[] portraits;
+    private InputManager inputManager;
 
-	void OnEnable(){
-		InputManager.onInputEvent += OnInputEvent;
-	}
+    void OnEnable()
+    {
+        // Check if the game is connected to the network
+        if (Photon.Pun.PhotonNetwork.IsConnected)
+        {
+            // Networked setup: look for InputManager as a child of the player
+            inputManager = GetComponentInChildren<InputManager>();
+        }
+        else
+        {
+            // Local setup: find InputManager anywhere in the scene
+            inputManager = FindObjectOfType<InputManager>();
+        }
 
-	void OnDisable() {
-		InputManager.onInputEvent += OnInputEvent;
-	}
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent += OnInputEvent;
+        }
+    }
 
-	void Start(){
+    void OnDisable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.onInputEvent -= OnInputEvent;
+        }
+    }
+
+    void Start(){
 		
 		//find all character portraits
 		portraits = GetComponentsInChildren<UICharSelectionPortrait>();

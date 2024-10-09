@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -21,9 +22,9 @@ public class InputManager : MonoBehaviour
 
     // Delegates
     public delegate void DirectionInputEventHandler(Vector2 dir, bool doubleTapActive);
-    public static event DirectionInputEventHandler onDirectionInputEvent;
+    public event DirectionInputEventHandler onDirectionInputEvent;
     public delegate void InputEventHandler(string action, BUTTONSTATE buttonState);
-    public static event InputEventHandler onInputEvent;
+    public event InputEventHandler onInputEvent;
 
     [Space(15)]
     public static bool defendKeyDown;
@@ -46,6 +47,24 @@ public class InputManager : MonoBehaviour
     void Start()
     {
         SetDefaultInputType();
+<<<<<<< Updated upstream
+=======
+
+        // Attempt to find and assign the player's PhotonView if it wasn't set
+        if (isNetworkedGame && playerPhotonView == null)
+        {
+            foreach (GameObject playerObject in GameObject.FindGameObjectsWithTag("Player")) // Assuming your players have the "Player" tag
+            {
+                PhotonView view = playerObject.GetComponent<PhotonView>();
+                if (view != null && view.Owner == PhotonNetwork.LocalPlayer)
+                {
+                    playerPhotonView = view;
+                    Debug.Log("Player's PhotonView assigned in Start for PlayerID: " + PlayerID);
+                    break;
+                }
+            }
+        }
+>>>>>>> Stashed changes
     }
 
     // Set retry flag
@@ -80,7 +99,20 @@ public class InputManager : MonoBehaviour
     {
         if (onDirectionInputEvent != null)
         {
+<<<<<<< Updated upstream
             onDirectionInputEvent(dir, doubleTapActive);
+=======
+            // Only process input if the playerPhotonView belongs to the local player
+            if (playerPhotonView.IsMine)
+            {
+                ProcessInput();
+            }
+        }
+        else
+        {
+            // Local play
+            ProcessInput();
+>>>>>>> Stashed changes
         }
     }
 
@@ -107,14 +139,28 @@ public class InputManager : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
+=======
+
+
+    // Handle keyboard input
+    // Handle keyboard input
+>>>>>>> Stashed changes
     void KeyboardControls()
     {
         float x = 0;
         float y = 0;
         bool doubleTapState = false;
 
+        // Exit early if this is a networked game and the local player doesn't own this object
+        if (isNetworkedGame && (playerPhotonView == null || !playerPhotonView.IsMine))
+        {
+            return;
+        }
+
         foreach (InputControl inputControl in keyBoardControls)
         {
+<<<<<<< Updated upstream
             if (onInputEvent == null) return;
 
             // On keyboard key down
@@ -123,16 +169,30 @@ public class InputManager : MonoBehaviour
                 doubleTapState = DetectDoubleTap(inputControl.Action);
                 Debug.Log($"Key Down: {inputControl.Action} (Key: {inputControl.key})");  // Debug for all key presses
                 onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
+=======
+            // Key down event
+            if (Input.GetKeyDown(inputControl.key))
+            {
+                doubleTapState = DetectDoubleTap(inputControl.Action);
+                onInputEvent?.Invoke(inputControl.Action, BUTTONSTATE.PRESS);
+>>>>>>> Stashed changes
             }
 
             // On keyboard key up
             if (Input.GetKeyUp(inputControl.key))
             {
+<<<<<<< Updated upstream
                 Debug.Log($"Key Up: {inputControl.Action} (Key: {inputControl.key})");  // Debug for key releases
                 onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
             }
 
             // Convert keyboard direction keys to x, y values
+=======
+                onInputEvent?.Invoke(inputControl.Action, BUTTONSTATE.RELEASE);
+            }
+
+            // Handle directional movement input
+>>>>>>> Stashed changes
             if (Input.GetKey(inputControl.key))
             {
                 if (inputControl.Action == "Left") x = -1f;
@@ -141,11 +201,12 @@ public class InputManager : MonoBehaviour
                 else if (inputControl.Action == "Down") y = -1;
             }
 
-            // Defend key exception (checks the defend state every frame)
+            // Special handling for Defend key (continuous check every frame)
             if (inputControl.Action == "Defend")
             {
                 Debug.Log($"Defend Key Pressed: {Input.GetKey(inputControl.key)}");  // Debug to check Defend key detection
                 defendKeyDown = Input.GetKey(inputControl.key);
+<<<<<<< Updated upstream
                 Debug.Log($"Defend state: {(defendKeyDown ? "Pressed" : "Released")}");
                 onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
             }
@@ -153,6 +214,21 @@ public class InputManager : MonoBehaviour
 
         // Send a direction event
         DirectionEvent(new Vector2(x, y), doubleTapState);
+=======
+                onInputEvent?.Invoke(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
+            }
+        }
+
+        // Send directional input to instance-based direction input event handler
+        onDirectionInputEvent?.Invoke(new Vector2(x, y), doubleTapState);
+    
+
+        // Send a direction event
+        if (isNetworkedGame && (playerPhotonView != null && playerPhotonView.IsMine))
+        {
+            onDirectionInputEvent?.Invoke(new Vector2(x, y), doubleTapState);
+        }
+>>>>>>> Stashed changes
     }
 
     void JoyPadControls()
@@ -163,20 +239,39 @@ public class InputManager : MonoBehaviour
         foreach (InputControl inputControl in joypadControls)
         {
             if (Input.GetKeyDown(inputControl.key))
-                onInputEvent(inputControl.Action, BUTTONSTATE.PRESS);
+                onInputEvent?.Invoke(inputControl.Action, BUTTONSTATE.PRESS);
 
             // On joypad button release
             if (Input.GetKeyUp(inputControl.key))
-                onInputEvent(inputControl.Action, BUTTONSTATE.RELEASE);
+                onInputEvent?.Invoke(inputControl.Action, BUTTONSTATE.RELEASE);
 
+<<<<<<< Updated upstream
             // Defend key exception (checks the defend state every frame)
+=======
+>>>>>>> Stashed changes
             if (inputControl.Action == "Defend")
             {
                 defendKeyDown = Input.GetKey(inputControl.key);
-                onInputEvent(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
+                onInputEvent?.Invoke(inputControl.Action, Input.GetKey(inputControl.key) ? BUTTONSTATE.PRESS : BUTTONSTATE.RELEASE);
             }
+
+
+            float x = Input.GetAxis("Joypad Left-Right");
+            float y = Input.GetAxis("Joypad Up-Down");
+
+            // Check if the joystick is neutral
+            if (Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f)
+            {
+                onDirectionInputEvent?.Invoke(new Vector2(x, y).normalized, false);
+            }
+            else
+            {
+                onDirectionInputEvent?.Invoke(Vector2.zero, false); // Stop movement when joystick is neutral
+            }
+
         }
 
+<<<<<<< Updated upstream
         // Get Joypad direction axis
         float x = Input.GetAxis("Joypad Left-Right");
         float y = Input.GetAxis("Joypad Up-Down");
@@ -186,7 +281,10 @@ public class InputManager : MonoBehaviour
         {
             DirectionEvent(new Vector2(x, y).normalized, false);
         }
+=======
+>>>>>>> Stashed changes
     }
+    
 
     // Detects if any keyboard input was pressed
     public bool DetectKeyboardInput()

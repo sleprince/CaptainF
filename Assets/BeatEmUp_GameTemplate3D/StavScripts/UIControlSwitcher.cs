@@ -1,5 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+<<<<<<< Updated upstream
+=======
+using Photon.Pun;
+using System.Collections;
+using System.Linq;
+>>>>>>> Stashed changes
 
 public class UIControlSwitcher : MonoBehaviour
 {
@@ -13,11 +19,23 @@ public class UIControlSwitcher : MonoBehaviour
 
     void Start()
     {
+<<<<<<< Updated upstream
         inputManager = FindObjectOfType<InputManager>();
 
         if (inputManager == null)
         {
             Debug.LogError("InputManager not found.");
+=======
+        if (PhotonNetwork.IsConnected)
+        {
+            //inputManager = FindObjectsOfType<InputManager>().FirstOrDefault(im => im.isNetworkedGame && im.playerPhotonView != null && im.playerPhotonView.IsMine);
+            InvokeRepeating("FindLocalPlayerInputManager", 0f, 0.5f);
+        }
+        else
+        {
+            // Start searching for the InputManager with repeated attempts
+            InvokeRepeating("FindLocalPlayerInputManager", 0f, 0.5f);
+>>>>>>> Stashed changes
         }
 
         if (touchscreenButton != null)

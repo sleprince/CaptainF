@@ -62,7 +62,11 @@ Material:
     - _Overlay:
         m_Texture: {fileID: 2800000, guid: 011ec17467369d64e99e0400193d7936, type: 3}
         m_Scale: {x: 1, y: 1}
+<<<<<<< Updated upstream
         m_Offset: {x: 3.6641288, y: -3.6641288}
+=======
+        m_Offset: {x: 0.61052483, y: -0.61052483}
+>>>>>>> Stashed changes
     - _ParallaxMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
