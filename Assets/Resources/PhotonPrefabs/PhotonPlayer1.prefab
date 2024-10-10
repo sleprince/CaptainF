@@ -124,7 +124,7 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Jump
   - Type: 4
     SynchronizeType: 1
@@ -169,43 +169,43 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: Pickup
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Run
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Walk
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Idle
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: JumpInProgress
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Falling
   - Type: 1
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: MovementSpeed
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Death
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: KnockDown_Up
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: KnockDown_Down
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: KnockDown_End
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: StandUp
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: isGrounded
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: JumpUp
   - Type: 9
     SynchronizeType: 1
@@ -223,7 +223,7 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: RunningKick
   m_SynchronizeLayers:
-  - SynchronizeType: 1
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!1 &396858467249908687
 GameObject:

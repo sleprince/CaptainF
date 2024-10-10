@@ -949,46 +949,46 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: Jump
   - Type: 4
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: JumpKickActive
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: JumpKick
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Punch1
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Punch2
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Punch3
   - Type: 4
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Defend
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Hit1
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Hit2
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Kick0
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Kick1
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Kick2
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: GroundPunch
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: GroundKick
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Pickup
   - Type: 4
     SynchronizeType: 2
@@ -1030,19 +1030,19 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: JumpUp
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: ThrowWeapon
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: FireGun
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: SwingWeapon
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: RunningPunch
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: RunningKick
   m_SynchronizeLayers:
   - SynchronizeType: 2

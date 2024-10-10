@@ -93,46 +93,12 @@ public class EnemyWaveSystem : MonoBehaviour
         HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
         if (hp != null) hp.DeActivateHandPointer();
 
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        // Activate the enemies in the current wave
+        foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
         {
-            for (int i = 0; i < EnemyWaves[currentWave].EnemyList.Count; i++)
+            if (enemy != null)
             {
-                GameObject enemy = EnemyWaves[currentWave].EnemyList[i];
-                if (enemy != null)
-                {
-                    Vector3 spawnPosition = enemy.transform.position;
-                    Quaternion spawnRotation = enemy.transform.rotation;
-
-                    // Instantiate enemy via Photon for networked play
-                    GameObject instantiatedEnemy = PhotonNetwork.InstantiateRoomObject("Enemy", spawnPosition, spawnRotation);
-
-                    if (instantiatedEnemy != null)
-                    {
-                        // Set the instantiated enemy's name to match the original GameObject name
-                        instantiatedEnemy.name = enemy.name;
-
-                        // Replace the original enemy in the EnemyList with the instantiated one
-                        EnemyWaves[currentWave].EnemyList[i] = instantiatedEnemy;
-
-                        // Set the parent as needed for organization
-                        instantiatedEnemy.transform.SetParent(enemy.transform.parent);
-                    }
-                    else
-                    {
-                        Debug.LogError("Failed to instantiate enemy prefab. Make sure it exists in the Resources folder.");
-                    }
-                }
-            }
-        }
-        else
-        {
-            // Local play: Simply activate the enemies directly
-            foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
-            {
-                if (enemy != null)
-                {
-                    enemy.SetActive(true);
-                }
+                enemy.SetActive(true); // Activate enemy instead of instantiating
             }
         }
 
@@ -196,6 +162,11 @@ public class EnemyWaveSystem : MonoBehaviour
     void RPC_OnEnemyDestroyed(int viewID)
     {
         GameObject g = PhotonView.Find(viewID).gameObject;
+        if (g != null)
+        {
+            g.SetActive(false);  // Deactivate the enemy instead of destroying it
+        }
+
         if (EnemyWaves.Length > currentWave)
         {
             EnemyWaves[currentWave].RemoveEnemyFromWave(g);
