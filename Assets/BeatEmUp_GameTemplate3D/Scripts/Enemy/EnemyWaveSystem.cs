@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 using Photon.Pun;
 using System.Collections;
 using UnityEngine.SceneManagement;
@@ -19,6 +19,8 @@ public class EnemyWaveSystem : MonoBehaviour
     public bool loadNewLevel;
     public string levelName;
 
+    private PhotonView photonView;
+
     private GameObject[] playerPrefabs; // Store the player prefabs as targets
 
     void OnEnable()
@@ -33,11 +35,14 @@ public class EnemyWaveSystem : MonoBehaviour
 
     void Awake()
     {
+        photonView= GetComponent<PhotonView>();
         if (enabled) DisableAllEnemies();
     }
 
     void Start()
     {
+
+
         currentWave = 0;
         UpdateAreaColliders();
         StartNewWave();
@@ -62,23 +67,95 @@ public class EnemyWaveSystem : MonoBehaviour
         }
     }
 
-    // Start a new enemy wave
-    public void StartNewWave()
+    public void StartNewWave(int waveIndex = -1)
     {
-        // Hide UI hand pointer
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_StartWave", RpcTarget.AllBuffered, waveIndex);
+        }
+        else
+        {
+            RPC_StartWave(waveIndex);
+        }
+    }
+
+
+
+    // Start a new enemy wave RPC
+    [PunRPC]
+    private void RPC_StartWave(int waveIndex)
+    {
+        if (waveIndex >= 0)
+        {
+            currentWave = waveIndex;
+        }
+
         HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
         if (hp != null) hp.DeActivateHandPointer();
 
-        // Activate enemies in the current wave after passing through the collider
-        foreach (GameObject g in EnemyWaves[currentWave].EnemyList)
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            if (g != null) g.SetActive(true);
+            for (int i = 0; i < EnemyWaves[currentWave].EnemyList.Count; i++)
+            {
+                GameObject enemy = EnemyWaves[currentWave].EnemyList[i];
+                if (enemy != null)
+                {
+                    Vector3 spawnPosition = enemy.transform.position;
+                    Quaternion spawnRotation = enemy.transform.rotation;
+
+                    // Instantiate enemy via Photon for networked play
+                    GameObject instantiatedEnemy = PhotonNetwork.InstantiateRoomObject("Enemy", spawnPosition, spawnRotation);
+
+                    if (instantiatedEnemy != null)
+                    {
+                        // Set the instantiated enemy's name to match the original GameObject name
+                        instantiatedEnemy.name = enemy.name;
+
+                        // Replace the original enemy in the EnemyList with the instantiated one
+                        EnemyWaves[currentWave].EnemyList[i] = instantiatedEnemy;
+
+                        // Set the parent as needed for organization
+                        instantiatedEnemy.transform.SetParent(enemy.transform.parent);
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to instantiate enemy prefab. Make sure it exists in the Resources folder.");
+                    }
+                }
+            }
         }
-        Invoke("SetEnemyTactics", .1f);
+        else
+        {
+            // Local play: Simply activate the enemies directly
+            foreach (GameObject enemy in EnemyWaves[currentWave].EnemyList)
+            {
+                if (enemy != null)
+                {
+                    enemy.SetActive(true);
+                }
+            }
+        }
+
+        Invoke("SetEnemyTactics", 0.1f);
     }
 
-    // Update Area Colliders
+
+    // Call this method wherever you update area colliders
     void UpdateAreaColliders()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_UpdateAreaColliders", RpcTarget.AllBuffered);
+        }
+        else
+        {
+            RPC_UpdateAreaColliders();
+        }
+    }
+
+    // Update Area Colliders RPC
+    [PunRPC]
+    private void RPC_UpdateAreaColliders()
     {
         if (currentWave > 0)
         {
@@ -101,8 +178,51 @@ public class EnemyWaveSystem : MonoBehaviour
         if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
     }
 
-    // When an enemy is destroyed
+
     void onUnitDestroy(GameObject g)
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            int viewID = g.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("RPC_OnEnemyDestroyed", RpcTarget.AllBuffered, viewID);
+        }
+        else
+        {
+            Local_OnEnemyDestroyed(g);
+        }
+    }
+
+    [PunRPC]
+    void RPC_OnEnemyDestroyed(int viewID)
+    {
+        GameObject g = PhotonView.Find(viewID).gameObject;
+        if (EnemyWaves.Length > currentWave)
+        {
+            EnemyWaves[currentWave].RemoveEnemyFromWave(g);
+            if (EnemyWaves[currentWave].waveComplete())
+            {
+                currentWave += 1;
+
+                // Only show hand pointer if there are more waves
+                if (!allWavesCompleted())
+                {
+                    HandPointer hp = GameObject.FindObjectOfType<HandPointer>();
+                    if (hp != null) hp.ActivateHandPointer();
+
+                    UpdateAreaColliders();
+                }
+                else
+                {
+                    StartCoroutine(LevelComplete());
+                }
+            }
+        }
+    }
+
+
+
+    // When an enemy is destroyed Local
+    void Local_OnEnemyDestroyed(GameObject g)
     {
         if (EnemyWaves.Length > currentWave)
         {
