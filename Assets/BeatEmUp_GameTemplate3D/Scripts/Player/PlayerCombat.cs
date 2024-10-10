@@ -171,9 +171,17 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 		//the player is colliding with the ground
 		if(animator) isGrounded = animator.animator.GetBool("isGrounded");
 
-		//update defence state every frame
-		Defend(inputManager.defendKeyDown);
-	}
+        if (inputManager != null)
+        {
+            // Update defence state every frame
+            Defend(inputManager.defendKeyDown);
+        }
+        else
+        {
+            // Attempt to find the InputManager if it hasn’t been assigned yet
+            FindLocalPlayerInputManager(); //
+        }
+    }
 
 	//physics update
 	void FixedUpdate(){

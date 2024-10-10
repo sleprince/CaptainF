@@ -140,16 +140,23 @@ public class EnemyWaveSystem : MonoBehaviour
             EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
         }
 
-        // Find all cameras in the scene
-        Camera[] allCameras = FindObjectsOfType<Camera>();
+        CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
+        if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
 
-        foreach (Camera cam in allCameras)
+
+        if (PhotonNetwork.IsConnected)
         {
-            // Ensure each camera updates its CurrentAreaCollider
-            PhotonView camPhotonView = cam.GetComponent<PhotonView>();
-            if (camPhotonView != null)
+            // Find all cameras in the scene
+            Camera[] allCameras = FindObjectsOfType<Camera>();
+
+            foreach (Camera cam in allCameras)
             {
-                camPhotonView.RPC("RPC_UpdateCameraCollider", RpcTarget.AllBuffered, currentWave);
+                // Ensure each camera updates its CurrentAreaCollider
+                PhotonView camPhotonView = cam.GetComponent<PhotonView>();
+                if (camPhotonView != null)
+                {
+                    camPhotonView.RPC("RPC_UpdateCameraCollider", RpcTarget.AllBuffered, currentWave);
+                }
             }
         }
     }
@@ -172,10 +179,11 @@ public class EnemyWaveSystem : MonoBehaviour
     void RPC_OnEnemyDestroyed(int viewID)
     {
         GameObject g = PhotonView.Find(viewID).gameObject;
-        if (g != null)
+       /* if (g != null)
         {
             g.SetActive(false);  // Deactivate the enemy instead of destroying it
         }
+       */
 
         if (EnemyWaves.Length > currentWave)
         {
