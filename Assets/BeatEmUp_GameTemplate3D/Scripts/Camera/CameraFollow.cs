@@ -158,6 +158,22 @@ public class CameraFollow : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void RPC_UpdateCameraCollider(int waveIndex)
+    {
+        // Find the EnemyWaveSystem
+        EnemyWaveSystem enemyWaveSystem = FindObjectOfType<EnemyWaveSystem>();
+
+        // Check if enemyWaveSystem and waveIndex are valid
+        if (enemyWaveSystem != null && waveIndex >= 0 && waveIndex < enemyWaveSystem.EnemyWaves.Length)
+        {
+            // Update the CurrentAreaCollider based on the wave index
+            CurrentAreaCollider = enemyWaveSystem.EnemyWaves[waveIndex].AreaCollider;
+            UseWaveAreaCollider = (CurrentAreaCollider != null);
+        }
+    }
+
+
     // Finds and assigns the EnemyWaveSystem's current wave collider to the camera
     void FindAndAssignEnemyWaveSystem()
     {

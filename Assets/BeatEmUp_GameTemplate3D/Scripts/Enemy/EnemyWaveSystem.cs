@@ -140,8 +140,18 @@ public class EnemyWaveSystem : MonoBehaviour
             EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
         }
 
-        CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
-        if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
+        // Find all cameras in the scene
+        Camera[] allCameras = FindObjectsOfType<Camera>();
+
+        foreach (Camera cam in allCameras)
+        {
+            // Ensure each camera updates its CurrentAreaCollider
+            PhotonView camPhotonView = cam.GetComponent<PhotonView>();
+            if (camPhotonView != null)
+            {
+                camPhotonView.RPC("RPC_UpdateCameraCollider", RpcTarget.AllBuffered, currentWave);
+            }
+        }
     }
 
 
