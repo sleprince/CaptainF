@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Photon.Pun;
 
 [RequireComponent (typeof(Animator))]
 public class UnitAnimator : MonoBehaviour {
@@ -23,13 +24,30 @@ public class UnitAnimator : MonoBehaviour {
 		currentDirection = DIRECTION.Right;
 	}
 
-	//play an animation
-	public void SetAnimatorTrigger(string triggerName) {
-		animator.SetTrigger(triggerName);
-	}
+    //play an animation
+    [PunRPC]
+    public void SetAnimatorTriggerRPC(string triggerName)
+    {
+        animator.SetTrigger(triggerName);
+    }
 
-	//sets a bool in the animator
-	public void SetAnimatorBool(string name, bool state){
+    // Modified SetAnimatorTrigger method to include the RPC call
+    public void SetAnimatorTrigger(string triggerName)
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            // Ensure the RPC is only called by the owner or master client if desired
+            GetComponent<PhotonView>().RPC("SetAnimatorTriggerRPC", RpcTarget.All, triggerName);
+        }
+        else
+        {
+            // Local play or single-player mode
+            animator.SetTrigger(triggerName);
+        }
+    }
+
+    //sets a bool in the animator
+    public void SetAnimatorBool(string name, bool state){
 		animator.SetBool(name, state);
 	}
 
