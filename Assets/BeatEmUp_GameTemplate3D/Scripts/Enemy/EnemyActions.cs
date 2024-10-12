@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Photon.Pun;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
@@ -110,12 +111,16 @@ public class EnemyActions : MonoBehaviour {
 	//global event Handler for destroying units
 	public static event UnitEventHandler OnUnitDestroy;
 
-	//---
+    private PhotonView photonView;
 
-	public void OnStart(){
+    //---
 
-		//assign a name to this enemy
-		if(pickARandomName) enemyName = GetRandomName();
+    public void OnStart(){
+
+        photonView = GetComponent<PhotonView>();
+
+        //assign a name to this enemy
+        if (pickARandomName) enemyName = GetRandomName();
 
 		//set player as target
 		if(target == null) target = GameObject.FindGameObjectWithTag("Player");
@@ -249,12 +254,24 @@ public class EnemyActions : MonoBehaviour {
 					cmd.StartSlowMotionDelay(.2f);
 			}
 
-			//substract health
-			HealthSystem healthSystem = GetComponent<HealthSystem>();
-			if(healthSystem != null) {
-				healthSystem.SubstractHealth(d.damage);
-				if(healthSystem.CurrentHp == 0)
-					return;
+
+            if (PhotonNetwork.IsConnected)
+            {
+                photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, d.damage);
+            }
+            else
+            {
+
+                //substract health
+                HealthSystem healthSystem = GetComponent<HealthSystem>();
+                if (healthSystem != null)
+                {
+                    healthSystem.SubstractHealth(d.damage);
+                    if (healthSystem.CurrentHp == 0)
+                        return;
+
+                }
+           
 			}
 
 			//ground attack
@@ -296,8 +313,23 @@ public class EnemyActions : MonoBehaviour {
 		}
 	}
 
-	//Defend
-	void Defend(){
+    [PunRPC]
+    private void RPC_ApplyHealthReduction(int damage)
+	{
+        //substract health
+        HealthSystem healthSystem = GetComponent<HealthSystem>();
+        if (healthSystem != null)
+        {
+            healthSystem.SubstractHealth(damage);
+            if (healthSystem.CurrentHp == 0)
+                return;
+
+        }
+
+    }
+
+    //Defend
+    void Defend(){
 		enemyState = UNITSTATE.DEFEND;
 		animator.ShowDefendEffect();
 		animator.SetAnimatorTrigger ("Defend");
