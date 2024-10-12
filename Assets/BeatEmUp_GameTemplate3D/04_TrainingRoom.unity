@@ -180,7 +180,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &403499393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -856,11 +856,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PhotonCustomMatchmaking
       objectReference: {fileID: 0}
-    - target: {fileID: 7834657013997947737, guid: 60fb79643985068418713f9a1a7fb732,
-        type: 3}
-      propertyPath: multiPlayerSceneIndex
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -883,7 +878,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!102 &1463575044
 TextMesh:
   serializedVersion: 3

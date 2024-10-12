@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 public class HealthSystem : MonoBehaviour {
 
@@ -18,26 +19,59 @@ public class HealthSystem : MonoBehaviour {
 	public delegate void OnHealthChange(float percentage, GameObject GO);
 	public static event OnHealthChange onHealthChange;
 
-	void Start(){
-		SendHealthUpdateEvent();
+    private PhotonView photonView;
+
+    void Start(){
+
+        photonView = GetComponent<PhotonView>();
+
+        SendHealthUpdateEvent();
 	}
+
+
 
 	//substract health
 	public void SubstractHealth(int damage){
-		if(!invulnerable){
 
-			//reduce hp
-			CurrentHp = Mathf.Clamp(CurrentHp -= damage, 0, MaxHp);
-
-			//Health reaches 0
-			if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
+		if (PhotonNetwork.IsConnected)
+		{
+			photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
 		}
+		else
+		{
+			if (!invulnerable)
+			{
 
-		SendHealthUpdateEvent();
+				//reduce hp
+				CurrentHp = Mathf.Clamp(CurrentHp -= damage, 0, MaxHp);
+
+				//Health reaches 0
+				if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
+			}
+
+			SendHealthUpdateEvent();
+		}
 	}
 
-	//add health
-	public void AddHealth(int amount){
+    [PunRPC]
+    private void RPC_ApplyHealthReduction(int damage)
+    {
+        if (!invulnerable)
+        {
+
+            //reduce hp
+            CurrentHp = Mathf.Clamp(CurrentHp -= damage, 0, MaxHp);
+
+            //Health reaches 0
+            if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
+        }
+
+        SendHealthUpdateEvent();
+
+    }
+
+    //add health
+    public void AddHealth(int amount){
 		CurrentHp = Mathf.Clamp(CurrentHp += amount, 0, MaxHp);
 		SendHealthUpdateEvent();
 	}

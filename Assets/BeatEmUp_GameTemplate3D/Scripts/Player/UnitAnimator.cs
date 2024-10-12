@@ -17,8 +17,14 @@ public class UnitAnimator : MonoBehaviour {
 	public Animator animator;
 	private bool isplayer;
 
+	private PhotonView photonView;
+	private Animator photonAnimator;
+
 	//awake
 	void Awake() {
+
+		photonView = GetComponent<PhotonView>();
+
 		if(animator == null) animator = GetComponent<Animator>();
 		isplayer = transform.parent.CompareTag("Player");
 		currentDirection = DIRECTION.Right;
@@ -28,7 +34,9 @@ public class UnitAnimator : MonoBehaviour {
     [PunRPC]
     public void SetAnimatorTriggerRPC(string triggerName)
     {
-        animator.SetTrigger(triggerName);
+		{
+			animator.SetTrigger(triggerName);
+		}
     }
 
     // Modified SetAnimatorTrigger method to include the RPC call
@@ -37,7 +45,7 @@ public class UnitAnimator : MonoBehaviour {
         if (PhotonNetwork.IsConnected)
         {
             // Ensure the RPC is only called by the owner or master client if desired
-            GetComponent<PhotonView>().RPC("SetAnimatorTriggerRPC", RpcTarget.All, triggerName);
+            photonView.RPC("SetAnimatorTriggerRPC", RpcTarget.All, triggerName);
         }
         else
         {

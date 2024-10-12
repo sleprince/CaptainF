@@ -111,13 +111,10 @@ public class EnemyActions : MonoBehaviour {
 	//global event Handler for destroying units
 	public static event UnitEventHandler OnUnitDestroy;
 
-    private PhotonView photonView;
-
     //---
 
     public void OnStart(){
 
-        photonView = GetComponent<PhotonView>();
 
         //assign a name to this enemy
         if (pickARandomName) enemyName = GetRandomName();
@@ -255,12 +252,6 @@ public class EnemyActions : MonoBehaviour {
 			}
 
 
-            if (PhotonNetwork.IsConnected)
-            {
-                photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, d.damage);
-            }
-            else
-            {
 
                 //substract health
                 HealthSystem healthSystem = GetComponent<HealthSystem>();
@@ -272,7 +263,6 @@ public class EnemyActions : MonoBehaviour {
 
                 }
            
-			}
 
 			//ground attack
 			if(enemyState == UNITSTATE.KNOCKDOWNGROUNDED) {
@@ -313,20 +303,6 @@ public class EnemyActions : MonoBehaviour {
 		}
 	}
 
-    [PunRPC]
-    private void RPC_ApplyHealthReduction(int damage)
-	{
-        //substract health
-        HealthSystem healthSystem = GetComponent<HealthSystem>();
-        if (healthSystem != null)
-        {
-            healthSystem.SubstractHealth(damage);
-            if (healthSystem.CurrentHp == 0)
-                return;
-
-        }
-
-    }
 
     //Defend
     void Defend(){

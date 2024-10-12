@@ -426,6 +426,7 @@ GameObject:
   - component: {fileID: 95324496746204870}
   - component: {fileID: 4835711493673616693}
   - component: {fileID: 8536883392888714420}
+  - component: {fileID: 9035844649324948854}
   m_Layer: 0
   m_Name: GFX
   m_TagString: Untagged
@@ -506,24 +507,6 @@ MonoBehaviour:
   ShowLayerWeightsInspector: 1
   ShowParameterInspector: 1
   m_SynchronizeParameters:
-  - Type: 9
-    SynchronizeType: 2
-    Name: Jump
-  - Type: 4
-    SynchronizeType: 2
-    Name: JumpKickActive
-  - Type: 9
-    SynchronizeType: 2
-    Name: JumpKick
-  - Type: 9
-    SynchronizeType: 2
-    Name: Punch1
-  - Type: 9
-    SynchronizeType: 2
-    Name: Punch2
-  - Type: 9
-    SynchronizeType: 2
-    Name: Punch3
   - Type: 4
     SynchronizeType: 1
     Name: Defend
@@ -535,37 +518,10 @@ MonoBehaviour:
     Name: Hit2
   - Type: 9
     SynchronizeType: 2
-    Name: Kick0
-  - Type: 9
-    SynchronizeType: 2
-    Name: Kick1
-  - Type: 9
-    SynchronizeType: 2
-    Name: Kick2
-  - Type: 9
-    SynchronizeType: 2
-    Name: GroundPunch
-  - Type: 9
-    SynchronizeType: 2
-    Name: GroundKick
-  - Type: 9
-    SynchronizeType: 2
-    Name: Pickup
-  - Type: 4
-    SynchronizeType: 2
-    Name: Run
-  - Type: 9
-    SynchronizeType: 2
     Name: Walk
   - Type: 9
     SynchronizeType: 2
     Name: Idle
-  - Type: 4
-    SynchronizeType: 2
-    Name: JumpInProgress
-  - Type: 4
-    SynchronizeType: 2
-    Name: Falling
   - Type: 1
     SynchronizeType: 2
     Name: MovementSpeed
@@ -584,27 +540,6 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 2
     Name: StandUp
-  - Type: 4
-    SynchronizeType: 2
-    Name: isGrounded
-  - Type: 9
-    SynchronizeType: 2
-    Name: JumpUp
-  - Type: 9
-    SynchronizeType: 2
-    Name: ThrowWeapon
-  - Type: 9
-    SynchronizeType: 2
-    Name: FireGun
-  - Type: 9
-    SynchronizeType: 2
-    Name: SwingWeapon
-  - Type: 9
-    SynchronizeType: 2
-    Name: RunningPunch
-  - Type: 9
-    SynchronizeType: 2
-    Name: RunningKick
   - Type: 9
     SynchronizeType: 2
     Name: GroundHit
@@ -626,6 +561,29 @@ MonoBehaviour:
   m_SynchronizeLayers:
   - SynchronizeType: 2
     LayerIndex: 0
+--- !u!114 &9035844649324948854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363018927459058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 1
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 8536883392888714420}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1929304379585312
 GameObject:
   m_ObjectHideFlags: 0

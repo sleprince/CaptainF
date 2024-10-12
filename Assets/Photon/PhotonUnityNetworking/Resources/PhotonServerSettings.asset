@@ -48,6 +48,8 @@ MonoBehaviour:
   - RPC_SetEnemyTactic
   - RPC_ShowRetryScreen
   - RPC_UpdateCameraCollider
+  - SetAnimatorTriggerRPC
+  - RPC_ApplyHealthReduction
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

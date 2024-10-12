@@ -16,7 +16,7 @@ public class CustomMatchmakingLobbyController : MonoBehaviourPunCallbacks
     private InputField playerNameInput; //Input field so player can change their NickName
 
     private string roomName; //string for saving room name
-    private int roomSize; //int for saving room size
+    private int roomSize = 4; //int for saving room size
 
     private List<RoomInfo> roomListings; //list of current rooms
     [SerializeField]
@@ -119,10 +119,13 @@ public class CustomMatchmakingLobbyController : MonoBehaviourPunCallbacks
     {
         roomName = nameIn;
     }
+
+    /*
     public void OnRoomSizeInputChanged(string sizeIn) //input function for changing room size. paired to room size input field
     {
         roomSize = int.Parse(sizeIn);
     }
+    */
 
     public void CreateRoomOnClick() //function paired to the create room button
     {
