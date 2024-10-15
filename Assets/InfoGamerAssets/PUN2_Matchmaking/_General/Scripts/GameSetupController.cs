@@ -96,7 +96,7 @@ public class GameSetupController : MonoBehaviour
             CreateAndAssignInputManager(player, ID);
         }
 
-        //CreateAndAssignUI(player, ID);
+        CreateAndAssignUI(player, ID);
 
     }
 

@@ -13,6 +13,9 @@ public class UIHUDHealthBar : MonoBehaviour
 
     private HealthSystem playerHealthSystem;
 
+
+    private PhotonView photonView;
+
     void OnEnable()
     {
         HealthSystem.onHealthChange += UpdateHealth;
@@ -25,6 +28,8 @@ public class UIHUDHealthBar : MonoBehaviour
 
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
+
         if (!isPlayer) Invoke("HideOnDestroy", Time.deltaTime); // Hide enemy health bar at the start
         if (isPlayer) SetPlayerForHUD();  // Assign the local player for this HUD
     }
@@ -37,16 +42,41 @@ public class UIHUDHealthBar : MonoBehaviour
             HpSlider.value = percentage;
         }
 
-        if (!isPlayer && go.CompareTag("Enemy"))
-        {
-            HpSlider.gameObject.SetActive(true);
-            HpSlider.value = percentage;
-            nameField.text = go.GetComponent<EnemyActions>().enemyName;
-            if (percentage == 0) Invoke("HideOnDestroy", 2);
-        }
+        
+
+
+            if (!isPlayer && go.CompareTag("Enemy"))
+            {
+                HpSlider.gameObject.SetActive(true);
+                HpSlider.value = percentage;
+
+                if (PhotonNetwork.IsConnected)
+                {
+                // Use PhotonView to send the RPC
+                    if (photonView.IsMine)
+                    {
+                        photonView.RPC("UpdateHealthRPC", RpcTarget.AllBuffered, go.GetComponent<EnemyActions>().enemyName.ToString());
+                    }
+                }
+                else
+                {
+                nameField.text = go.GetComponent<EnemyActions>().enemyName;
+                }
+
+                if (percentage == 0) Invoke("HideOnDestroy", 2);
+            }
+        
     }
 
-    void HideOnDestroy()
+    [PunRPC]
+    void UpdateHealthRPC(string gameObjectName)
+    {
+        nameField.text = gameObjectName;
+
+
+    }
+
+        void HideOnDestroy()
     {
         HpSlider.gameObject.SetActive(false);
         nameField.text = "";

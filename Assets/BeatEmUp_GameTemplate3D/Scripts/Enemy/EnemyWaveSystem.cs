@@ -75,7 +75,7 @@ public class EnemyWaveSystem : MonoBehaviour
         }
         else
         {
-            RPC_StartWave(waveIndex);
+            RPC_StartWave(waveIndex); // Local game version
         }
     }
 
@@ -109,7 +109,7 @@ public class EnemyWaveSystem : MonoBehaviour
     // Call this method wherever you update area colliders
     void UpdateAreaColliders()
     {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsConnected)
         {
             photonView.RPC("RPC_UpdateAreaColliders", RpcTarget.AllBuffered);
         }
@@ -140,11 +140,12 @@ public class EnemyWaveSystem : MonoBehaviour
             EnemyWaves[currentWave].AreaCollider.gameObject.SetActive(true);
         }
 
+        //update the CurrentAreaCollider for the camera restriction
         CameraFollow cf = GameObject.FindObjectOfType<CameraFollow>();
         if (cf != null) cf.CurrentAreaCollider = EnemyWaves[currentWave].AreaCollider;
 
 
-        if (PhotonNetwork.IsConnected)
+        /*if (PhotonNetwork.IsConnected)
         {
             // Find all cameras in the scene
             Camera[] allCameras = FindObjectsOfType<Camera>();
@@ -159,6 +160,7 @@ public class EnemyWaveSystem : MonoBehaviour
                 }
             }
         }
+        */
     }
 
 

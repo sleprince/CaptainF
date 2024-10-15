@@ -266,10 +266,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5702628501733981539, guid: 1f55a748b6fe05d4881a8a0761337359,
+    - target: {fileID: 5187910474654696416, guid: 1f55a748b6fe05d4881a8a0761337359,
         type: 3}
-      propertyPath: m_IsActive
-      value: 0
+      propertyPath: sceneViewId
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6265896079415905249, guid: 1f55a748b6fe05d4881a8a0761337359,
         type: 3}
@@ -326,9 +326,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7858223327936737873, guid: 1f55a748b6fe05d4881a8a0761337359,
+    - target: {fileID: 7928384659564390141, guid: 1f55a748b6fe05d4881a8a0761337359,
         type: 3}
-      propertyPath: m_IsActive
+      propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
