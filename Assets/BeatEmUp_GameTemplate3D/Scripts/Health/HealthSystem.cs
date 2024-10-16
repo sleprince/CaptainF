@@ -33,7 +33,7 @@ public class HealthSystem : MonoBehaviour {
 	//substract health
 	public void SubstractHealth(int damage){
 
-		if (PhotonNetwork.IsConnected && this.CompareTag("Player"))
+		if (PhotonNetwork.IsConnected)
 		{
 			photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
 		}
@@ -73,17 +73,32 @@ public class HealthSystem : MonoBehaviour {
         int playerID = GetComponent<PhotonView>().Owner.ActorNumber; // Using PhotonView's ActorNumber as the player ID
         GameObject playerUI = GameObject.Find("UI_Player" + playerID);
 
-        if (playerUI != null)
-        {
-            // Update the health bar on the correct UI instance
-            UIHUDHealthBar healthBar = playerUI.GetComponentInChildren<UIHUDHealthBar>();
-            if (healthBar != null)
+            if (playerUI != null)
             {
-                healthBar.UpdateHealth(healthPercentage, this.gameObject);
+                UIHUDHealthBar healthBar = null;
+
+                // Check if it's a player or enemy, then select the correct health bar
+                if (this.CompareTag("Player"))
+                { 
+                    healthBar = playerUI.GetComponentInChildren<UIHUDHealthBar>();
             }
+                else
+                {
+                // Update the enemy health bar
+                Transform healthBarTransform = playerUI.transform.Find("Canvas/HUD/EnemyHealthBar");
+                healthBar = healthBarTransform.GetComponent<UIHUDHealthBar>();
+                }
+
+                // Update health bar if found
+                if (healthBar != null)
+                {
+                    healthBar.UpdateHealth(healthPercentage, this.gameObject);
+                }
+            }
+
         }
 
-    }
+    
 
     //add health
     public void AddHealth(int amount){

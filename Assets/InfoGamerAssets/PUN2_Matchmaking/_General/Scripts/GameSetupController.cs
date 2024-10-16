@@ -183,7 +183,41 @@ public class GameSetupController : MonoBehaviour
 
         Debug.Log("UI instantiated for Player " + playerID);
 
-        if(uiInstance.name == "UINetwork(Clone)")
+
+        // Find the HUD transform under the UI instance where the health bar should be instantiated
+        Transform hudTransform = uiInstance.transform.Find("Canvas/HUD");
+
+        if (hudTransform == null)
+        {
+            Debug.LogError("HUD Transform not found. Ensure that Canvas and HUD objects are correctly named and nested in the UI prefab.");
+            return;
+        }
+
+        // Instantiate EnemyHealthBar at the world position of the HUD and then set it as a child
+        GameObject healthBarInstance = PhotonNetwork.Instantiate("EnemyHealthBar", hudTransform.position, Quaternion.identity);
+        healthBarInstance.name = "EnemyHealthBar";
+
+        // Set the HUD as the parent and reset local position and scale to align correctly within HUD
+        healthBarInstance.transform.SetParent(hudTransform, false);
+
+        // Use RectTransform for positioning within the Canvas UI system
+        RectTransform healthBarRect = healthBarInstance.GetComponent<RectTransform>();
+
+        // Set anchor to top-right
+        healthBarRect.anchorMin = new Vector2(1, 1);
+        healthBarRect.anchorMax = new Vector2(1, 1);
+
+        // Lock the anchored position to zero to ensure it stays in the top-right
+        healthBarRect.anchoredPosition = Vector2.zero;
+        healthBarRect.localScale = Vector3.one;        // Ensure it has a scale of 1
+        healthBarRect.localRotation = Quaternion.identity; // Reset rotation to default
+
+        // Ensure anchored position is not affected again by subsequent updates
+        healthBarRect.pivot = new Vector2(1, 1); // Keep pivot at top-right if needed
+        healthBarRect.anchoredPosition3D = Vector3.zero; // Locks 3D position to zero as well, in case of other scripts or influences
+
+
+        if (uiInstance.name == "UINetwork(Clone)")
         {
             Destroy(uiInstance);
         }

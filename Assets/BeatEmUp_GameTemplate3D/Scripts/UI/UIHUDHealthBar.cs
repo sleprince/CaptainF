@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;  // Required for networked multiplayer
+using Photon.Pun; // Required for networked multiplayer
+using ExitGames.Client.Photon;  
 
 [RequireComponent(typeof(Slider))]
 public class UIHUDHealthBar : MonoBehaviour
@@ -16,6 +17,8 @@ public class UIHUDHealthBar : MonoBehaviour
 
     private PhotonView photonView;
 
+    private const string HealthBarInstantiatedKey = "HealthBarInstantiated";
+
     void OnEnable()
     {
         HealthSystem.onHealthChange += UpdateHealth;
@@ -26,13 +29,18 @@ public class UIHUDHealthBar : MonoBehaviour
         HealthSystem.onHealthChange -= UpdateHealth;
     }
 
+   
+
     void Start()
     {
         photonView = GetComponent<PhotonView>();
 
+
+
         if (!isPlayer) Invoke("HideOnDestroy", Time.deltaTime); // Hide enemy health bar at the start
         if (isPlayer) SetPlayerForHUD();  // Assign the local player for this HUD
     }
+
 
     // Updates health for both player and enemy health bars
     public void UpdateHealth(float percentage, GameObject go)
@@ -59,25 +67,15 @@ public class UIHUDHealthBar : MonoBehaviour
 
         if (!isPlayer && go.CompareTag("Enemy"))
         {
-            HpSlider.gameObject.SetActive(true);
             HpSlider.value = percentage;
-
-            if (PhotonNetwork.IsConnected)
-            {
-                nameField.text = go.GetComponent<EnemyActions>().enemyName;
-            }
-            else
-            {
-                nameField.text = go.GetComponent<EnemyActions>().enemyName;
-            }
-
-            if (percentage == 0) Invoke("HideOnDestroy", 2);
+            nameField.text = go.GetComponent<EnemyActions>().enemyName;
+            HpSlider.gameObject.SetActive(true);
+            if (percentage == 0) HideOnDestroy();
         }
 
     }
 
-
-    void HideOnDestroy()
+    public void HideOnDestroy()
     {
         HpSlider.gameObject.SetActive(false);
         nameField.text = "";
