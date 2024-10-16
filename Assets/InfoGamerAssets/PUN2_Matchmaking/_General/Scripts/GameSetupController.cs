@@ -19,6 +19,8 @@ public class GameSetupController : MonoBehaviour
     // InputManager prefab (added to instantiate it for each player)
     public GameObject inputManagerPrefab;
 
+    public GameObject uiPrefab;
+
     // Prefab names in Resources folder
     private const string enemyWaveSystemPrefab = "EnemyWaveSystem";
     private const string itemsPrefab = "Items";
@@ -171,7 +173,7 @@ public class GameSetupController : MonoBehaviour
         }
 
         // Instantiate UI from Resources folder using Photon for networked play
-        GameObject uiInstance = PhotonNetwork.InstantiateRoomObject("UINetwork", Vector3.zero, Quaternion.identity);
+        GameObject uiInstance = Instantiate(uiPrefab, Vector3.zero, Quaternion.identity);
 
         // Set a unique name to better organize it in the hierarchy
         uiInstance.name = "UI_Player" + playerID;
@@ -180,6 +182,11 @@ public class GameSetupController : MonoBehaviour
         DontDestroyOnLoad(uiInstance);
 
         Debug.Log("UI instantiated for Player " + playerID);
+
+        if(uiInstance.name == "UINetwork(Clone)")
+        {
+            Destroy(uiInstance);
+        }
     }
 
 

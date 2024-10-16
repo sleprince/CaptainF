@@ -33,7 +33,7 @@ public class HealthSystem : MonoBehaviour {
 	//substract health
 	public void SubstractHealth(int damage){
 
-		if (PhotonNetwork.IsConnected)
+		if (PhotonNetwork.IsConnected && this.CompareTag("Player"))
 		{
 			photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
 		}
@@ -66,7 +66,22 @@ public class HealthSystem : MonoBehaviour {
             if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
         }
 
-        SendHealthUpdateEvent();
+        // Calculate health percentage
+        float healthPercentage = (float)CurrentHp / MaxHp;
+
+        // Find the correct UI GameObject based on player ID
+        int playerID = GetComponent<PhotonView>().Owner.ActorNumber; // Using PhotonView's ActorNumber as the player ID
+        GameObject playerUI = GameObject.Find("UI_Player" + playerID);
+
+        if (playerUI != null)
+        {
+            // Update the health bar on the correct UI instance
+            UIHUDHealthBar healthBar = playerUI.GetComponentInChildren<UIHUDHealthBar>();
+            if (healthBar != null)
+            {
+                healthBar.UpdateHealth(healthPercentage, this.gameObject);
+            }
+        }
 
     }
 
@@ -78,7 +93,8 @@ public class HealthSystem : MonoBehaviour {
 
 	//health update event
 	void SendHealthUpdateEvent(){
-		float CurrentHealthPercentage = 1f/MaxHp * CurrentHp;
+
+        float CurrentHealthPercentage = 1f/MaxHp * CurrentHp;
 		if(onHealthChange != null) onHealthChange(CurrentHealthPercentage, gameObject);
 	}
 

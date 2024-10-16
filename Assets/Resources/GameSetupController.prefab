@@ -56,6 +56,8 @@ MonoBehaviour:
   cameraPrefab: {fileID: 171854, guid: 36a2e3d21b9de1448891cdfb14223a15, type: 3}
   inputManagerPrefab: {fileID: 1000012781959418, guid: e39095174dacb1644bc531f5401d5731,
     type: 3}
+  uiPrefab: {fileID: 6265896079415905249, guid: a30b37f4a92b26e4aacf026b494bce25,
+    type: 3}
 --- !u!114 &5709734917160778769
 MonoBehaviour:
   m_ObjectHideFlags: 0

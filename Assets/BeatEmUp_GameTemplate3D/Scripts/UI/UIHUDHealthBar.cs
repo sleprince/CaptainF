@@ -35,48 +35,49 @@ public class UIHUDHealthBar : MonoBehaviour
     }
 
     // Updates health for both player and enemy health bars
-    void UpdateHealth(float percentage, GameObject go)
+    public void UpdateHealth(float percentage, GameObject go)
     {
+        PhotonView targetPhotonView = go.GetComponent<PhotonView>();
+
+        // Ensure only the local player's health bar updates when they are hit
         if (isPlayer && go.CompareTag("Player"))
         {
-            HpSlider.value = percentage;
+            if (PhotonNetwork.IsConnected)
+            {
+                // Only update if the player is the owner
+                if (targetPhotonView != null && targetPhotonView.IsMine)
+                {
+                    HpSlider.value = percentage;
+                }
+            }
+            else
+            {
+                // In offline/local play, update the health directly
+                HpSlider.value = percentage;
+            }
         }
 
-        
+        if (!isPlayer && go.CompareTag("Enemy"))
+        {
+            HpSlider.gameObject.SetActive(true);
+            HpSlider.value = percentage;
 
-
-            if (!isPlayer && go.CompareTag("Enemy"))
+            if (PhotonNetwork.IsConnected)
             {
-                HpSlider.gameObject.SetActive(true);
-                HpSlider.value = percentage;
-
-                if (PhotonNetwork.IsConnected)
-                {
-                // Use PhotonView to send the RPC
-                    if (photonView.IsMine)
-                    {
-                        photonView.RPC("UpdateHealthRPC", RpcTarget.AllBuffered, go.GetComponent<EnemyActions>().enemyName.ToString());
-                    }
-                }
-                else
-                {
                 nameField.text = go.GetComponent<EnemyActions>().enemyName;
-                }
-
-                if (percentage == 0) Invoke("HideOnDestroy", 2);
             }
-        
+            else
+            {
+                nameField.text = go.GetComponent<EnemyActions>().enemyName;
+            }
+
+            if (percentage == 0) Invoke("HideOnDestroy", 2);
+        }
+
     }
 
-    [PunRPC]
-    void UpdateHealthRPC(string gameObjectName)
-    {
-        nameField.text = gameObjectName;
 
-
-    }
-
-        void HideOnDestroy()
+    void HideOnDestroy()
     {
         HpSlider.gameObject.SetActive(false);
         nameField.text = "";
