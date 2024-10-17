@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,6 +29,18 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>
         if (randomizeValues) SetRandomValues();
 
         OnStart();
+
+        // Generate a random name              
+        string name = GetRandomName();
+
+        // Set the initial health
+        int maxHealth = 20;
+
+        // Call the RPC to sync the enemy data across all players
+        PhotonView enemyPhotonView = GetComponent<PhotonView>();
+        enemyPhotonView.RPC("SyncEnemyData", RpcTarget.AllBuffered, name, maxHealth);
+
+
     }
 
     void FixedUpdate()

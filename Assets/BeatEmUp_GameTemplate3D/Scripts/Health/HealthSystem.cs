@@ -35,7 +35,8 @@ public class HealthSystem : MonoBehaviour {
 
 		if (PhotonNetwork.IsConnected)
 		{
-			photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
+          
+            photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
 		}
 		else
 		{
@@ -69,25 +70,18 @@ public class HealthSystem : MonoBehaviour {
         // Calculate health percentage
         float healthPercentage = (float)CurrentHp / MaxHp;
 
-        // Find the correct UI GameObject based on player ID
-        int playerID = GetComponent<PhotonView>().Owner.ActorNumber; // Using PhotonView's ActorNumber as the player ID
-        GameObject playerUI = GameObject.Find("UI_Player" + playerID);
+        // Determine the UI for the local player (attacker)
+        int localPlayerID = PhotonNetwork.LocalPlayer.ActorNumber;
+        GameObject playerUI = GameObject.Find("UI_Player" + localPlayerID);
 
-            if (playerUI != null)
+        if (playerUI != null)
+        {
+            UIHUDHealthBar healthBar = null;
+
+            // Check if it's a player or enemy, then select the correct health bar
+            if (this.CompareTag("Player"))
             {
-                UIHUDHealthBar healthBar = null;
-
-                // Check if it's a player or enemy, then select the correct health bar
-                if (this.CompareTag("Player"))
-                { 
-                    healthBar = playerUI.GetComponentInChildren<UIHUDHealthBar>();
-            }
-                else
-                {
-                // Update the enemy health bar
-                Transform healthBarTransform = playerUI.transform.Find("Canvas/HUD/EnemyHealthBar");
-                healthBar = healthBarTransform.GetComponent<UIHUDHealthBar>();
-                }
+                healthBar = playerUI.GetComponentInChildren<UIHUDHealthBar>();
 
                 // Update health bar if found
                 if (healthBar != null)
@@ -96,7 +90,37 @@ public class HealthSystem : MonoBehaviour {
                 }
             }
 
+
+            else
+            {
+
+                // Ensure this block only runs for the local attacker
+                if (PhotonNetwork.LocalPlayer.ActorNumber == localPlayerID)
+                {
+                    // Locate EnemyHealthBar under the attacker's UI
+                    Transform healthBarTransform = playerUI.transform.Find("Canvas/HUD/EnemyHealthBar");
+                    healthBar = healthBarTransform?.GetComponent<UIHUDHealthBar>();
+
+                    // Update local UI for this player only
+                    if (healthBar != null)
+                    {
+                        healthBar.UpdateHealth(healthPercentage, this.gameObject);
+                        healthBar.nameField.text = this.GetComponent<EnemyActions>().enemyName;
+                        healthBar.HpSlider.gameObject.SetActive(healthPercentage > 0); // Show until the enemy is dead
+                        healthBar.nameField.gameObject.SetActive(healthPercentage > 0);
+                    }
+                }
+            }
+
         }
+
+
+
+    }
+
+           
+
+    
 
     
 

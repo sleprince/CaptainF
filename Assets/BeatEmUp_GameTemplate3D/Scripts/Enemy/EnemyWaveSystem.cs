@@ -99,6 +99,7 @@ public class EnemyWaveSystem : MonoBehaviour
             if (enemy != null)
             {
                 enemy.SetActive(true); // Activate enemy instead of instantiating
+
             }
         }
 

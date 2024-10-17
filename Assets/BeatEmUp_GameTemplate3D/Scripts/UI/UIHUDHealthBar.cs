@@ -68,7 +68,7 @@ public class UIHUDHealthBar : MonoBehaviour
         if (!isPlayer && go.CompareTag("Enemy"))
         {
             HpSlider.value = percentage;
-            nameField.text = go.GetComponent<EnemyActions>().enemyName;
+            nameField.text = go.GetComponent<EnemyAI>().enemyName;
             HpSlider.gameObject.SetActive(true);
             if (percentage == 0) HideOnDestroy();
         }

@@ -115,9 +115,12 @@ public class EnemyActions : MonoBehaviour {
 
     public void OnStart(){
 
+		if (!PhotonNetwork.IsConnected)
+		{
+            //assign a name to this enemy
+            if (pickARandomName) enemyName = GetRandomName();
+        }
 
-        //assign a name to this enemy
-        if (pickARandomName) enemyName = GetRandomName();
 
 		//set player as target
 		if(target == null) target = GameObject.FindGameObjectWithTag("Player");
@@ -160,12 +163,26 @@ public class EnemyActions : MonoBehaviour {
 		fixedVelocity = velocity;
 		updateVelocity = true;
 	}
-	#endregion
 
-	#region Attack
+    [PunRPC]
+    public void SyncEnemyData(string name, int maxHealth)
+    {
+        this.enemyName = name;
+        HealthSystem healthSystem = GetComponent<HealthSystem>();
+        if (healthSystem != null)
+        {
+            healthSystem.MaxHp = maxHealth;
+            healthSystem.CurrentHp = maxHealth;
+        }
+    }
 
-	//Attack
-	public void ATTACK() {
+
+    #endregion
+
+    #region Attack
+
+    //Attack
+    public void ATTACK() {
 
 		//don't attack when player is jumping
 		var playerMovement = target.GetComponent<PlayerMovement>();
@@ -582,7 +599,7 @@ public class EnemyActions : MonoBehaviour {
 	}
 
 	//returns a random name
-	string GetRandomName(){
+	public string GetRandomName(){
 		if(enemyNamesList == null) {
 			Debug.Log("no list of names was found, please create 'EnemyNames.txt' that contains a list of enemy names and put it in the 'Resources' folder.");
 			return "";
