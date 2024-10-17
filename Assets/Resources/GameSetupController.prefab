@@ -58,6 +58,8 @@ MonoBehaviour:
     type: 3}
   uiPrefab: {fileID: 6265896079415905249, guid: a30b37f4a92b26e4aacf026b494bce25,
     type: 3}
+  EnemyHealthBar: {fileID: 2993317264716288500, guid: fa963704303d4ae43b5d690a719068c4,
+    type: 3}
 --- !u!114 &5709734917160778769
 MonoBehaviour:
   m_ObjectHideFlags: 0

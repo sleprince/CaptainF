@@ -21,6 +21,8 @@ public class GameSetupController : MonoBehaviour
 
     public GameObject uiPrefab;
 
+    public GameObject EnemyHealthBar;
+
     // Prefab names in Resources folder
     private const string enemyWaveSystemPrefab = "EnemyWaveSystem";
     private const string itemsPrefab = "Items";
@@ -194,7 +196,7 @@ public class GameSetupController : MonoBehaviour
         }
 
         // Instantiate EnemyHealthBar at the world position of the HUD and then set it as a child
-        GameObject healthBarInstance = PhotonNetwork.Instantiate("EnemyHealthBar", hudTransform.position, Quaternion.identity);
+        GameObject healthBarInstance = Instantiate(EnemyHealthBar, hudTransform.position, Quaternion.identity);
         healthBarInstance.name = "EnemyHealthBar";
 
         // Set the HUD as the parent and reset local position and scale to align correctly within HUD

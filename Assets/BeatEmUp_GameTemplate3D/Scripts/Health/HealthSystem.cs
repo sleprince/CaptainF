@@ -35,8 +35,8 @@ public class HealthSystem : MonoBehaviour {
 
 		if (PhotonNetwork.IsConnected)
 		{
-          
-            photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage);
+            int attackerID = PhotonNetwork.LocalPlayer.ActorNumber;
+            photonView.RPC("RPC_ApplyHealthReduction", RpcTarget.All, damage, attackerID);
 		}
 		else
 		{
@@ -55,7 +55,7 @@ public class HealthSystem : MonoBehaviour {
 	}
 
     [PunRPC]
-    private void RPC_ApplyHealthReduction(int damage)
+    private void RPC_ApplyHealthReduction(int damage, int attackerID)
     {
         if (!invulnerable)
         {
@@ -71,8 +71,8 @@ public class HealthSystem : MonoBehaviour {
         float healthPercentage = (float)CurrentHp / MaxHp;
 
         // Determine the UI for the local player (attacker)
-        int localPlayerID = PhotonNetwork.LocalPlayer.ActorNumber;
-        GameObject playerUI = GameObject.Find("UI_Player" + localPlayerID);
+        GameObject playerUI = GameObject.Find("UI_Player" + attackerID);
+
 
         if (playerUI != null)
         {
@@ -95,7 +95,7 @@ public class HealthSystem : MonoBehaviour {
             {
 
                 // Ensure this block only runs for the local attacker
-                if (PhotonNetwork.LocalPlayer.ActorNumber == localPlayerID)
+                if (PhotonNetwork.LocalPlayer.ActorNumber == attackerID)
                 {
                     // Locate EnemyHealthBar under the attacker's UI
                     Transform healthBarTransform = playerUI.transform.Find("Canvas/HUD/EnemyHealthBar");
@@ -109,7 +109,12 @@ public class HealthSystem : MonoBehaviour {
                         healthBar.HpSlider.gameObject.SetActive(healthPercentage > 0); // Show until the enemy is dead
                         healthBar.nameField.gameObject.SetActive(healthPercentage > 0);
                     }
+
+                    // Hide the health bar for all other players
+                    photonView.RPC("RPC_UpdateHealthVisibility", RpcTarget.AllBuffered, attackerID, healthPercentage > 0);
+
                 }
+
             }
 
         }
@@ -118,11 +123,35 @@ public class HealthSystem : MonoBehaviour {
 
     }
 
-           
 
-    
 
-    
+    [PunRPC]
+    private void RPC_UpdateHealthVisibility(int attackerID, bool isVisible)
+    {
+        foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
+        {
+            GameObject otherPlayerUI = GameObject.Find("UI_Player" + player.ActorNumber);
+
+            if (otherPlayerUI != null)
+            {
+                Transform otherHealthBarTransform = otherPlayerUI.transform.Find("Canvas/HUD/EnemyHealthBar");
+
+                if (otherHealthBarTransform != null)
+                {
+                    UIHUDHealthBar otherHealthBar = otherHealthBarTransform.GetComponent<UIHUDHealthBar>();
+
+                    if (otherHealthBar != null)
+                    {
+                        // Show for the attacker, hide for others
+                        bool shouldDisplay = player.ActorNumber == attackerID && isVisible;
+                        otherHealthBar.gameObject.SetActive(shouldDisplay);
+                    }
+                }
+            }
+        }
+    }
+
+
 
     //add health
     public void AddHealth(int amount){

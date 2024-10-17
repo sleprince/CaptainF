@@ -54,6 +54,7 @@ MonoBehaviour:
   - UpdatePlayerHealthRPC
   - RPC_UpdateHealthAndName
   - SyncEnemyData
+  - RPC_UpdateHealthVisibility
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
