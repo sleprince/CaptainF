@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 
 public class HealthSystem : MonoBehaviour {
@@ -108,6 +109,15 @@ public class HealthSystem : MonoBehaviour {
                         healthBar.nameField.text = this.GetComponent<EnemyActions>().enemyName;
                         healthBar.HpSlider.gameObject.SetActive(healthPercentage > 0); // Show until the enemy is dead
                         healthBar.nameField.gameObject.SetActive(healthPercentage > 0);
+
+                        // Stop the current coroutine if already running
+                        if (hideHealthBarCoroutine != null)
+                        {
+                            StopCoroutine(hideHealthBarCoroutine);
+                        }
+
+                        // Start a new coroutine to hide after delay
+                        hideHealthBarCoroutine = StartCoroutine(HideHealthBarAfterDelay(healthBar, 3.0f));
                     }
 
                     // Hide the health bar for all other players
@@ -151,7 +161,14 @@ public class HealthSystem : MonoBehaviour {
         }
     }
 
+    private Coroutine hideHealthBarCoroutine;
 
+    // Coroutine to hide health bar after delay
+    private IEnumerator HideHealthBarAfterDelay(UIHUDHealthBar healthBar, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        healthBar.gameObject.SetActive(false);
+    }
 
     //add health
     public void AddHealth(int amount){
