@@ -224,7 +224,17 @@ public class EnemyActions : MonoBehaviour {
 
 	//Unit was hit
 	public void Hit(DamageObject d){
-		if(HitableStates.Contains(enemyState)) {
+
+        // Update target to the attacking player when hit
+        if (PhotonNetwork.IsConnected)
+        {
+            if (d.inflictor.CompareTag("Player"))
+            {
+                target = d.inflictor;
+            }
+        }
+
+        if (HitableStates.Contains(enemyState)) {
 
 			//only allow ground attacks to hit us when we are knocked down
 			if(enemyState == UNITSTATE.KNOCKDOWNGROUNDED && !d.isGroundAttack) return;

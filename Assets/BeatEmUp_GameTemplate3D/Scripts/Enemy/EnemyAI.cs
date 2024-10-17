@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -55,37 +56,88 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>
 
     void Update()
     {
-
-        //do nothing when there is no target or when AI is disabled
-        if (target == null || !enableAI)
+        // Ensure network mode and there are multiple players
+        if (PhotonNetwork.IsConnected && enableAI && !isDead)
         {
-            Ready();
-            return;
-
-        }
-        else
-        {
-
-            //get range to target
-            range = GetDistanceToTarget();
-        }
-
-        if (!isDead && enableAI)
-        {
-            if (ActiveAIStates.Contains(enemyState) && targetSpotted)
+            UpdateTargetBasedOnProximity();
+        } 
+        
+            //do nothing when there is no target or when AI is disabled
+            if (target == null || !enableAI)
             {
-
-                //AI active 
-                AI();
+                Ready();
+                return;
 
             }
             else
             {
 
-                //try to spot the player
-                if (distanceToTarget.magnitude < sightDistance) targetSpotted = true;
+                //get range to target
+                range = GetDistanceToTarget();
             }
-        }
+
+            if (!isDead && enableAI)
+            {
+                if (ActiveAIStates.Contains(enemyState) && targetSpotted)
+                {
+
+                    //AI active 
+                    AI();
+
+                }
+                else
+                {
+
+                    //try to spot the player
+                    if (distanceToTarget.magnitude < sightDistance) targetSpotted = true;
+                }
+            }
+
+        
+
+
+       
+    }
+
+    private void UpdateTargetBasedOnProximity()
+    {
+        // Find all player objects
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        GameObject closestPlayer = null;
+        float closestDistance = float.MaxValue;
+
+      
+
+
+            foreach (GameObject player in players)
+            {
+
+
+                float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+                if (distanceToPlayer < closestDistance)
+                {
+                    closestDistance = distanceToPlayer;
+                    closestPlayer = player;
+                }
+
+
+
+
+            }
+
+            // Update target to the closest player if found, if their hp is greater than 0
+            if (closestPlayer != null && closestPlayer.activeInHierarchy && closestPlayer.GetComponent<HealthSystem>().CurrentHp > 0)
+            {
+                target = closestPlayer;
+            }
+
+
+        
+
+
+
     }
 
     void AI()

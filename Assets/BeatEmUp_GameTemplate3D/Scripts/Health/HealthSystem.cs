@@ -29,10 +29,19 @@ public class HealthSystem : MonoBehaviour {
         SendHealthUpdateEvent();
 	}
 
+    private void Update()
+    {
+        // Toggle invulnerability on and off with the "I" key, for debugging
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            invulnerable = !invulnerable;
+        }
+    }
 
 
-	//substract health
-	public void SubstractHealth(int damage){
+
+    //substract health
+    public void SubstractHealth(int damage){
 
 		if (PhotonNetwork.IsConnected)
 		{
