@@ -132,6 +132,10 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>
             {
                 target = closestPlayer;
             }
+            if (target.GetComponent<HealthSystem>().CurrentHp <= 0) //if player dies stop targeting them
+            {
+                   targetSpotted = false;
+            }
 
 
         

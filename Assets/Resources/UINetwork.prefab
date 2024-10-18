@@ -2331,7 +2331,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1587388062909648183}
   - component: {fileID: 4788653978952088729}
-  - component: {fileID: 9150972033767071435}
+  - component: {fileID: 633538003193070969}
   m_Layer: 5
   m_Name: GameOverScrn
   m_TagString: Untagged
@@ -2368,7 +2368,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2452312503202758613}
   m_CullTransparentMesh: 1
---- !u!114 &9150972033767071435
+--- !u!114 &633538003193070969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2377,11 +2377,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2452312503202758613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5696379a28bb424a94a3228ed3f8471, type: 3}
+  m_Script: {fileID: 11500000, guid: d3a27da1418544544b2c5e0dbe649d1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 8426958939762319123}
-  subtext: {fileID: 2432702893952091191}
+  subtext: {fileID: 0}
   TextRestart: Press any key to restart
   TextNextLevel: Press any key to continue
   ColorTransition:
@@ -6947,6 +6947,8 @@ MonoBehaviour:
     UI_Gameobject: {fileID: 1689200233759362589}
   - UI_Name: TitleScreen
     UI_Gameobject: {fileID: 5702628501733981539}
+  - UI_Name: TouchScreenControls
+    UI_Gameobject: {fileID: 7923982308999784555}
 --- !u!114 &1105180260175459575
 MonoBehaviour:
   m_ObjectHideFlags: 0

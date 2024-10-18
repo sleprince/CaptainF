@@ -23,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BeatEmUp_GameTemplate3D/05_MultiPlayer.unity
     guid: 683002911aea17e4592ca67e88761b8c
+  - enabled: 1
+    path: Assets/BeatEmUp_GameTemplate3D/06_MultiPlayer.unity
+    guid: 9eb25dc829d12fc488179c03dda9307a
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
       type: 2}

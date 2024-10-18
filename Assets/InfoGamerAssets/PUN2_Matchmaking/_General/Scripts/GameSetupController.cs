@@ -32,7 +32,7 @@ public class GameSetupController : MonoBehaviour
     {
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        DontDestroyOnLoad(this.gameObject);
+        //DontDestroyOnLoad(this.gameObject);
 
         // Only the Master Client should instantiate dynamic game elements
         if (PhotonNetwork.IsMasterClient)

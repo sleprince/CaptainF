@@ -34,8 +34,26 @@ public class HealthSystem : MonoBehaviour {
         // Toggle invulnerability on and off with the "I" key, for debugging
         if (Input.GetKeyDown(KeyCode.I))
         {
-            invulnerable = !invulnerable;
+            if (photonView.IsMine && (CompareTag("Player")))
+            {
+                invulnerable = !invulnerable;
+            }
+            
         }
+
+        // Suicide button, for debugging
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (photonView.IsMine && (CompareTag("Player")))
+            {
+                CurrentHp = 1;
+            }
+            
+        }
+
+        
+
+
     }
 
 
@@ -75,6 +93,19 @@ public class HealthSystem : MonoBehaviour {
 
             //Health reaches 0
             if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
+
+            // Health reaches 0
+            if (PhotonNetwork.IsConnected && CompareTag("Player") && isDead()) {
+
+                Debug.Log("Game Over!");
+
+                StartCoroutine(ReStartLevel()); 
+                    
+                
+                
+                    
+               
+            }
         }
 
         // Calculate health percentage
@@ -140,6 +171,52 @@ public class HealthSystem : MonoBehaviour {
 
 
 
+    }
+
+    IEnumerator ReStartLevel()
+    {
+        yield return new WaitForSeconds(2);
+
+        // Determine the UI for the local player (attacker)
+        GameObject playerUI = GameObject.Find("UI_Player" + PhotonNetwork.LocalPlayer.ActorNumber);
+        UIManagerNetwork UI = playerUI.GetComponent<UIManagerNetwork>();
+
+        if (UI != null)
+        {
+            float fadeoutTime = 1.3f;
+            //fade out
+            UI.UI_fader.Fade(UIFader.FADE.FadeOut, fadeoutTime, 0);
+            yield return new WaitForSeconds(fadeoutTime);
+
+            // Show game over screen
+            UI.DisableAllScreens();
+            UI.ShowMenu("GameOver");
+            UI.GetComponentInChildren<UIControlSwitcher>().touchControlsOverlay.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("UI is null");
+        }
+
+        // Notify all players to show the game over screen
+        photonView.RPC("RPC_GameOver", RpcTarget.All, UI);
+
+   
+
+            
+
+           
+       
+    }
+
+
+
+    [PunRPC]
+    private void RPC_GameOver(UIManagerNetwork UI)
+    {
+        // Show game over screen
+        UI.DisableAllScreens();
+        UI.ShowMenu("GameOver");
     }
 
 

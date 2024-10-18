@@ -7418,6 +7418,8 @@ MonoBehaviour:
     UI_Gameobject: {fileID: 1689200233759362589}
   - UI_Name: TitleScreen
     UI_Gameobject: {fileID: 5702628501733981539}
+  - UI_Name: TouchScreenControls
+    UI_Gameobject: {fileID: 7923982308999784555}
 --- !u!1 &6267408094836162329
 GameObject:
   m_ObjectHideFlags: 0

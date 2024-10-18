@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Photon.Pun;
 
-public class GameOverScrn : UISceneLoader
+public class GameOverNetwork : UISceneLoader
 {
     public Text text;
     public Text subtext;
@@ -15,10 +15,10 @@ public class GameOverScrn : UISceneLoader
     private bool restartInProgress = false;
 
     private InputManager inputManager; // Reference to InputManager
-    
 
 
-private void OnEnable()
+
+    private void OnEnable()
     {
 
 
@@ -102,17 +102,11 @@ private void OnEnable()
 
             GlobalGameSettings.currentLevelId = levelId;
 
-            // Load new scene depending on network connection status
-            if (PhotonNetwork.IsConnected)
-            {
+   
                 // If connected to Photon network, load scene for all players synchronously
-                PhotonNetwork.LoadLevel(sceneName);
-            }
-            else
-            {
-                // If not connected, load scene locally
-                LoadScene(sceneName);
-            }
+                PhotonNetwork.LoadLevel("06_MultiPlayer");
+          
+          
         }
     }
 
@@ -127,5 +121,5 @@ private void OnEnable()
         return GlobalGameSettings.currentLevelId == totalNumberOfLevels;
     }
 
-    
+
 }

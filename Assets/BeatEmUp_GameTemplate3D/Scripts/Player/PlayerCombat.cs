@@ -76,8 +76,10 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 	private string lastAttackInput;
 	private DIRECTION lastAttackDirection;
 
-	//a list of states when the player can attack
-	private List<UNITSTATE> AttackStates = new List<UNITSTATE> {
+    private PhotonView photonView;
+
+    //a list of states when the player can attack
+    private List<UNITSTATE> AttackStates = new List<UNITSTATE> {
 		UNITSTATE.IDLE, 
 		UNITSTATE.WALK, 
 		UNITSTATE.RUN, 
@@ -144,7 +146,10 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 
     //awake
     void Start() {
-		animator = GetComponentInChildren<UnitAnimator>();
+
+        photonView = GetComponent<PhotonView>();
+
+        animator = GetComponentInChildren<UnitAnimator>();
 		playerState = GetComponent<UnitState>();
 		rb = GetComponent<Rigidbody>();
 
@@ -855,12 +860,33 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 			GlobalAudioPlayer.PlaySFXAtPosition(deathVoiceSFX, transform.position + Vector3.up);
 			animator.SetAnimatorBool("Death", true);
 			EnemyManager.PlayerHasDied();
-			StartCoroutine(ReStartLevel());
+
+			if (PhotonNetwork.IsConnected)
+			{
+                // Trigger game over on all clients
+                photonView.RPC("TriggerGameOver", RpcTarget.AllBuffered);
+            }
+			else
+			{
+                StartCoroutine(ReStartLevel());
+            }
+			
 		}
 	}
 
-	//restart this level
-	IEnumerator ReStartLevel(){
+
+    
+    
+
+
+[PunRPC]
+void TriggerGameOver()
+{
+    StartCoroutine(ReStartLevel());
+}
+
+//restart this level
+IEnumerator ReStartLevel(){
 		yield return new WaitForSeconds(2);
 		float fadeoutTime = 1.3f;
 
