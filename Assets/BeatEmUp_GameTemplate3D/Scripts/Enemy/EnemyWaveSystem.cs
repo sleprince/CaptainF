@@ -292,6 +292,31 @@ public class EnemyWaveSystem : MonoBehaviour
             yield return new WaitForSeconds(2f);
         }
 
+        if (PhotonNetwork.IsConnected) { 
+            // Determine the UI for the local player (attacker)
+            GameObject playerUI = GameObject.Find("UI_Player" + PhotonNetwork.LocalPlayer.ActorNumber);
+            //UIManagerNetwork UI = playerUI.GetComponent<UIManagerNetwork>();
+            UIManagerNetwork networkUI = GameObject.FindObjectOfType<UIManagerNetwork>();
+
+            if (networkUI != null)
+            {
+                float fadeoutTime = 1.3f;
+                //fade out
+                networkUI.UI_fader.Fade(UIFader.FADE.FadeOut, fadeoutTime, 0);
+                yield return new WaitForSeconds(fadeoutTime);
+
+                // Show game over screen
+                networkUI.DisableAllScreens();
+                networkUI.ShowMenu("LevelComplete");
+                networkUI.GetComponentInChildren<UIControlSwitcher>().touchControlsOverlay.SetActive(false);
+            }
+            else
+            {
+                Debug.Log("UI is null");
+            }
+        }
+
+
         // Disable players
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject p in players)

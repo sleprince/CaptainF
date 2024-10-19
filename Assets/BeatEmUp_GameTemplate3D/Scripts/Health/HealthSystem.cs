@@ -36,7 +36,7 @@ public class HealthSystem : MonoBehaviour {
         {
             if (photonView.IsMine && (CompareTag("Player")))
             {
-                invulnerable = !invulnerable;
+               invulnerable = !invulnerable;
             }
             
         }
@@ -92,20 +92,28 @@ public class HealthSystem : MonoBehaviour {
             CurrentHp = Mathf.Clamp(CurrentHp -= damage, 0, MaxHp);
 
             //Health reaches 0
-            if (isDead()) gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
+            if (isDead())
+            {
+                gameObject.SendMessage("Death", SendMessageOptions.DontRequireReceiver);
 
-            // Health reaches 0
-            if (PhotonNetwork.IsConnected && CompareTag("Player") && isDead()) {
+                // Health reaches 0 networked
+                if (PhotonNetwork.IsConnected && CompareTag("Player") && CurrentHp == 0)
+                {
 
-                Debug.Log("Game Over!");
+                    Debug.Log("Game Over!");
 
-                StartCoroutine(ReStartLevel()); 
-                    
-                
-                
-                    
-               
+                    StartCoroutine(ReStartLevel());
+
+
+
+
+
+                }
+
+
             }
+
+        
         }
 
         // Calculate health percentage
@@ -191,7 +199,7 @@ public class HealthSystem : MonoBehaviour {
             // Show game over screen
             UI.DisableAllScreens();
             UI.ShowMenu("GameOver");
-            UI.GetComponentInChildren<UIControlSwitcher>().touchControlsOverlay.SetActive(false);
+            //UI.GetComponentInChildren<UIControlSwitcher>().touchControlsOverlay.SetActive(false);
         }
         else
         {
@@ -199,7 +207,7 @@ public class HealthSystem : MonoBehaviour {
         }
 
         // Notify all players to show the game over screen
-        photonView.RPC("RPC_GameOver", RpcTarget.All, UI);
+        //photonView.RPC("RPC_GameOver", RpcTarget.All, UI);
 
    
 

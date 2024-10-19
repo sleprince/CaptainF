@@ -882,7 +882,7 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 [PunRPC]
 void TriggerGameOver()
 {
-    StartCoroutine(ReStartLevel());
+    //StartCoroutine(ReStartLevel());
 }
 
 //restart this level

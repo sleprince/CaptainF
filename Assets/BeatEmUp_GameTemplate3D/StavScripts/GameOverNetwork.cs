@@ -104,7 +104,7 @@ public class GameOverNetwork : UISceneLoader
 
    
                 // If connected to Photon network, load scene for all players synchronously
-                PhotonNetwork.LoadLevel("06_MultiPlayer");
+                PhotonNetwork.LoadLevel("05_MultiPlayer");
           
           
         }

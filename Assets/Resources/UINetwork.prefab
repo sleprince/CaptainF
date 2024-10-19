@@ -7356,19 +7356,19 @@ MonoBehaviour:
   levelData:
   - levelTitle: Level 1
     levelSprite: {fileID: 21300000, guid: ca2d9d356cd7ac04987d20c4e6ee2207, type: 3}
-    sceneToLoad: 01_Game
+    sceneToLoad: 05_MultiPlayer
     levelId: 0
   - levelTitle: Level 2
     levelSprite: {fileID: 21300000, guid: ca2d9d356cd7ac04987d20c4e6ee2207, type: 3}
-    sceneToLoad: 01_Game
+    sceneToLoad: 05_MultiPlayer
     levelId: 0
   - levelTitle: Level 3
     levelSprite: {fileID: 21300000, guid: ca2d9d356cd7ac04987d20c4e6ee2207, type: 3}
-    sceneToLoad: 01_Game
+    sceneToLoad: 05_MultiPlayer
     levelId: 0
   - levelTitle: Level 4
     levelSprite: {fileID: 21300000, guid: ca2d9d356cd7ac04987d20c4e6ee2207, type: 3}
-    sceneToLoad: 01_Game
+    sceneToLoad: 05_MultiPlayer
     levelId: 0
 --- !u!1 &7077106567365310929
 GameObject:
