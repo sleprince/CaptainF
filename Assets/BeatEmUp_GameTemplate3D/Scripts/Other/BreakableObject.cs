@@ -30,7 +30,7 @@ public class BreakableObject : MonoBehaviour, IDamagable<DamageObject> {
 	public void Hit(DamageObject DO)
 	{
 
-		if (PhotonNetwork.IsConnected && photonView != null && photonView.IsMine)
+		if (PhotonNetwork.IsConnected && photonView != null)
 		{
 			photonView.RPC("RPC_HandleHit", RpcTarget.All, DO.inflictor != null ? DO.inflictor.transform.position.x : 0);
 		}

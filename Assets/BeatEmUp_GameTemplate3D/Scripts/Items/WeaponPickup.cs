@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 public class WeaponPickup : MonoBehaviour {
 
@@ -13,8 +14,12 @@ public class WeaponPickup : MonoBehaviour {
 	private GameObject[] Players;
 	private GameObject playerinRange;
 
-	void Start(){
-		Players = GameObject.FindGameObjectsWithTag("Player");
+    private PhotonView photonView;
+
+    void Start(){
+
+        photonView = GetComponent<PhotonView>();
+        Players = GameObject.FindGameObjectsWithTag("Player");
 	}
 
 	//Checks if this item is in pickup range
@@ -43,23 +48,57 @@ public class WeaponPickup : MonoBehaviour {
 	//pick up this item
 	public void OnPickup(GameObject player){
 
-		//show pickup effect
-		if (pickupEffect) {
-			GameObject effect = GameObject.Instantiate (pickupEffect);
-			effect.transform.position = transform.position;
-		}
+        if (PhotonNetwork.IsConnected)
+        {
+            photonView.RPC("RPC_GiveWeaponToPlayer", RpcTarget.AllBuffered, player.GetComponent<PhotonView>().ViewID);
+        }
+		else
+		{
+            //show pickup effect
+            if (pickupEffect)
+            {
+                GameObject effect = GameObject.Instantiate(pickupEffect);
+                effect.transform.position = transform.position;
+            }
 
-		//play sfx
-		if(SFX != null) GlobalAudioPlayer.PlaySFX(SFX);
+            //play sfx
+            if (SFX != null) GlobalAudioPlayer.PlaySFX(SFX);
 
-		//give weapon to player
-		GiveWeaponToPlayer(player);
+            //give weapon to player
+            GiveWeaponToPlayer(player);
 
-		//remove pickup
-		Destroy(gameObject);
+            //remove pickup
+            Destroy(gameObject);
+
+        }
+
+       
 	}
 
-	public void GiveWeaponToPlayer(GameObject player){
+    [PunRPC]
+    void RPC_GiveWeaponToPlayer(int playerViewID)
+    {
+        GameObject player = PhotonView.Find(playerViewID).gameObject;
+        if (player != null)
+        {
+            //show pickup effect
+            if (pickupEffect)
+            {
+                GameObject effect = GameObject.Instantiate(pickupEffect);
+                effect.transform.position = transform.position;
+            }
+
+            //play sfx
+            if (SFX != null) GlobalAudioPlayer.PlaySFX(SFX);
+
+            GiveWeaponToPlayer(player);
+
+            //remove pickup
+            Destroy(gameObject);
+        }
+    }
+
+    public void GiveWeaponToPlayer(GameObject player){
 		PlayerCombat pc = player.GetComponent<PlayerCombat>();
 		if(pc) pc.equipWeapon(weapon);
 	}
