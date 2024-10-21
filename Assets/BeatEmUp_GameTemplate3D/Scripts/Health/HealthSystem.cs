@@ -34,28 +34,44 @@ public class HealthSystem : MonoBehaviour {
         // Toggle invulnerability on and off with the "I" key, for debugging
         if (Input.GetKeyDown(KeyCode.I))
         {
-            if (photonView.IsMine && (CompareTag("Player")))
+            if (CompareTag("Player"))
             {
-               invulnerable = !invulnerable;
+                invulnerable = !invulnerable;
             }
-            
+
         }
 
         // Suicide button, for debugging
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (photonView.IsMine && (CompareTag("Player")))
+            if (CompareTag("Player"))
             {
                 CurrentHp = 1;
             }
-            
+
         }
 
-        
 
-
+        if (PhotonNetwork.IsConnected && photonView.IsMine && CompareTag("Player"))
+        {
+            // Call RPC to toggle invulnerability for this player
+            photonView.RPC("RPC_ToggleInvulnerability", RpcTarget.AllBuffered, !invulnerable);
+        }
     }
+    
 
+
+
+
+
+
+
+    // RPC to toggle invulnerability across the network
+    [PunRPC]
+    void RPC_ToggleInvulnerability(bool newInvulnerableState)
+    {
+        invulnerable = newInvulnerableState;
+    }
 
 
     //substract health
