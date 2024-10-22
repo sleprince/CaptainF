@@ -17,11 +17,18 @@ public class Weapon {
 	public string useSound = "";
 	public string breakSound = "";
 
-	public void useWeapon(){
-		timesToUse = Mathf.Clamp(timesToUse-1, 0, 1000);
+    private PhotonView photonView;
+
+    public void useWeapon(){
+
+			timesToUse = Mathf.Clamp(timesToUse - 1, 0, 1000);
+
 	}
 
-	public void onHitSomething(){
+    // This RPC is called to update the weapon usage count for all clients
+    [PunRPC]
+
+    public void onHitSomething(){
 		if(degenerateType == DEGENERATETYPE.DEGENERATEONHIT) useWeapon();
 
 		//play break sfx on last hit
@@ -30,7 +37,7 @@ public class Weapon {
 
 	public void BreakWeapon(){
 
-        if (PhotonNetwork.IsConnected)
+        if (PhotonNetwork.IsConnected && WeaponEndState != null)
         {
 
             GameObject g = g = PhotonNetwork.InstantiateRoomObject(WeaponEndState.name, playerHandPrefab.transform.position, Quaternion.identity);

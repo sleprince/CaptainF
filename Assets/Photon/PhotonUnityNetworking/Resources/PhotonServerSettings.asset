@@ -61,6 +61,10 @@ MonoBehaviour:
   - RPC_GiveWeaponToPlayer
   - RPC_ToggleInvulnerability
   - RPC_AddHealthToPlayer
+  - RPC_UseWeapon
+  - onHitSomething
+  - RPC_DestroyWeapon
+  - RPC_DeactivateObject
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

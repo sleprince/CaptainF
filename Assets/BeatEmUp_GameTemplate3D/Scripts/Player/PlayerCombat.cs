@@ -429,13 +429,37 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 	IEnumerator destroyCurrentWeapon(float delay){
 		yield return new WaitForSeconds(delay);
 		if(currentWeapon.degenerateType == DEGENERATETYPE.DEGENERATEONUSE) GlobalAudioPlayer.PlaySFX(currentWeapon.breakSound);
-		Destroy(currentWeapon.playerHandPrefab);
-		currentWeapon.BreakWeapon();
-		currentWeapon = null;
-	}
 
-	//returns the current weapon
-	public Weapon GetCurrentWeapon(){
+        // If connected to Photon, call the RPC to destroy the weapon across the network
+        if (PhotonNetwork.IsConnected)
+        {
+            photonView.RPC("RPC_DestroyWeapon", RpcTarget.AllBuffered);
+        }
+        else
+        {
+            // Destroy locally if not connected to the network
+            Destroy(currentWeapon.playerHandPrefab);
+            currentWeapon.BreakWeapon();
+            currentWeapon = null;
+        }
+    }
+
+
+// RPC to destroy the weapon on all clients
+[PunRPC]
+public void RPC_DestroyWeapon()
+{
+    if (currentWeapon != null && currentWeapon.playerHandPrefab != null)
+    {
+        // Destroy the weapon game object
+        PhotonNetwork.Destroy(currentWeapon.playerHandPrefab);
+        currentWeapon.BreakWeapon();
+        currentWeapon = null;
+    }
+}
+
+//returns the current weapon
+public Weapon GetCurrentWeapon(){
 		return currentWeapon;
 	}
 
@@ -499,8 +523,14 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
 	//check if we have hit something (Animation Event)
 	public void CheckForHit() {
 
-		//draw a hitbox in front of the character to see which objects it collides with
-		Vector3 boxPosition = transform.position + (Vector3.up * lastAttack.collHeight) + Vector3.right * ((int)lastAttackDirection * lastAttack.collDistance);
+        if (lastAttack == null || lastAttack.inflictor == null)
+        {
+            Debug.Log("lastAttack or inflictor is null, cannot perform hit check.");
+            return;
+        }
+
+        //draw a hitbox in front of the character to see which objects it collides with
+        Vector3 boxPosition = transform.position + (Vector3.up * lastAttack.collHeight) + Vector3.right * ((int)lastAttackDirection * lastAttack.collDistance);
 		Vector3 boxSize = new Vector3 (lastAttack.CollSize/2, lastAttack.CollSize/2, hitZRange/2);
 		Collider[] hitColliders = Physics.OverlapBox(boxPosition, boxSize, Quaternion.identity, HitLayerMask); 
 
@@ -674,15 +704,47 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
             // Instantiate the weapon and parent it to the weaponBone
             if (weapon.playerHandPrefab != null)
             {
-				// Instantiate the weapon without resetting the transform
-				GameObject PlayerWeapon = Instantiate(weapon.playerHandPrefab, weaponBone);
 
-				// Ensure the weapon's scale is reset after parenting
-				PlayerWeapon.transform.localScale = Vector3.one;
-				// Keep the original transform settings of the prefab
-				PlayerWeapon.transform.localPosition = weapon.playerHandPrefab.transform.localPosition;
+            // If connected to Photon, instantiate the weapon across the network
+            if (PhotonNetwork.IsConnected)
+            {
+                // Instantiate the weapon using Photon, but don't set its position/rotation yet
+                GameObject PlayerWeapon = PhotonNetwork.Instantiate(weapon.playerHandPrefab.name, Vector3.zero, Quaternion.identity);
 
-				PlayerWeapon.transform.localRotation = Quaternion.identity;
+                if (PlayerWeapon != null)
+                {
+                    // Parent the weapon to the player's weapon bone
+                    PlayerWeapon.transform.SetParent(weaponBone);
+
+                    // Reset the weapon's local position, rotation, and scale after parenting
+                    PlayerWeapon.transform.localPosition = weapon.playerHandPrefab.transform.localPosition;
+                    PlayerWeapon.transform.localRotation = Quaternion.Euler(weaponRotationOffset); // Apply the rotation offset
+                    PlayerWeapon.transform.localScale = Vector3.one;
+
+                    // Apply the rotation offset (set in the editor)
+                    PlayerWeapon.transform.localRotation = Quaternion.Euler(weaponRotationOffset);
+
+                    // Update the currentWeapon reference
+                    currentWeapon.playerHandPrefab = PlayerWeapon;
+                }
+                else
+                {
+                    Debug.LogError("Failed to instantiate weapon prefab.");
+                }
+
+               
+            }
+            else
+            {
+                // Local instantiation
+                GameObject PlayerWeapon = Instantiate(weapon.playerHandPrefab, weaponBone);
+
+                // Ensure the weapon's scale is reset after parenting
+                PlayerWeapon.transform.localScale = Vector3.one;
+                // Keep the original transform settings of the prefab
+                PlayerWeapon.transform.localPosition = weapon.playerHandPrefab.transform.localPosition;
+
+                PlayerWeapon.transform.localRotation = Quaternion.identity;
 
                 // Debug the scale to ensure it's being set correctly
                 Debug.Log("Weapon Scale After Parenting: " + PlayerWeapon.transform.localScale);
@@ -691,8 +753,12 @@ public class PlayerCombat : MonoBehaviour, IDamagable<DamageObject> {
                 // Update the currentWeapon reference
                 currentWeapon.playerHandPrefab = PlayerWeapon;
 
-				// Apply the rotation offset (set in the editor)
-				PlayerWeapon.transform.localRotation = Quaternion.Euler(weaponRotationOffset);
+                // Apply the rotation offset (set in the editor)
+                PlayerWeapon.transform.localRotation = Quaternion.Euler(weaponRotationOffset);
+            }
+
+
+		
         }
         }
 

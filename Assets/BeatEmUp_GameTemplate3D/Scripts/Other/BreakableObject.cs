@@ -6,24 +6,24 @@ public class BreakableObject : MonoBehaviour, IDamagable<DamageObject> {
 
 	public string hitSFX = "";
 
-	[Header ("Gameobject Destroyed")]
+	[Header("Gameobject Destroyed")]
 	public GameObject destroyedGO;
 	public bool orientToImpactDir;
 
-	[Header ("Spawn an item")]
+	[Header("Spawn an item")]
 	public GameObject spawnItem;
 	public float spawnChance = 100;
 
 	[Space(10)]
 	public bool destroyOnHit;
 
-    private PhotonView photonView;
+	private PhotonView photonView;
 
-    void Start(){
+	void Start() {
 
-        photonView = GetComponent<PhotonView>();
+		photonView = GetComponent<PhotonView>();
 
-        gameObject.layer = LayerMask.NameToLayer("DestroyableObject");
+		gameObject.layer = LayerMask.NameToLayer("DestroyableObject");
 	}
 
 	//this object was Hit
@@ -78,47 +78,56 @@ public class BreakableObject : MonoBehaviour, IDamagable<DamageObject> {
 		}
 	}
 
+	[PunRPC]
+	void RPC_HandleHit(float inflictorXPos)
+	{
+		// Play hit SFX
+		if (hitSFX != "")
+		{
+			GlobalAudioPlayer.PlaySFXAtPosition(hitSFX, transform.position);
+		}
+
+		// Spawn destroyed gameobject version
+		if (destroyedGO != null)
+		{
+
+			GameObject BrokenGO = PhotonNetwork.InstantiateRoomObject(destroyedGO.name, transform.position, Quaternion.identity);
+
+			// Orient to impact direction
+			if (orientToImpactDir)
+			{
+				float dir = Mathf.Sign(inflictorXPos - transform.position.x);
+				BrokenGO.transform.rotation = Quaternion.LookRotation(Vector3.forward * dir);
+			}
+		}
+
+		// Spawn an item
+		if (spawnItem != null)
+		{
+			if (Random.Range(0, 100) < spawnChance)
+			{
+				GameObject item = PhotonNetwork.InstantiateRoomObject(spawnItem.name, transform.position, Quaternion.identity);
+				item.transform.position = transform.position;
+
+				// Add upward force to object
+				item.GetComponent<Rigidbody>().velocity = Vector3.up * 8f;
+			}
+		}
+
+		// "Destroy" the object by deactivating it across the network
+		if (destroyOnHit)
+		{
+			// Instead of Destroy(gameObject), we deactivate the object
+			photonView.RPC("RPC_DeactivateObject", RpcTarget.AllBuffered);
+		}
+	}
+
     [PunRPC]
-    void RPC_HandleHit(float inflictorXPos)
+    void RPC_DeactivateObject()
     {
-        // Play hit SFX
-        if (hitSFX != "")
-        {
-            GlobalAudioPlayer.PlaySFXAtPosition(hitSFX, transform.position);
-        }
-
-        // Spawn destroyed gameobject version
-        if (destroyedGO != null)
-        {
-            
-            GameObject BrokenGO = PhotonNetwork.InstantiateRoomObject(destroyedGO.name, transform.position, Quaternion.identity);
-
-            // Orient to impact direction
-            if (orientToImpactDir)
-            {
-                float dir = Mathf.Sign(inflictorXPos - transform.position.x);
-                BrokenGO.transform.rotation = Quaternion.LookRotation(Vector3.forward * dir);
-            }
-        }
-
-        // Spawn an item
-        if (spawnItem != null)
-        {
-            if (Random.Range(0, 100) < spawnChance)
-            {
-                GameObject item = PhotonNetwork.InstantiateRoomObject(spawnItem.name, transform.position, Quaternion.identity);
-                item.transform.position = transform.position;
-
-                // Add upward force to object
-                item.GetComponent<Rigidbody>().velocity = Vector3.up * 8f;
-            }
-        }
-
-        // Destroy the object
-        if (destroyOnHit)
-        {
-            Destroy(gameObject);
-        }
+        // Deactivate this object on all clients
+        gameObject.SetActive(false);
     }
+
 
 }

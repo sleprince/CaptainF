@@ -39,7 +39,12 @@ public class EnemyAI : EnemyActions, IDamagable<DamageObject>
 
         // Call the RPC to sync the enemy data across all players
         PhotonView enemyPhotonView = GetComponent<PhotonView>();
-        enemyPhotonView.RPC("SyncEnemyData", RpcTarget.AllBuffered, name, maxHealth);
+
+        if (PhotonNetwork.IsConnected)
+        {
+            enemyPhotonView.RPC("SyncEnemyData", RpcTarget.AllBuffered, name, maxHealth);
+        }
+        
 
 
     }

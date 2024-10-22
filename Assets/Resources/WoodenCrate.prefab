@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1181366139474212
+--- !u!1 &1217764232122442
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4032912722925874}
-  - component: {fileID: 33097615304949022}
-  - component: {fileID: 23085388279886492}
-  m_Layer: 0
-  m_Name: GFX
+  - component: {fileID: 4882213012863746}
+  - component: {fileID: 33538418439786660}
+  - component: {fileID: 23129889070455780}
+  - component: {fileID: 65184698512358954}
+  - component: {fileID: 114225313807016428}
+  - component: {fileID: 7011927368996172177}
+  m_Layer: 13
+  m_Name: WoodenCrate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4032912722925874
+--- !u!4 &4882213012863746
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181366139474212}
+  m_GameObject: {fileID: 1217764232122442}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7431448, w: 0.6691307}
-  m_LocalPosition: {x: -0.09, y: 0.035, z: -0}
+  m_LocalRotation: {x: 0.000000021855694, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.53, y: 0, z: -3.845}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4751859194716836}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -96}
---- !u!33 &33097615304949022
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &33538418439786660
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181366139474212}
-  m_Mesh: {fileID: 4300000, guid: 8b9f53493620bcd4c9fc7787b4d39dc6, type: 3}
---- !u!23 &23085388279886492
+  m_GameObject: {fileID: 1217764232122442}
+  m_Mesh: {fileID: 4300000, guid: 6da59280cf9fcea428fe81f543a95dfa, type: 3}
+--- !u!23 &23129889070455780
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181366139474212}
+  m_GameObject: {fileID: 1217764232122442}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -61,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 050b781f6cc0a3c49ac60be261b1e740, type: 2}
+  - {fileID: 2100000, guid: 6f5d3c2e7d7925a4aad93f0784d99b4b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,46 +86,53 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1596423937318954
-GameObject:
+--- !u!65 &65184698512358954
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4751859194716836}
-  - component: {fileID: 567083535304265260}
-  m_Layer: 0
-  m_Name: BaseballBat_HandWeapon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4751859194716836
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1596423937318954}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.084, z: 0.14}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4032912722925874}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &567083535304265260
+  m_GameObject: {fileID: 1217764232122442}
+  m_Material: {fileID: 13400000, guid: c3496fc1bd7a3d140810de56cc293ce6, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.85, y: 3.443216, z: 0.85}
+  m_Center: {x: 0, y: 1.721608, z: 1.9395284e-15}
+--- !u!114 &114225313807016428
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1596423937318954}
+  m_GameObject: {fileID: 1217764232122442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e6d8e868f887f448c55f7c6a3452f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitSFX: CrateHit
+  destroyedGO: {fileID: 1000013345971592, guid: b3e792cd74e2e6743b641fe4b7280199,
+    type: 3}
+  orientToImpactDir: 1
+  spawnItem: {fileID: 1611375829293178, guid: fcd0b346c69460a4ea8393d7dee9c741, type: 3}
+  spawnChance: 25
+  destroyOnHit: 1
+--- !u!114 &7011927368996172177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1217764232122442}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
@@ -131,8 +141,8 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 1
+  Synchronization: 1
+  OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
   sceneViewId: 0
