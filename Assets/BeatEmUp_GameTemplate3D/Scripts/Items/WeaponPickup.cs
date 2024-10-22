@@ -24,25 +24,68 @@ public class WeaponPickup : MonoBehaviour {
 
 	//Checks if this item is in pickup range
 	void LateUpdate(){
-		foreach(GameObject player in Players) {
-			if(player) {
-				float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
 
-				//item in pickup range
-				if(distanceToPlayer < pickUpRange && playerinRange == null) {
-					playerinRange = player;
-					player.SendMessage("ItemInRange", gameObject, SendMessageOptions.DontRequireReceiver);
-					return;
+        if (PhotonNetwork.IsConnected)
+        {
+            foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                if (player)
+                {
+                    PhotonView playerPhotonView = player.GetComponent<PhotonView>();
 
-				}
+                    // Only check range for the local player (the player controlled by this instance)
+                    if (playerPhotonView != null && playerPhotonView.IsMine)
+                    {
+                        float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
 
-				//item out of pickup range
-				if(distanceToPlayer > pickUpRange && playerinRange != null) {
-					player.SendMessage("ItemOutOfRange", gameObject, SendMessageOptions.DontRequireReceiver);
-					playerinRange = null;
-				}
-			}
-		}
+                        // item in pickup range
+                        if (distanceToPlayer < pickUpRange && playerinRange == null)
+                        {
+                            playerinRange = player;
+                            player.SendMessage("ItemInRange", gameObject, SendMessageOptions.DontRequireReceiver);
+                            return;
+                        }
+
+                        // item out of pickup range
+                        if (distanceToPlayer > pickUpRange && playerinRange != null)
+                        {
+                            player.SendMessage("ItemOutOfRange", gameObject, SendMessageOptions.DontRequireReceiver);
+                            playerinRange = null;
+                        }
+                    }
+                }
+            }
+
+        }
+        else
+        {
+
+
+            foreach (GameObject player in Players)
+            {
+                if (player)
+                {
+                    float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+
+                    //item in pickup range
+                    if (distanceToPlayer < pickUpRange && playerinRange == null)
+                    {
+                        playerinRange = player;
+                        player.SendMessage("ItemInRange", gameObject, SendMessageOptions.DontRequireReceiver);
+                        return;
+
+                    }
+
+                    //item out of pickup range
+                    if (distanceToPlayer > pickUpRange && playerinRange != null)
+                    {
+                        player.SendMessage("ItemOutOfRange", gameObject, SendMessageOptions.DontRequireReceiver);
+                        playerinRange = null;
+                    }
+                }
+            }
+
+        }
 	}
 
 	//pick up this item
@@ -78,6 +121,7 @@ public class WeaponPickup : MonoBehaviour {
     [PunRPC]
     void RPC_GiveWeaponToPlayer(int playerViewID)
     {
+
         GameObject player = PhotonView.Find(playerViewID).gameObject;
         if (player != null)
         {

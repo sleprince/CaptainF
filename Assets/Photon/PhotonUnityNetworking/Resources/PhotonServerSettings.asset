@@ -58,6 +58,9 @@ MonoBehaviour:
   - TriggerGameOver
   - RPC_GameOver
   - RPC_HandleHit
+  - RPC_GiveWeaponToPlayer
+  - RPC_ToggleInvulnerability
+  - RPC_AddHealthToPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

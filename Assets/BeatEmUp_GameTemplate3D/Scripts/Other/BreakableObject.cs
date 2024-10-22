@@ -90,8 +90,8 @@ public class BreakableObject : MonoBehaviour, IDamagable<DamageObject> {
         // Spawn destroyed gameobject version
         if (destroyedGO != null)
         {
-            GameObject BrokenGO = GameObject.Instantiate(destroyedGO);
-            BrokenGO.transform.position = transform.position;
+            
+            GameObject BrokenGO = PhotonNetwork.InstantiateRoomObject(destroyedGO.name, transform.position, Quaternion.identity);
 
             // Orient to impact direction
             if (orientToImpactDir)
@@ -106,7 +106,7 @@ public class BreakableObject : MonoBehaviour, IDamagable<DamageObject> {
         {
             if (Random.Range(0, 100) < spawnChance)
             {
-                GameObject item = GameObject.Instantiate(spawnItem);
+                GameObject item = PhotonNetwork.InstantiateRoomObject(spawnItem.name, transform.position, Quaternion.identity);
                 item.transform.position = transform.position;
 
                 // Add upward force to object

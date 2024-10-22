@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1611375829293178
+--- !u!1 &1655860656415804
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4055773158081944}
-  - component: {fileID: 65855080699159802}
-  - component: {fileID: 54325476534827754}
-  - component: {fileID: 114318463254527000}
-  - component: {fileID: 1952286473443707567}
-  m_Layer: 10
-  m_Name: PickupBaseballBat
+  - component: {fileID: 4989029015055788}
+  - component: {fileID: 65847220340707626}
+  - component: {fileID: 54751938976540690}
+  - component: {fileID: 114019575600324794}
+  - component: {fileID: 6755044579025294244}
+  m_Layer: 0
+  m_Name: GunEmpty
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4055773158081944
+--- !u!4 &4989029015055788
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611375829293178}
+  m_GameObject: {fileID: 1655860656415804}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.2916803, z: -0, w: 0.9565159}
-  m_LocalPosition: {x: 5, y: 0, z: -1.6}
+  m_LocalRotation: {x: -0.35355332, y: -0.6123725, z: 0.06162845, w: 0.70441604}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4671814602666444}
+  - {fileID: 4211203816085384}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 30, z: 0}
---- !u!65 &65855080699159802
+  m_LocalEulerAnglesHint: {x: -25, y: -90, z: 35}
+--- !u!65 &65847220340707626
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611375829293178}
+  m_GameObject: {fileID: 1655860656415804}
   m_Material: {fileID: 13400000, guid: d123f6c1ac9a3e347a4515bb5a4485a0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -55,15 +55,15 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.1, z: 0.1}
-  m_Center: {x: 0, y: 0.045, z: 0}
---- !u!54 &54325476534827754
+  m_Size: {x: 0.07, y: 0.25, z: 0.4}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &54751938976540690
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611375829293178}
+  m_GameObject: {fileID: 1655860656415804}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
@@ -82,59 +82,34 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 122
+  m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114318463254527000
+--- !u!114 &114019575600324794
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611375829293178}
+  m_GameObject: {fileID: 1655860656415804}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efddfbdf85d73c5448fed29aaeb0fb52, type: 3}
+  m_Script: {fileID: 11500000, guid: 465270fbb0be33d4892d62bc47708472, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapon:
-    weaponName: BaseballBat
-    playerHandPrefab: {fileID: 1596423937318954, guid: eb12ae988b8d9fc4ba536879b036bc39,
-      type: 3}
-    WeaponEndState: {fileID: 1241872331814296, guid: 7a80c159a555c164aa993a5d17a03ef5,
-      type: 3}
-    timesToUse: 3
-    degenerateType: 1
-    damageObject:
-      animTrigger: SwingWeapon
-      damage: 6
-      duration: 0.5
-      comboResetTime: 0
-      forwardForce: 0
-      knockBackForce: 0
-      hitSFX: BaseballBatHit
-      knockDown: 1
-      slowMotionEffect: 0
-      DefenceOverride: 1
-      isGroundAttack: 0
-      animationClip: {fileID: 0}
-      animationSpeed: 0
-      CollSize: 2
-      collDistance: 1
-      collHeight: 1
-      hitTime: 0
-      inflictor: {fileID: 0}
-    useSound: 
-    breakSound: BaseballBatBreak
-  SFX: ItemPickup
-  pickupEffect: {fileID: 0}
-  pickUpRange: 1
---- !u!114 &1952286473443707567
+  pauzeBeforeStart: 0.5
+  flickerSpeedStart: 15
+  flickerSpeedEnd: 35
+  Duration: 2
+  DestroyOnFinish: 1
+  GFX:
+  - {fileID: 1929836106563666}
+--- !u!114 &6755044579025294244
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611375829293178}
+  m_GameObject: {fileID: 1655860656415804}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
@@ -150,7 +125,7 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!1 &1740607778799176
+--- !u!1 &1929836106563666
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,9 +133,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4671814602666444}
-  - component: {fileID: 33457927185271492}
-  - component: {fileID: 23941239252692728}
+  - component: {fileID: 4211203816085384}
+  - component: {fileID: 33914203819268954}
+  - component: {fileID: 23044164938224782}
   m_Layer: 0
   m_Name: GFX
   m_TagString: Untagged
@@ -168,36 +143,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4671814602666444
+--- !u!4 &4211203816085384
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740607778799176}
+  m_GameObject: {fileID: 1929836106563666}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.27685204, y: -0.6396014, z: 0.27023566, w: 0.6642558}
-  m_LocalPosition: {x: 0.336, y: 0.038, z: -0.01}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4055773158081944}
-  m_LocalEulerAnglesHint: {x: -1.2670001, y: -88.365005, z: 45.507004}
---- !u!33 &33457927185271492
+  m_Father: {fileID: 4989029015055788}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &33914203819268954
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740607778799176}
-  m_Mesh: {fileID: 4300000, guid: 8b9f53493620bcd4c9fc7787b4d39dc6, type: 3}
---- !u!23 &23941239252692728
+  m_GameObject: {fileID: 1929836106563666}
+  m_Mesh: {fileID: 4300000, guid: c081c6c9e7a0efe499ce51feb59aa52a, type: 3}
+--- !u!23 &23044164938224782
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740607778799176}
+  m_GameObject: {fileID: 1929836106563666}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -211,7 +186,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3d069c114033d844987b9eeb949abb59, type: 2}
+  - {fileID: 2100000, guid: a5830086af44a1e4ca4f6276ff0a9c56, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

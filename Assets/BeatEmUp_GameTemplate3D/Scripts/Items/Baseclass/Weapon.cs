@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,10 +29,23 @@ public class Weapon {
 	}
 
 	public void BreakWeapon(){
-		if(WeaponEndState) {
-			GameObject g = GameObject.Instantiate(WeaponEndState) as GameObject;
-			g.transform.position = playerHandPrefab.transform.position;
-		}
+
+        if (PhotonNetwork.IsConnected)
+        {
+
+            GameObject g = g = PhotonNetwork.InstantiateRoomObject(WeaponEndState.name, playerHandPrefab.transform.position, Quaternion.identity);
+        }
+		else
+		{
+            if (WeaponEndState)
+            {
+                GameObject g = GameObject.Instantiate(WeaponEndState) as GameObject;
+                g.transform.position = playerHandPrefab.transform.position;
+            }
+
+        }
+
+  
 	}
 }
 
