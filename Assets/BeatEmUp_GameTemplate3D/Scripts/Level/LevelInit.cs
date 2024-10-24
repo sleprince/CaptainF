@@ -29,8 +29,12 @@ public class LevelInit : MonoBehaviour {
 		//create InputManager
 		if(!GameObject.FindObjectOfType<InputManager>() && createInputManager) GameObject.Instantiate(Resources.Load("InputManager"), Vector3.zero, Quaternion.identity);
 
-		//create UI
-		if(!GameObject.FindObjectOfType<UIManager>() && createUI) GameObject.Instantiate(Resources.Load("UI"), Vector3.zero, Quaternion.identity);
+        //create UI
+
+        //destroy old UI first
+        //Destroy(GameObject.FindObjectOfType<UIManager>());
+
+        if (!GameObject.FindObjectOfType<UIManager>() && createUI) GameObject.Instantiate(Resources.Load("UI"), Vector3.zero, Quaternion.identity);
 	
 		//create Game Camera
 		if(!GameObject.FindObjectOfType<CameraFollow>() && createGameCamera) GameObject.Instantiate(Resources.Load("GameCamera"), Vector3.zero, Quaternion.identity);
